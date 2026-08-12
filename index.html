@@ -544,9 +544,35 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .vb-edit-ft button{flex:1;height:48px;border-radius:12px;border:none;font-size:16px;font-weight:700;cursor:pointer;-webkit-appearance:none}
 @keyframes vbSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
+/* ============ PWA 安装提示条 ============ */
+.pwa-install-bar{position:fixed;left;0;right;0;bottom:56px;z-index:59;
+  background:linear-gradient(135deg,#6d5efc 0%,#a855f7 100%);color:#fff;
+  padding:10px 16px;display:none;align-items:center;gap:10px;
+  box-shadow:0 -4px 20px rgba(115,85,247,.35);animation:pwaSlideUp .3s ease}
+.pwa-install-bar.show{display:flex}
+.pwa-install-bar .pwa-ic{flex:none;font-size:22px}
+.pwa-install-bar .pwa-txt{flex:1;font-size:13px;font-weight:700;line-height:1.4}
+.pwa-install-bar .pwa-txt small{font-size:11px;font-weight:500;opacity:.85;display:block}
+.pwa-install-btn{flex:none;height:36px;padding:0 16px;border-radius:10px;
+  background:#fff;color:#7355f7;font-size:13px;font-weight:800;
+  border:none;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.pwa-install-btn:active{opacity:.8}
+.pwa-dismiss{flex:none;width:32px;height:32px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;
+  cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+@keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
 </style>
 </head>
 <body>
+<!-- PWA 安装提示条（由 beforeinstallprompt 触发显示） -->
+<div id="pwaInstallBar" class="pwa-install-bar">
+  <span class="pwa-ic">&#x1f4e1;</span>
+  <div class="pwa-txt">安装到桌面<small>全屏使用，像 App 一样</small></div>
+  <button class="pwa-install-btn" id="pwaInstallBtn">安装</button>
+  <button class="pwa-dismiss" id="pwaDismissBtn" title="暂时不要">&#x2715;</button>
+</div>
+
 <!-- 启动屏 -->
 
 <div class="app">
@@ -3133,6 +3159,43 @@ if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
     navigator.serviceWorker.register('./sw.js').catch(function(){ /* 注册失败不影响使用 */ });
   });
 }
+</script>
+<script>
+/* PWA 安装提示（beforeinstallprompt） */
+(function(){
+  var bar=document.getElementById('pwaInstallBar');
+  var btn=document.getElementById('pwaInstallBtn');
+  var dis=document.getElementById('pwaDismissBtn');
+  if(!bar) return;
+  var deferredPrompt=null;
+  // 浏览器发出"可安装"信号时显示提示条
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    deferredPrompt=e;
+    bar.classList.add('show');
+  });
+  // 用户点"安装"
+  if(btn) btn.addEventListener('click',function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      deferredPrompt=null;
+      if(choice.outcome==='accepted'){
+        bar.classList.remove('show');
+      }
+    }).catch(function(){});
+  });
+  // 用户点关闭
+  if(dis) dis.addEventListener('click',function(){
+    bar.classList.remove('show');
+    deferredPrompt=null; // 本次会话不再弹出
+  });
+  // 已安装则隐藏
+  window.addEventListener('appinstalled',function(){
+    bar.classList.remove('show');
+    deferredPrompt=null;
+  });
+})();
 </script>
 </body>
 </html>
