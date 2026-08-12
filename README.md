@@ -25,6 +25,20 @@
 
 数据备份：进入「我的」→「数据备份」可导出 JSON 备份，或导入之前导出的备份文件。
 
+## 截图预览
+
+### 今日 · 打卡与生词
+![今日](screenshots/01-today.png)
+
+### 真题 · 多轮次练习（一刷 / 二刷 / 三刷）
+![真题](screenshots/02-papers.png)
+
+### 周报
+![周报](screenshots/03-weekly.png)
+
+### 我的 · 设置与数据备份
+![我的](screenshots/04-me.png)
+
 ## 技术说明
 
 - 纯前端实现（HTML + CSS + JavaScript），无框架、无构建步骤
