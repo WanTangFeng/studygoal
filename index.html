@@ -953,7 +953,7 @@ function normalize(o){
 }
 function normalizePapers(arr){
   const seen = {};
-  return (arr||[]).map(function(p,i){
+  const list = (arr||[]).map(function(p,i){
     if(!p || typeof p!=='object') return null;
     const def = PAPERS[p.subj]; if(!def) return null;
     const yr = Math.round(Number(p.year)||0);
@@ -986,14 +986,19 @@ function normalizePapers(arr){
       if(!r && !t && !mk.redo) return;
       marks[key] = { r:r, t:t, redo: mk.redo?1:0 };
     });
-    return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, secs:secs, marks:marks,
+    return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, round:(p.round||1), secs:secs, marks:marks,
              updated: String(p.updated||'').slice(0,10) || todayStr(), seed: !!p.seed };
-  }).filter(function(p){
-    if(!p) return false;
-    const k = p.subj+'@'+p.year;
-    if(seen[k]) return false;
-    seen[k] = 1; return true;
+  }).filter(function(p){ return !!p; });
+  /* 合并同一「科目+年份+轮次」的重复记录：先到者保留，后到者仅补充空缺题型与错因，避免拆成多条、并修复二刷三刷被误吞 */
+  const _m = {};
+  list.forEach(function(p){
+    const k = p.subj+'@'+p.year+'@'+p.round;
+    if(!_m[k]){ _m[k] = p; return; }
+    const ex = _m[k];
+    Object.keys(p.secs).forEach(function(sk){ if(!ex.secs[sk]) ex.secs[sk] = p.secs[sk]; });
+    Object.keys(p.marks).forEach(function(mk){ if(!ex.marks[mk]) ex.marks[mk] = p.marks[mk]; });
   });
+  return Object.keys(_m).map(function(k){ return _m[k]; });
 }
 
 function readLegacy(){
@@ -2375,6 +2380,9 @@ function pfLoad(){
     else PF.rows[d.k] = { on: !!v, allright: !!(v && !v.wrong.length), total: v ? v.total : d.q, wrong: v ? v.wrong.slice() : [] };
   });
 }
+function existingPaper(subj,year,round){
+  return S.papers.filter(function(x){ return x.subj===subj && x.year===year && (x.round||1)===round; })[0] || null;
+}
 function pfYears(){
   const out = []; for(let y=2026; y>=2005; y--) out.push(y);
   if(PF.year && out.indexOf(PF.year)<0) out.unshift(PF.year);
@@ -2472,16 +2480,18 @@ function paperForm(pid, opts){
     src = S.papers.filter(function(x){ return x.id===opts.roundFor; })[0];
     subj = src.subj; year = src.year; lock = true; roundSrc = src.id;
     round = maxRound(subj, year) + 1;
-  } else {                         /* 全新记录 */
+  } else {                         /* 全新记录（若该年份已有一刷，则转为补充编辑，避免再开一份） */
     subj = 'eng2'; year = S.lastYear || (new Date().getFullYear()-1); lock = false; round = 1;
+    const ex = existingPaper(subj, year, 1);
+    if(ex){ src = ex; lock = true; round = ex.round||1; }
   }
-  PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId: pid||null, lock:lock, roundSrc:roundSrc };
+  PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId: src?src.id:null, lock:lock, roundSrc:roundSrc };
   pfLoad();
   if(roundSrc){                    /* 新轮：保留题型开关，清空上一轮错题让用户重勾 */
     PAPERS[subj].secs.forEach(function(d){ if(PF.rows[d.k].on && d.mode!=='sub') PF.rows[d.k].wrong = []; });
   }
   const def = PAPERS[PF.subj];
-  const title = pid ? '编辑真题记录' : (roundSrc ? (roundLabel(round)+' · '+def.s+' '+year) : '记一份真题');
+  const title = PF.editId ? '补充真题记录' : (roundSrc ? (roundLabel(round)+' · '+def.s+' '+year) : '记一份真题');
   const body =
     '<div class="fld"><label>科目</label>' +
     (PF.lock
@@ -2506,7 +2516,12 @@ function paperForm(pid, opts){
     function(){
       const ys = el('pfYear');
       if(ys) ys.addEventListener('change', function(){
-        PF.year = Number(ys.value); pfLoad();
+        PF.year = Number(ys.value);
+        if(!PF.editId && !PF.roundSrc){
+          const ex = existingPaper(PF.subj, PF.year, 1);
+          if(ex){ paperForm(ex.id); return; }
+        }
+        pfLoad();
         el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
       });
     });
@@ -2526,14 +2541,24 @@ function savePaper(){
   });
   if(!Object.keys(secs).length){ toast('至少填一个题型才能保存'); return; }
   let p = PF.editId ? S.papers.filter(function(x){ return x.id===PF.editId; })[0] : null;
+  let mergedEx = false;
+  if(!p){ const ex = existingPaper(PF.subj, PF.year, PF.round); if(ex){ p = ex; mergedEx = true; } }
   let dropped = 0;
   if(p){
-    p.secs = secs; p.year = PF.year; p.updated = todayStr();
-    Object.keys(p.marks).forEach(function(key){
-      const kp = key.split('#'), v = secs[kp[0]], d = secDef(p.subj, kp[0]);
-      if(!v || !d){ delete p.marks[key]; dropped++; return; }
-      if(d.mode!=='sub' && v.wrong.indexOf(Number(kp[1]))<0){ delete p.marks[key]; dropped++; }
-    });
+    if(mergedEx){
+      /* 兜底：未走编辑态却撞到已有记录时，以旧题型为底、本次填写覆盖，避免丢失之前记录 */
+      const m = {};
+      Object.keys(p.secs).forEach(function(k){ m[k] = p.secs[k]; });
+      Object.keys(secs).forEach(function(k){ m[k] = secs[k]; });
+      p.secs = m; p.year = PF.year; p.updated = todayStr();
+    } else {
+      p.secs = secs; p.year = PF.year; p.updated = todayStr();
+      Object.keys(p.marks).forEach(function(key){
+        const kp = key.split('#'), v = secs[kp[0]], d = secDef(p.subj, kp[0]);
+        if(!v || !d){ delete p.marks[key]; dropped++; return; }
+        if(d.mode!=='sub' && v.wrong.indexOf(Number(kp[1]))<0){ delete p.marks[key]; dropped++; }
+      });
+    }
   } else {
     p = { id:uid('p'), subj:PF.subj, year:PF.year, round:PF.round, secs:secs, marks:{}, updated:todayStr(), seed:false };
     S.papers.push(p);
@@ -2891,7 +2916,12 @@ document.addEventListener('click', function(ev){
     case 'redone':     toggleRedo(id, b.dataset.key); break;
     case 'psubj': {
       if(!PF) break;
-      PF.subj = b.dataset.k; pfLoad();
+      PF.subj = b.dataset.k;
+      if(!PF.editId && !PF.roundSrc){
+        const ex = existingPaper(PF.subj, PF.year, 1);
+        if(ex){ paperForm(ex.id); break; }
+      }
+      pfLoad();
       Array.prototype.forEach.call(el('pfSubj').querySelectorAll('button'), function(x){
         x.classList.toggle('on', x.dataset.k===PF.subj);
       });
