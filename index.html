@@ -2368,11 +2368,11 @@ function vocabBoxHTML(){
     '<div id="vocabCollapsed" class="vocab-collapsed" style="display:none"></div>' +
   '</div>';
 }
-function pfLoad(){
+function pfLoad(srcObj){
   const def = PAPERS[PF.subj];
-  let src = null;
-  if(PF.editId) src = S.papers.filter(function(x){ return x.id===PF.editId; })[0];
-  else if(PF.roundSrc) src = S.papers.filter(function(x){ return x.id===PF.roundSrc; })[0];
+  let src = srcObj || null;
+  if(!src && PF.editId) src = S.papers.filter(function(x){ return x.id===PF.editId; })[0];
+  if(!src && PF.roundSrc) src = S.papers.filter(function(x){ return x.id===PF.roundSrc; })[0];
   PF.rows = {};
   def.secs.forEach(function(d){
     const v = src && src.secs[d.k];
@@ -2465,27 +2465,35 @@ function pfTip(){
       'font-size:12px;color:var(--purple);line-height:1.6;display:flex;gap:7px">'+ic('refresh',15)+
       '<span>这是 <b>'+roundLabel(PF.round)+'</b>（'+PAPERS[PF.subj].s+' '+PF.year+'）。按题号重新勾一遍错题就行，保存会作为<b>新的一条</b>记录，不影响一刷数据。</span></div>';
   }
-  if(!PF.editId) return '';
-  return '<div class="card" style="padding:10px 12px;margin-bottom:11px;background:var(--amber-soft);border-color:var(--amber-line);' +
-    'font-size:12px;color:var(--amber);line-height:1.6;display:flex;gap:7px">'+ic('info',15)+
-    '<span>这一份 <b>'+PAPERS[PF.subj].s+' '+PF.year+'</b> 已经记过了，下面是原来的数据，保存会直接更新它。</span></div>';
+  if(PF.editId){
+    return '<div class="card" style="padding:10px 12px;margin-bottom:11px;background:var(--amber-soft);border-color:var(--amber-line);' +
+      'font-size:12px;color:var(--amber);line-height:1.6;display:flex;gap:7px">'+ic('info',15)+
+      '<span>这一份 <b>'+PAPERS[PF.subj].s+' '+PF.year+'</b> 已经记过了，下面是原来的数据，保存会直接更新它。</span></div>';
+  }
+  const ex = existingPaper(PF.subj, PF.year, 1);
+  if(!ex) return '';
+  const done = ex.secs ? Object.keys(ex.secs).map(function(k){ return secDef(PF.subj,k).n; }).join('、') : '';
+  return '<div class="card" style="padding:10px 12px;margin-bottom:11px;background:var(--grad-soft);border-color:var(--purple-line);' +
+    'font-size:12px;color:var(--purple);line-height:1.6;display:flex;gap:7px;align-items:flex-start">'+ic('info',15)+
+    '<span>这一份 <b>'+PAPERS[PF.subj].s+' '+PF.year+'</b> 已记过'+(done?'（你记过：'+done+'）':'')+'。'+
+    '本次保存会<b>合并</b>进已有记录（不会重复创建）。'+
+    ' <span data-act="loadex" style="color:var(--purple);font-weight:600;cursor:pointer;text-decoration:underline">载入已记录的数据</span></span></div>';
 }
 function paperForm(pid, opts){
   opts = opts || {};
-  let src = null, subj, year, lock, round = 1, roundSrc = null;
-  if(pid){                         /* 编辑某一轮 */
-    src = S.papers.filter(function(x){ return x.id===pid; })[0];
-    subj = src.subj; year = src.year; lock = true; round = src.round||1;
-  } else if(opts.roundFor){        /* 加一轮（按题号重填） */
-    src = S.papers.filter(function(x){ return x.id===opts.roundFor; })[0];
+  let subj, year, lock, round = 1, roundSrc = null, editId = null;
+  if(pid){                         /* 编辑某一轮：锁定科目年份 */
+    const src = S.papers.filter(function(x){ return x.id===pid; })[0];
+    subj = src.subj; year = src.year; lock = true; round = src.round||1; editId = src.id;
+  } else if(opts.roundFor){        /* 加一轮（按题号重填）：新开一条，不编辑旧轮 */
+    const src = S.papers.filter(function(x){ return x.id===opts.roundFor; })[0];
     subj = src.subj; year = src.year; lock = true; roundSrc = src.id;
-    round = maxRound(subj, year) + 1;
-  } else {                         /* 全新记录（若该年份已有一刷，则转为补充编辑，避免再开一份） */
+    round = maxRound(subj, year) + 1; editId = null;
+  } else {                         /* 记一份真题：自由新建，科目/年份始终可选，不自动转编辑、不锁死 */
     subj = 'eng2'; year = S.lastYear || (new Date().getFullYear()-1); lock = false; round = 1;
-    const ex = existingPaper(subj, year, 1);
-    if(ex){ src = ex; lock = true; round = ex.round||1; }
+    editId = null; roundSrc = null;
   }
-  PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId: src?src.id:null, lock:lock, roundSrc:roundSrc };
+  PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId:editId, lock:lock, roundSrc:roundSrc };
   pfLoad();
   if(roundSrc){                    /* 新轮：保留题型开关，清空上一轮错题让用户重勾 */
     PAPERS[subj].secs.forEach(function(d){ if(PF.rows[d.k].on && d.mode!=='sub') PF.rows[d.k].wrong = []; });
@@ -2517,10 +2525,7 @@ function paperForm(pid, opts){
       const ys = el('pfYear');
       if(ys) ys.addEventListener('change', function(){
         PF.year = Number(ys.value);
-        if(!PF.editId && !PF.roundSrc){
-          const ex = existingPaper(PF.subj, PF.year, 1);
-          if(ex){ paperForm(ex.id); return; }
-        }
+        PF.editId = null;  /* 切换年份取消载入态，回到自由新建 */
         pfLoad();
         el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
       });
@@ -2915,17 +2920,25 @@ document.addEventListener('click', function(ev){
     case 'clearmark':  clearMark(); break;
     case 'redone':     toggleRedo(id, b.dataset.key); break;
     case 'psubj': {
-      if(!PF) break;
+      if(!PF || PF.lock) break;
       PF.subj = b.dataset.k;
-      if(!PF.editId && !PF.roundSrc){
-        const ex = existingPaper(PF.subj, PF.year, 1);
-        if(ex){ paperForm(ex.id); break; }
-      }
+      PF.editId = null;  /* 切换科目取消载入态，回到自由新建 */
       pfLoad();
       Array.prototype.forEach.call(el('pfSubj').querySelectorAll('button'), function(x){
         x.classList.toggle('on', x.dataset.k===PF.subj);
       });
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
+      break;
+    }
+    case 'loadex': {
+      if(!PF || PF.lock) break;
+      const ex = existingPaper(PF.subj, PF.year, 1);
+      if(ex){
+        PF.editId = null;          /* 仅预填数据，保存仍走合并，不覆盖丢失旧题型 */
+        pfLoad(ex);
+        el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
+        if(PF.subj==='eng2' && el('vocabBox')) el('vocabBox').style.display = 'block';
+      }
       break;
     }
     case 'pfull': {
