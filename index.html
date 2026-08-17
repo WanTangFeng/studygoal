@@ -503,6 +503,16 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .vocrow span{color:var(--ink2)}
 .tagok{font-size:11.5px;font-weight:700;color:var(--green);background:var(--green-soft);border:1px solid var(--green-line);padding:2px 8px;border-radius:999px;margin-left:auto}
 
+/* ===== 今日·昨日生词 隐藏/显现 ===== */
+.yv-tip{font-size:11.5px;color:var(--muted);padding:8px 2px 4px}
+.yv-row{display:flex;gap:10px;align-items:baseline;padding:9px 4px;border-bottom:1px solid var(--line2)}
+.yv-row:last-child{border-bottom:none}
+.yv-w{color:var(--purple);font-weight:750;flex:none;min-width:82px;cursor:pointer;user-select:none;border-radius:7px;padding:3px 7px;margin:-3px -7px}
+.yv-m{color:var(--ink2);cursor:pointer;user-select:none;border-radius:7px;padding:3px 7px;margin:-3px -7px}
+.yv-w.yv-off,.yv-m.yv-off{color:transparent;text-shadow:0 0 9px rgba(120,124,150,.9);background:var(--bg2)}
+.yv-all{padding-top:8px}
+.yv-all .btn{color:var(--ink2)}
+
 
 
 /* ============ 生词本卡片式UI ============ */
@@ -514,6 +524,9 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .vb-picker{appearance:none;-webkit-appearance:none;border:none;background:transparent;font-size:16px;font-weight:700;color:var(--ink);text-align:center;padding:4px 24px 4px 8px;border-radius:8px;cursor:pointer;outline:none;max-width:180px;margin:0 auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 6px center/12px}
 .vb-picker:focus{background-color:var(--bg2)}
 .vb-eye{color:var(--ink2);cursor:pointer;padding:4px;border-radius:8px;flex-shrink:0}
+.vb-ico{color:var(--ink2);cursor:pointer;padding:4px;border-radius:8px;flex-shrink:0}
+.vb-ico:hover{color:var(--purple);background:var(--bg2)}
+.vb-ico:active{background:var(--bg2)}
 .vb-body{background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:0 0 16px;min-height:200px}
 .vb-count{padding:14px 18px 8px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px}
 .vb-list{padding:0 8px}
@@ -1249,7 +1262,15 @@ const TABS = [
 ];
 function pendingCount(){
   const T = todayStr();
-  return S.cats.filter(function(c){ return !catChecked(c,T); }).length;
+  let n = S.cats.filter(function(c){ return !catChecked(c,T); }).length;
+  /* 昨日生词未复习也计为一个待打卡 */
+  const yVoc = dAdd(T,-1);
+  const vrec = S.vocab[yVoc];
+  if(vrec && vrec.eng2done){
+    const ywords = (vrec.words||[]).filter(function(x){ return x.w && x.m; });
+    if(ywords.length && !(vrec.review && vrec.review[T])) n++;
+  }
+  return n;
 }
 function renderNav(){
   const n = pendingCount();
@@ -1480,7 +1501,13 @@ function renderToday(){
     if(hasVoc){
       const reviewed = vrec.review && vrec.review[T];
       if(words.length){
-        h += '<div class="card">' + words.map(function(w){ return '<div class="vocrow"><b>'+esc(w.w)+'</b><span>'+esc(w.m)+'</span></div>'; }).join('') +
+        h += '<div class="card">' +
+             '<div class="yv-tip">点单词看单词，点词义看词义（默认都先藏起来）</div>' +
+             words.map(function(w,i){ return '<div class="yv-row">'+
+                 '<b class="yv-w yv-off" data-act="yvoc-toggle" data-role="w" data-i="'+i+'">'+esc(w.w)+'</b>'+
+                 '<span class="yv-m yv-off" data-act="yvoc-toggle" data-role="m" data-i="'+i+'">'+esc(w.m)+'</span>'+
+               '</div>'; }).join('') +
+             '<div class="yv-all"><button type="button" class="btn btn-ghost btn-xs" data-act="yvoc-all">'+ic('eye',13)+' 全部显示 / 收起</button></div>' +
              '<button class="btn '+(reviewed?'btn-pri':'btn-ghost')+'" data-act="vocab-review" data-date="'+yVoc+'" style="margin-top:10px;justify-content:center;width:100%">' +
              ic('check',15)+(reviewed?' 今日已复习打卡':' 打卡复习')+'</button></div>';
       } else {
@@ -1625,7 +1652,10 @@ function vocabBoard(){
     var label = d === todayStr() ? '今天' : md(d);
     h += '<option value="'+d+'"'+(d===defDate?' selected':'')+'>'+label+' '+wdOf(d)+'</option>';
   });
-  h += '</select></div>' + ic('eye',20,'vb-eye') + '</div>';
+  h += '</select></div>' +
+       '<span class="vb-ico" data-act="vb-reveal-all" title="显示/隐藏全部词义">'+ic('eye',20)+'</span>' +
+       '<span class="vb-ico" data-act="vb-add" title="添加生词">'+ic('plus',20)+'</span>' +
+       '</div>';
   h += '<div id="vbBody" class="vb-body"></div>' +
        '<div id="vbExitHint" class="vb-exit-hint" style="display:none">'+ic('right',15)+' 右滑收起</div></div>';
   return h;
@@ -3011,7 +3041,21 @@ document.addEventListener('click', function(ev){
       if(!S.vocab[dt]) S.vocab[dt] = { words:[], eng2done:false, eng2allright:false, review:{} };
       S.vocab[dt].review = S.vocab[dt].review || {};
       S.vocab[dt].review[todayStr()] = true;
-      save(); renderToday();
+      save(); renderToday(); renderNav();
+      break;
+    }
+    /* ---- 今日·昨日生词 隐藏/显现 ---- */
+    case 'yvoc-toggle': {
+      b.classList.remove('yv-off');
+      break;
+    }
+    case 'yvoc-all': {
+      const card = b.closest('.card'); if(!card) break;
+      const offs = card.querySelectorAll('.yv-off');
+      const anyHidden = offs.length > 0;
+      Array.prototype.forEach.call(card.querySelectorAll('.yv-w, .yv-m'), function(el){
+        el.classList.toggle('yv-off', !anyHidden);
+      });
       break;
     }
     /* ---- 生词本看板 ---- */
@@ -3065,6 +3109,51 @@ document.addEventListener('click', function(ev){
       var ov2 = document.querySelector('.vb-edit-overlay');
       if(ov2) ov2.remove();
       toast('已更新');
+      break;
+    }
+    case 'vb-add': {
+      var defDate = (el('vbDatePick') ? el('vbDatePick').value : todayStr()) || todayStr();
+      var ov = document.createElement('div'); ov.className='vb-edit-overlay';
+      ov.innerHTML = '<div class="vb-edit-card">'+
+        '<div class="vb-edit-handle"></div>'+
+        '<h3>'+ic('plus',18)+' 添加生词</h3>'+
+        '<div class="vb-edit-row"><input id="vbEW" type="text" inputmode="text" value="" placeholder="单词" maxlength="24"></div>'+
+        '<div class="vb-edit-row"><input id="vbEM" type="text" inputmode="text" value="" placeholder="词义" maxlength="60"></div>'+
+        '<div class="vb-edit-ft">'+
+          '<button type="button" style="background:var(--bg2);color:var(--ink)" data-act="vb-edit-cancel">取消</button>'+
+          '<button type="button" style="background:var(--purple);color:#fff" data-act="vb-add-save" data-date="'+defDate+'">保存</button>'+
+        '</div></div>';
+      ov.addEventListener('click', function(e){ if(e.target===ov) ov.remove(); });
+      document.body.appendChild(ov);
+      var ew = el('vbEW'); if(ew){ ew.focus(); }
+      break;
+    }
+    case 'vb-add-save': {
+      var adt = b.dataset.date;
+      var nW = el('vbEW'), nM = el('vbEM');
+      if(!nW || !nM) break;
+      var nw = nW.value.trim(), nm = nM.value.trim();
+      if(!nw || !nm){ toast('单词和词义都要填哦'); if(!nw){ nW.focus(); } else { nM.focus(); } break; }
+      if(!S.vocab[adt]) S.vocab[adt] = { words:[], eng2done:false, eng2allright:false, review:{} };
+      S.vocab[adt].words = S.vocab[adt].words || [];
+      S.vocab[adt].words.push({ w:nw, m:nm });
+      save();
+      var ov3 = document.querySelector('.vb-edit-overlay');
+      if(ov3) ov3.remove();
+      renderVbWords(adt);
+      toast('已添加');
+      break;
+    }
+    case 'vb-reveal-all': {
+      var body = el('vbBody'); if(!body) break;
+      var items = body.querySelectorAll('.vb-item');
+      var anyHidden = false;
+      Array.prototype.forEach.call(items, function(it){
+        var m = it.querySelector('.vb-mean'); if(m && m.style.display==='none') anyHidden = true;
+      });
+      Array.prototype.forEach.call(items, function(it){
+        var m = it.querySelector('.vb-mean'); if(m) m.style.display = anyHidden ? '' : 'none';
+      });
       break;
     }
     case 'vb-del-word': {
