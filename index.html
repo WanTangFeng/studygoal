@@ -505,11 +505,11 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 
 /* ===== 今日·昨日生词 隐藏/显现 ===== */
 .yv-tip{font-size:11.5px;color:var(--muted);padding:8px 2px 4px}
-.yv-row{display:flex;gap:10px;align-items:baseline;padding:9px 4px;border-bottom:1px solid var(--line2)}
+.yv-row{display:flex;gap:16px;align-items:baseline;padding:9px 4px;border-bottom:1px solid var(--line2)}
 .yv-row:last-child{border-bottom:none}
-.yv-w{color:var(--purple);font-weight:750;flex:none;min-width:82px;cursor:pointer;user-select:none;border-radius:7px;padding:3px 7px;margin:-3px -7px}
-.yv-m{color:var(--ink2);cursor:pointer;user-select:none;border-radius:7px;padding:3px 7px;margin:-3px -7px}
-.yv-w.yv-off,.yv-m.yv-off{color:transparent;text-shadow:0 0 9px rgba(120,124,150,.9);background:var(--bg2)}
+.yv-w{color:var(--purple);font-weight:750;flex:none;min-width:86px;cursor:pointer;user-select:none}
+.yv-m{color:var(--ink2);user-select:none}
+.yv-m.yv-off{color:transparent;text-shadow:0 0 9px rgba(120,124,150,.9);background:var(--bg2);border-radius:6px;padding:2px 9px;cursor:pointer}
 .yv-all{padding-top:8px}
 .yv-all .btn{color:var(--ink2)}
 
@@ -1502,10 +1502,10 @@ function renderToday(){
       const reviewed = vrec.review && vrec.review[T];
       if(words.length){
         h += '<div class="card">' +
-             '<div class="yv-tip">点单词看单词，点词义看词义（默认都先藏起来）</div>' +
+             '<div class="yv-tip">点单词，词义就显现出来（再点一下收起）</div>' +
              words.map(function(w,i){ return '<div class="yv-row">'+
-                 '<b class="yv-w yv-off" data-act="yvoc-toggle" data-role="w" data-i="'+i+'">'+esc(w.w)+'</b>'+
-                 '<span class="yv-m yv-off" data-act="yvoc-toggle" data-role="m" data-i="'+i+'">'+esc(w.m)+'</span>'+
+                 '<b class="yv-w" data-act="yvoc-toggle" data-i="'+i+'">'+esc(w.w)+'</b>'+
+                 '<span class="yv-m yv-off">'+esc(w.m)+'</span>'+
                '</div>'; }).join('') +
              '<div class="yv-all"><button type="button" class="btn btn-ghost btn-xs" data-act="yvoc-all">'+ic('eye',13)+' 全部显示 / 收起</button></div>' +
              '<button class="btn '+(reviewed?'btn-pri':'btn-ghost')+'" data-act="vocab-review" data-date="'+yVoc+'" style="margin-top:10px;justify-content:center;width:100%">' +
@@ -3046,14 +3046,16 @@ document.addEventListener('click', function(ev){
     }
     /* ---- 今日·昨日生词 隐藏/显现 ---- */
     case 'yvoc-toggle': {
-      b.classList.toggle('yv-off');
+      const row = b.closest('.yv-row');
+      const m = row ? row.querySelector('.yv-m') : null;
+      if(m) m.classList.toggle('yv-off');
       break;
     }
     case 'yvoc-all': {
       const card = b.closest('.card'); if(!card) break;
-      const offs = card.querySelectorAll('.yv-off');
+      const offs = card.querySelectorAll('.yv-m.yv-off');
       const anyHidden = offs.length > 0;
-      Array.prototype.forEach.call(card.querySelectorAll('.yv-w, .yv-m'), function(el){
+      Array.prototype.forEach.call(card.querySelectorAll('.yv-m'), function(el){
         el.classList.toggle('yv-off', !anyHidden);
       });
       break;
