@@ -382,6 +382,9 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .prow .in-s{width:64px;text-align:center}
 .prow .po{grid-column:1/-1;display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
 .prow .pr .ptag{font-size:11.5px;color:var(--muted);font-weight:600}
+.prow .pr.subq{display:flex;flex-wrap:wrap;gap:8px 12px;grid-column:1/-1;margin-top:4px}
+.subq-it{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--muted)}
+.subq-it input{width:62px;text-align:center}
 .prow .qgrid{display:flex;flex-wrap:wrap;gap:6px;grid-column:1/-1;margin-top:3px}
 .qchip{min-width:40px;height:40px;padding:0 9px;border-radius:10px;border:1px solid var(--line);
   background:#fbfcff;color:var(--ink2);font-size:13.5px;font-weight:700;cursor:pointer;
@@ -729,9 +732,9 @@ const PAPERS = {
     {k:'w2',s:'大作文',   n:'大作文',      no:48,mode:'sub',pt:15}
   ]},
   math2:{ n:'数学（二）', s:'数二', secs:[
-    {k:'ch',s:'选择',n:'选择题',q:10,from:1, to:10,mode:'obj',pt:50},
-    {k:'bl',s:'填空',n:'填空题',q:6, from:11,to:16,mode:'obj',pt:30},
-    {k:'sv',s:'解答',n:'解答题',q:6, from:17,to:22,mode:'obj',pt:70}
+    {k:'ch',s:'选择',n:'选择题',q:10,from:1, to:10,mode:'obj',pt:50,per:5},
+    {k:'bl',s:'填空',n:'填空题',q:6, from:11,to:16,mode:'obj',pt:30,per:5},
+    {k:'sv',s:'解答',n:'解答题',q:6, from:17,to:22,mode:'subq',pt:70,maxPer:15}
   ]},
   cs408:{ n:'408 计算机综合', s:'408', secs:[
     {k:'ds_c',s:'数构选',n:'数据结构·选择',q:11,from:1, to:11,mode:'obj',pt:22},
@@ -749,6 +752,22 @@ const PAPERS = {
     {k:'an',s:'分析题',n:'分析题（自评）',no:'34-38',mode:'sub',pt:50}
   ]}
 };
+/* 数二 历年题型结构（严格按照真题）
+   2008–2020：选择 8×4=32，填空 6×4=24，解答 9 题=94（总分 150）
+   2021–2026：选择 10×5=50，填空 6×5=30，解答 6 题=70（总分 150，解答题分值不再固定平均分配） */
+function math2Secs(year){
+  const pre = year <= 2020;
+  const chQ = pre?8:10, chPt = pre?32:50, chPer = pre?4:5;
+  const blQ = 6,         blPt = pre?24:30, blPer = pre?4:5;
+  const svQ = pre?9:6,   svPt = pre?94:70;
+  return [
+    {k:'ch',s:'选择',n:'选择题',q:chQ,from:1,to:chQ,mode:'obj',pt:chPt,per:chPer},
+    {k:'bl',s:'填空',n:'填空题',q:blQ,from:chQ+1,to:chQ+blQ,mode:'obj',pt:blPt,per:blPer},
+    {k:'sv',s:'解答',n:'解答题',q:svQ,from:chQ+blQ+1,to:chQ+blQ+svQ,mode:'subq',pt:svPt,maxPer:15}
+  ];
+}
+function secsOf(subj, year){ return (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs; }
+function subqSum(arr, maxPer){ let s=0; (arr||[]).forEach(function(x){ const n=Number(x); if(isFinite(n)&&n>0) s+=Math.min(n,maxPer); }); return s; }
 const SUBJ_ORDER = ['eng2','math2','cs408','pol'];
 const REASONS = {
   careless:'疏忽大意', unknown:'知识点不会', misread:'审题偏差', calc:'计算/笔误', time:'时间不够'
@@ -757,12 +776,14 @@ const RS_ORDER = ['careless','unknown','misread','calc','time'];
 function paperFull(subj){
   let s=0; PAPERS[subj].secs.forEach(function(x){ s+=x.pt; }); return s;
 }
-function secDef(subj, k){
-  const a = PAPERS[subj].secs.filter(function(x){return x.k===k;}); return a[0]||null;
+function secDef(subj, k, year){
+  const list = (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs;
+  const a = list.filter(function(x){return x.k===k;}); return a[0]||null;
 }
-function secAcc(subj, k, v){
-  const d = secDef(subj,k); if(!d||!v) return null;
+function secAcc(subj, k, v, year){
+  const d = secDef(subj,k,year); if(!d||!v) return null;
   if(d.mode==='sub'){ return d.pt>0 ? Math.max(0,Math.min(1, v.score/d.pt)) : null; }
+  if(d.mode==='subq'){ return d.pt>0 ? Math.max(0,Math.min(1, subqSum(v.scores,d.maxPer)/d.pt)) : null; }
   const t = v.total||d.q; if(!(t>0)) return null;
   return Math.max(0, Math.min(1, (t - v.wrong.length)/t));
 }
@@ -778,11 +799,12 @@ function accColor(a){
   return {b:'var(--red-soft)', f:'var(--red)'};
 }
 function paperScore(p){
-  const def = PAPERS[p.subj]; let got=0, full=0, wrong=0, recorded=0;
-  def.secs.forEach(function(d){
+  const secs = secsOf(p.subj, p.year); let got=0, full=0, wrong=0, recorded=0;
+  secs.forEach(function(d){
     const v = p.secs[d.k]; if(!v) return;
     recorded++; full += d.pt;
     if(d.mode==='sub'){ got += v.score; }
+    else if(d.mode==='subq'){ got += Math.min(subqSum(v.scores,d.maxPer), d.pt); }
     else { const t=v.total||d.q; wrong += v.wrong.length; got += d.pt*(t-v.wrong.length)/t; }
   });
   return { got:Math.round(got*10)/10, full:full, wrong:wrong, recorded:recorded,
@@ -809,8 +831,8 @@ function redoList(){
     Object.keys(p.marks).forEach(function(key){
       const m=p.marks[key]; if(m.redo) return;
       if(!m.r && !m.t) return;             /* 没标注过的不进清单 */
-      const parts=key.split('#'); const d=secDef(p.subj,parts[0]); if(!d) return;
-      const v=p.secs[parts[0]]; if(!v || d.mode==='sub') return;
+      const parts=key.split('#'); const d=secDef(p.subj,parts[0],p.year); if(!d) return;
+      const v=p.secs[parts[0]]; if(!v || d.mode!=='obj') return;
       if(v.wrong.indexOf(Number(parts[1]))<0) return;   /* 已改对就不再算 */
       out.push({ pid:p.id, key:key, subj:p.subj, year:p.year, sec:d, no:Number(parts[1]), m:m });
     });
@@ -829,7 +851,7 @@ function maxRound(subj, year){
 function roundWrongDiff(cur, first){
   let conquered = 0, newly = 0;
   Object.keys(cur.secs||{}).forEach(function(k){
-    const d = secDef(cur.subj, k); if(!d || d.mode==='sub') return;
+    const d = secDef(cur.subj, k, cur.year); if(!d || d.mode!=='obj') return;
     const dc = cur.secs[k], df = first.secs[k]; if(!df) return;
     const wc = dc.wrong||[], wf = df.wrong||[];
     wc.forEach(function(n){ if(wf.indexOf(n)<0) newly++; });
@@ -1263,10 +1285,10 @@ const TABS = [
 function pendingCount(){
   const T = todayStr();
   let n = S.cats.filter(function(c){ return !catChecked(c,T); }).length;
-  /* 昨日生词未复习也计为一个待打卡 */
+  /* 昨日生词未复习也计为一个待打卡（含手动添加的生词） */
   const yVoc = dAdd(T,-1);
   const vrec = S.vocab[yVoc];
-  if(vrec && vrec.eng2done){
+  if(vrec){
     const ywords = (vrec.words||[]).filter(function(x){ return x.w && x.m; });
     if(ywords.length && !(vrec.review && vrec.review[T])) n++;
   }
@@ -1488,10 +1510,11 @@ function renderToday(){
   {
     const yVoc = dAdd(T,-1);
     const vrec = S.vocab[yVoc];
-    const hasVoc = !!(vrec && vrec.eng2done);
+    const hasVoc = !!(vrec && (vrec.eng2done || ((vrec.words||[]).filter(function(x){ return x.w && x.m; }).length)));
     const words = hasVoc ? (vrec.words||[]).filter(function(x){ return x.w && x.m; }) : [];
     const yCol = S.vocabCollapsed ? ' collapsed' : '';
-    const yBtn = '<span class="sp"></span><button type="button" class="coll-btn" data-act="toggle-sec" data-sec="yvocab" aria-label="折叠/展开">'+ic('down',15)+'</button>';
+    const yBtn = '<span class="sp"></span><button type="button" class="iconbtn" data-act="av-open" title="添加英语生词" aria-label="添加生词">'+ic('plus',16)+'</button>'+
+       '<button type="button" class="coll-btn" data-act="toggle-sec" data-sec="yvocab" aria-label="折叠/展开">'+ic('down',15)+'</button>';
     h += '<div class="sec'+yCol+'" id="sec-yvocab"><div class="sec-hd">'+ic('book',16)+'<h2>昨日生词</h2>';
     if(hasVoc){
       h += '<span class="cnt">'+(words.length ? words.length+' 个' : '无生词')+'</span>' +
@@ -1804,9 +1827,11 @@ function paperMatrix(){
     def.secs.forEach(function(d){
       const v = p.secs[d.k];
       if(!v){ h += '<td>'+cell(null)+'</td>'; return; }
-      const a = secAcc(BSUBJ, d.k, v);
+      const a = secAcc(BSUBJ, d.k, v, p.year);
       sums[d.k].push(a);
-      const sub = d.mode==='sub' ? (nfm(v.score)+'/'+d.pt) : ((v.total-v.wrong.length)+'/'+v.total);
+      const sub = d.mode==='sub' ? (nfm(v.score)+'/'+d.pt)
+                : d.mode==='subq' ? (nfm(subqSum(v.scores,d.maxPer))+'/'+d.pt)
+                : ((v.total-v.wrong.length)+'/'+v.total);
       h += '<td>'+cell(a, sub)+'</td>';
     });
     const sc = paperScore(p);
@@ -2385,6 +2410,12 @@ function vocabRowHTML(w,m){
     '<input class="vmean" placeholder="词义" value="'+esc(m||'')+'" maxlength="40">' +
     '<button type="button" class="iconbtn" data-act="vocab-del" aria-label="删除">'+ic('trash',13)+'</button></div>';
 }
+function avRowHTML(){
+  return '<div class="vocrow-ed">' +
+    '<input class="vword" placeholder="单词" maxlength="24">' +
+    '<input class="vmean" placeholder="词义" maxlength="60">' +
+    '<button type="button" class="iconbtn" data-act="av-del" aria-label="删除">'+ic('trash',13)+'</button></div>';
+}
 function vocabBoxHTML(){
   const rows = (PF.vocab||[]).map(function(v){ return vocabRowHTML(v.w, v.m); });
   return '<div id="vocabBox" class="card" style="margin-top:12px;display:none">' +
@@ -2404,10 +2435,14 @@ function pfLoad(srcObj){
   if(!src && PF.editId) src = S.papers.filter(function(x){ return x.id===PF.editId; })[0];
   if(!src && PF.roundSrc) src = S.papers.filter(function(x){ return x.id===PF.roundSrc; })[0];
   PF.rows = {};
-  def.secs.forEach(function(d){
+  secsOf(PF.subj, PF.year).forEach(function(d){
     const v = src && src.secs[d.k];
     if(d.mode==='sub') PF.rows[d.k] = { on: !!v, score: v ? v.score : '' };
-    else PF.rows[d.k] = { on: !!v, allright: !!(v && !v.wrong.length), total: v ? v.total : d.q, wrong: v ? v.wrong.slice() : [] };
+    else if(d.mode==='subq'){
+      const sv = v && v.scores ? v.scores : [];
+      const arr = []; for(let i=0;i<d.q;i++) arr.push(sv[i]!=null?sv[i]:'');
+      PF.rows[d.k] = { on: !!v, scores: arr };
+    } else PF.rows[d.k] = { on: !!v, allright: !!(v && !v.wrong.length), total: v ? v.total : d.q, wrong: v ? v.wrong.slice() : [] };
   });
 }
 function existingPaper(subj,year,round){
@@ -2419,7 +2454,7 @@ function pfYears(){
   return out;
 }
 function qgridHTML(k){
-  const d = secDef(PF.subj, k), r = PF.rows[k];
+  const d = secDef(PF.subj, k, PF.year), r = PF.rows[k];
   let s = '<div class="qgrid" id="qg_'+k+'">';
   for(let n=d.from; n<=d.to; n++){
     const on = r.wrong.indexOf(n)>=0;
@@ -2428,19 +2463,30 @@ function qgridHTML(k){
   return s + '</div>';
 }
 function pfRowsHTML(){
-  const def = PAPERS[PF.subj];
+  const secs = secsOf(PF.subj, PF.year);
   let h = '<div class="card" style="padding:4px 13px;margin-bottom:10px">';
-  def.secs.forEach(function(d){
+  secs.forEach(function(d){
     const r = PF.rows[d.k];
-    h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>' +
-      (d.mode==='sub' ? ('第 '+d.no+' 题 · 满分 '+d.pt+' 分') : ('第 '+d.from+'-'+d.to+' 题 · '+d.pt+' 分')) +
-      '</span></div>';
+    h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>';
+    if(d.mode==='sub') h += '第 '+d.no+' 题 · 满分 '+d.pt+' 分';
+    else if(d.mode==='subq') h += '第 '+d.from+'-'+d.to+' 题 · 每题 ≤ '+d.maxPer+' 分（共 '+d.pt+' 分）';
+    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分（共 '+d.pt+' 分）';
+    h += '</span></div>';
     if(d.mode==='sub'){
       h += '<div class="pr"><input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.pt+'" step="0.5" ' +
         'data-prow="'+d.k+'" data-kind="score" placeholder="得分" value="'+(r.on?r.score:'')+'">' +
         '<span style="font-size:12.5px;color:var(--muted);white-space:nowrap">/ '+d.pt+'</span></div>';
+    } else if(d.mode==='subq'){
+      h += '<div class="pr subq">';
+      for(let i=0;i<d.q;i++){
+        const n = d.from + i;
+        h += '<label class="subq-it"><span>'+n+'</span>'+
+          '<input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.maxPer+'" step="0.5" '+
+          'data-prow="'+d.k+'" data-kind="subq" data-qi="'+i+'" placeholder="分" value="'+(r.scores[i]!=null?r.scores[i]:'')+'"></label>';
+      }
+      h += '</div>';
     } else {
-      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · '+d.pt+' 分</span>' +
+      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分</span>' +
         '<button class="btn btn-xs '+(r.on&&!r.wrong.length?'btn-pri':'btn-ghost')+'" data-act="pfull" data-k="'+d.k+'">全对</button></div>' +
         qgridHTML(d.k);
     }
@@ -2450,13 +2496,20 @@ function pfRowsHTML(){
   return h;
 }
 function pfStat(k){
-  const d = secDef(PF.subj, k), r = PF.rows[k];
+  const d = secDef(PF.subj, k, PF.year), r = PF.rows[k];
   if(!r.on) return '<span style="color:var(--faint)">未记录 —— 没做或不想记就留着空</span>';
   if(d.mode==='sub'){
     const sc = Number(r.score);
     if(!isFinite(sc) || r.score==='') return '<span style="color:var(--faint)">未记录</span>';
     const a = Math.max(0, Math.min(1, sc/d.pt));
     return ic('check',11,2.4)+' '+nfm(Math.min(sc,d.pt))+' / '+d.pt+' 分 · <b style="color:'+accColor(a).f+'">'+Math.round(a*100)+'%</b>';
+  }
+  if(d.mode==='subq'){
+    const arr = r.scores||[]; let s=0, cnt=0;
+    arr.forEach(function(x){ const n=Number(x); if(isFinite(n)&&n>0){ s+=Math.min(n,d.maxPer); cnt++; } });
+    if(cnt===0) return '<span style="color:var(--faint)">未记录</span>';
+    const a = Math.max(0, Math.min(1, s/d.pt));
+    return ic('check',11,2.4)+' 已填 '+cnt+' 题 · '+nfm(Math.min(s,d.pt))+' / '+d.pt+' 分 · <b style="color:'+accColor(a).f+'">'+Math.round(a*100)+'%</b>';
   }
   const t = Math.max(1, r.total||d.q), w = r.wrong.length;
   if(w > t) return '<span style="color:var(--red)">错题数（'+w+'）比总题量（'+t+'）还多，检查一下</span>';
@@ -2467,12 +2520,16 @@ function pfStat(k){
     (out.length ? ' <span style="color:var(--amber)">（'+out.join('、')+' 不在本题型题号范围内，仍照记）</span>' : '');
 }
 function pfSum(){
-  const def = PAPERS[PF.subj]; let got=0, full=0, n=0, wrong=0;
-  def.secs.forEach(function(d){
+  const secs = secsOf(PF.subj, PF.year); let got=0, full=0, n=0, wrong=0;
+  secs.forEach(function(d){
     const r = PF.rows[d.k]; if(!r.on) return;
     if(d.mode==='sub'){
       const sc = Number(r.score); if(!isFinite(sc)||r.score==='') return;
       n++; full += d.pt; got += Math.min(sc, d.pt);
+    } else if(d.mode==='subq'){
+      const arr = r.scores||[]; let s=0; arr.forEach(function(x){ const mm=Number(x); if(isFinite(mm)&&mm>0) s+=Math.min(mm,d.maxPer); });
+      if(s<=0) return;
+      n++; full += d.pt; got += Math.min(s, d.pt);
     } else {
       const t = Math.max(1, r.total||d.q), w = Math.min(r.wrong.length, t);
       n++; full += d.pt; wrong += w; got += d.pt*(t-w)/t;
@@ -2502,7 +2559,7 @@ function pfTip(){
   }
   const ex = existingPaper(PF.subj, PF.year, 1);
   if(!ex) return '';
-  const done = ex.secs ? Object.keys(ex.secs).map(function(k){ return secDef(PF.subj,k).n; }).join('、') : '';
+  const done = ex.secs ? Object.keys(ex.secs).map(function(k){ return secDef(PF.subj,k,PF.year).n; }).join('、') : '';
   return '<div class="card" style="padding:10px 12px;margin-bottom:11px;background:var(--grad-soft);border-color:var(--purple-line);' +
     'font-size:12px;color:var(--purple);line-height:1.6;display:flex;gap:7px;align-items:flex-start">'+ic('info',15)+
     '<span>这一份 <b>'+PAPERS[PF.subj].s+' '+PF.year+'</b> 已记过'+(done?'（你记过：'+done+'）':'')+'。'+
@@ -2526,7 +2583,7 @@ function paperForm(pid, opts){
   PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId:editId, lock:lock, roundSrc:roundSrc };
   pfLoad();
   if(roundSrc){                    /* 新轮：保留题型开关，清空上一轮错题让用户重勾 */
-    PAPERS[subj].secs.forEach(function(d){ if(PF.rows[d.k].on && d.mode!=='sub') PF.rows[d.k].wrong = []; });
+    secsOf(subj, year).forEach(function(d){ if(PF.rows[d.k].on && d.mode==='obj') PF.rows[d.k].wrong = []; });
   }
   const def = PAPERS[PF.subj];
   const title = PF.editId ? '补充真题记录' : (roundSrc ? (roundLabel(round)+' · '+def.s+' '+year) : '记一份真题');
@@ -2562,13 +2619,18 @@ function paperForm(pid, opts){
     });
 }
 function savePaper(){
-  const def = PAPERS[PF.subj], secs = {};
-  def.secs.forEach(function(d){
+  const secs = {};
+  secsOf(PF.subj, PF.year).forEach(function(d){
     const r = PF.rows[d.k]; if(!r.on) return;
     if(d.mode==='sub'){
       const sc = Number(r.score);
       if(!isFinite(sc) || r.score==='' || sc<0) return;
       secs[d.k] = { score: Math.round(Math.min(sc, d.pt)*10)/10 };
+    } else if(d.mode==='subq'){
+      const arr = (r.scores||[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
+      const sum = arr.reduce(function(a,b){return a+b;},0);
+      if(sum<=0) return;
+      secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
     } else {
       const t = Math.max(1, Math.round(r.total)||d.q);
       secs[d.k] = { total:t, wrong: r.wrong.slice(0,t) };
@@ -2589,7 +2651,7 @@ function savePaper(){
     } else {
       p.secs = secs; p.year = PF.year; p.updated = todayStr();
       Object.keys(p.marks).forEach(function(key){
-        const kp = key.split('#'), v = secs[kp[0]], d = secDef(p.subj, kp[0]);
+        const kp = key.split('#'), v = secs[kp[0]], d = secDef(p.subj, kp[0], p.year);
         if(!v || !d){ delete p.marks[key]; dropped++; return; }
         if(d.mode!=='sub' && v.wrong.indexOf(Number(kp[1]))<0){ delete p.marks[key]; dropped++; }
       });
@@ -2633,7 +2695,7 @@ function doDelPaper(pid){
 let MK = null;
 function markModal(pid, key){
   const p = S.papers.filter(function(x){ return x.id===pid; })[0]; if(!p) return;
-  const kp = key.split('#'), d = secDef(p.subj, kp[0]); if(!d) return;
+  const kp = key.split('#'), d = secDef(p.subj, kp[0], p.year); if(!d) return;
   const cur = p.marks[key] || { r:'', t:'', redo:0 };
   MK = { pid:pid, key:key, r:cur.r, t:cur.t, redo:cur.redo };
   const where = PAPERS[p.subj].s+' '+p.year+' · '+d.n + (d.mode==='sub' ? '' : ' · 第 '+kp[1]+' 题');
@@ -3060,6 +3122,52 @@ document.addEventListener('click', function(ev){
       });
       break;
     }
+    /* ---- 添加英语生词（可选日期） ---- */
+    case 'av-open': {
+      const body =
+        '<div class="fld"><label>添加到哪天</label>'+
+        '<input type="date" id="avDate" value="'+dAdd(todayStr(),-1)+'" max="'+todayStr()+'" '+
+          'style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;font-size:16px;font-family:inherit;color:inherit">'+
+        '</div>'+
+        '<div class="fld"><label>生词 <em>可加多行</em></label></div>'+
+        '<div id="avRows">'+avRowHTML()+'</div>'+
+        '<button type="button" class="btn btn-ghost btn-xs" data-act="av-add-row" style="margin-top:6px">'+ic('plus',13)+'再加一行</button>';
+      openModal('添加英语生词',
+        body,
+        '<button class="btn btn-ghost" data-act="closem">取消</button>'+
+        '<button class="btn btn-pri" data-act="av-save">'+ic('check',16)+'保存</button>');
+      break;
+    }
+    case 'av-add-row': {
+      const box = el('avRows'); if(box) box.insertAdjacentHTML('beforeend', avRowHTML());
+      break;
+    }
+    case 'av-del': {
+      const row = b.closest('.vocrow-ed'); if(row && row.parentNode) row.parentNode.removeChild(row);
+      break;
+    }
+    case 'av-save': {
+      const dtEl = el('avDate');
+      const dt = dtEl ? dtEl.value : todayStr();
+      if(!dt){ toast('请选择日期'); break; }
+      const rows = Array.prototype.slice.call(document.querySelectorAll('#avRows .vocrow-ed'));
+      const words = [];
+      rows.forEach(function(row){
+        const w = row.querySelector('.vword').value.trim();
+        const m = row.querySelector('.vmean').value.trim();
+        if(w && m) words.push({ w:w, m:m });
+      });
+      if(!words.length){ toast('至少填一个单词和词义'); break; }
+      if(!S.vocab[dt]) S.vocab[dt] = { words:[], eng2done:false, eng2allright:false, review:{} };
+      S.vocab[dt].eng2done = true;   /* 作为「昨日生词」来源，今日页会显示并可打卡 */
+      S.vocab[dt].words = S.vocab[dt].words || [];
+      words.forEach(function(x){ S.vocab[dt].words.push(x); });
+      save(); closeModal();
+      if(TAB==='today') renderToday();
+      if(TAB==='board') renderBoard();
+      toast('已添加 '+words.length+' 个生词到 '+md(dt)+'（'+wdOf(dt)+'）');
+      break;
+    }
     /* ---- 生词本看板 ---- */
     case 'vb-toggle': {
       var item = b.closest('.vb-item');
@@ -3252,8 +3360,15 @@ document.addEventListener('input', function(ev){
     const k = pr.dataset.prow, r = PF.rows[k];
     if(!r) return;
     const raw = pr.value.trim();
-    r.score = raw==='' ? '' : Number(raw);
-    r.on = raw!=='' && isFinite(r.score) && r.score>=0;
+    if(pr.dataset.kind==='subq'){
+      const qi = Number(pr.dataset.qi);
+      r.scores[qi] = raw==='' ? '' : Number(raw);
+      const any = r.scores.some(function(x){ return x!=='' && isFinite(Number(x)) && Number(x)>0; });
+      r.on = any;
+    } else {
+      r.score = raw==='' ? '' : Number(raw);
+      r.on = raw!=='' && isFinite(r.score) && r.score>=0;
+    }
     pfRefresh(k);
   }
 });
