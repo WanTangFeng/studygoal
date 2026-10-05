@@ -576,6 +576,10 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .pwa-dismiss{flex:none;width:32px;height:32px;border-radius:50%;
   border:none;background:rgba(255,255,255,.2);color:#fff;font-size:18px;
   cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+.seg-n{display:inline-block;margin-left:4px;padding:0 5px;border-radius:7px;
+  background:rgba(0,0,0,.06);font-size:10.5px;font-weight:700;font-style:normal;
+  color:var(--muted);vertical-align:1px}
+.seg button.on .seg-n{background:rgba(255,255,255,.28);color:#fff}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -1341,7 +1345,6 @@ const TABS = [
   { k:'board',  t:'看板', i:'board'  },
   { k:'papers', t:'真题', i:'paper'  },
   { k:'pol',    t:'政治', i:'cap'    },
-  { k:'weekly', t:'周报', i:'weekly' },
   { k:'me',     t:'我的', i:'me'     }
 ];
 function pendingCount(){
@@ -1388,7 +1391,7 @@ function subLine(){
 }
 function go(tab){
   TAB = tab;
-  ['today','board','papers','pol','weekly','me'].forEach(function(k){
+  ['today','board','papers','pol','me'].forEach(function(k){
     el('tab-'+k).classList.toggle('hide', k!==tab);
   });
   renderNav(); renderBanner();
@@ -1396,7 +1399,6 @@ function go(tab){
   if(tab==='board') renderBoard();
   if(tab==='papers') renderPapers();
   if(tab==='pol') renderPol();
-  if(tab==='weekly') renderWeekly();
   if(tab==='me') renderMe();
   window.scrollTo(0,0);
 }
@@ -3002,16 +3004,17 @@ function confetti(color){
    ========================================================= */
 let POL_IDX = 0;            /* 当前卡片在牌组中的下标 */
 let POL_ANS = {};           /* 当前题已选选项 {A:true,...} */
-let POL_FILTER = 'all';     /* all | s1 | s2 | s3 | wrong */
+let POL_FILTER = 'all';     /* all | s1 | s2 | s3 | none | wrong */
 let POL_MODE = 'order';     /* order | random */
 
 function polById(id){ for(let i=0;i<POL.length;i++) if(POL[i].id===id) return POL[i]; return null; }
 function polDeck(){
   let arr = POL.map(function(it){ return it.id; });
   if(POL_FILTER==='wrong')      arr = arr.filter(function(id){ return !!S.pol.wrong[id]; });
-  else if(POL_FILTER==='s1')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) >= 1; });
-  else if(POL_FILTER==='s2')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) >= 2; });
-  else if(POL_FILTER==='s3')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) >= 3; });
+  else if(POL_FILTER==='s1')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) === 1; });
+  else if(POL_FILTER==='s2')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) === 2; });
+  else if(POL_FILTER==='s3')    arr = arr.filter(function(id){ return (S.pol.stars[id]||0) === 3; });
+  else if(POL_FILTER==='none')  arr = arr.filter(function(id){ return (S.pol.stars[id]||0) === 0; });
   if(POL_MODE==='random'){
     for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
   }
@@ -3033,16 +3036,20 @@ function renderPol(){
   /* 控制条：提醒间隔 + 筛选 + 模式 */
   h += '<div class="sec pol-ctrl"><div class="pol-set">提醒间隔 '+
        '<input type="number" id="polRemind" value="'+S.pol.settings.remindDays+'" min="1" max="60" class="pol-num"> 天后再提醒</div>';
-  const filt=[['all','全部'],['s1','★'],['s2','★★'],['s3','★★★'],['wrong','错题本']];
-  h += '<div class="seg" style="margin:10px 0 6px">'+filt.map(function(f){ return '<button class="'+(POL_FILTER===f[0]?'on':'')+'" data-act="pol-filter" data-f="'+f[0]+'">'+f[1]+'</button>'; }).join('')+'</div>';
+  const cnt = { all:POL.length, s1:0, s2:0, s3:0, none:0, wrong:Object.keys(S.pol.wrong).length };
+  POL.forEach(function(it){ const lv=S.pol.stars[it.id]||0; cnt[lv===0?'none':('s'+lv)]++; });
+  const filt=[['all','全部'],['s1','一星'],['s2','二星'],['s3','三星'],['none','无星']];
+  h += '<div class="seg" style="margin:10px 0 6px">'+filt.map(function(f){
+        return '<button class="'+(POL_FILTER===f[0]?'on':'')+'" data-act="pol-filter" data-f="'+f[0]+'">'+f[1]+'<i class="seg-n">'+cnt[f[0]]+'</i></button>';
+      }).join('')+'</div>';
   const mode=[['order','顺序'],['random','随机']];
   h += '<div class="seg" style="margin-bottom:4px">'+mode.map(function(f){ return '<button class="'+(POL_MODE===f[0]?'on':'')+'" data-act="pol-mode" data-m="'+f[0]+'">'+f[1]+'</button>'; }).join('')+'</div></div>';
 
   const wkeys = Object.keys(S.pol.wrong);
   if(wkeys.length){
     const due = dueWrongCount();
-    h += '<div class="alert '+(due?'alert-red':'alert-amber')+'" style="text-align:center">'+
-         '<div style="font-weight:700">错题本：'+wkeys.length+' 题'+(due?'，其中 '+due+' 题今天该复习了':'')+'</div>'+
+    h += '<div class="alert '+(due?'alert-red':'alert-amber')+'" data-act="go-pol-wrong" style="text-align:center;cursor:pointer">'+
+         '<div style="font-weight:700">错题本：'+wkeys.length+' 题'+(due?'，其中 '+due+' 题今天该复习了':'')+'（点我查看）</div>'+
          '<div style="font-size:12px;color:var(--muted);margin-top:3px">答错后会在 '+S.pol.settings.remindDays+' 天后再提醒你过来做一遍</div></div>';
   }
 
