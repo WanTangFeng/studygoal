@@ -1015,7 +1015,7 @@ function normalize(o){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0) return;
+        if(sum<=0 && !arr.length) return;   /* 仅当分数数组为空才丢弃；全 0 分仍保留记录 */
         secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
@@ -1068,7 +1068,7 @@ function normalizePapers(arr){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0) return;
+        if(sum<=0 && !arr.length) return;   /* 仅当分数数组为空才丢弃；全 0 分仍保留记录 */
         secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
@@ -1908,9 +1908,11 @@ function paperMatrix(){
        '<th class="yh">年份</th>' +
        def.secs.map(function(d){ return '<th>'+esc(d.s)+'</th>'; }).join('') +
        '<th>全卷</th></tr></thead><tbody>';
+  const cols = def.secs.length + 2;   /* 年份 + 各题型 + 全卷 */
   const sums = {}; def.secs.forEach(function(d){ sums[d.k] = []; });
   const wholes = [];
   rows.forEach(function(p){
+    if(BD_YEAR!=null && BD_YEAR!==p.year) return;   /* 展开某年后，其余年份行折叠收起 */
     const ylOn = (BD_YEAR===p.year) ? ' style="background:var(--grad-soft);color:var(--purple);font-weight:700"' : '';
     h += '<tr><td class="yl" data-act="board-year" data-y="'+p.year+'"'+ylOn+' title="点击查看这份卷的重做题号与评价">'+p.year+'</td>';
     secsOf(BSUBJ, p.year).forEach(function(d){
@@ -1927,46 +1929,50 @@ function paperMatrix(){
     const sc = paperScore(p);
     if(sc.rate!==null) wholes.push(sc.rate);
     h += '<td>'+cell(sc.rate, nfm(sc.got)+'/'+sc.full)+'</td></tr>';
+    /* 卷后记录（仅数学二）内嵌到该年份行正下方，作为独立一行展开 */
+    if(BD_YEAR===p.year){
+      h += '<tr class="ydrow"><td colspan="'+cols+'" style="padding:2px 0 8px;background:var(--grad-soft)">'+boardYearDetail(BSUBJ, p.year)+'</td></tr>';
+    }
   });
   const avg = function(arr){ return arr.length ? arr.reduce(function(a,b){return a+b;},0)/arr.length : null; };
-  if(rows.length>1){
+  if(rows.length>1 && BD_YEAR==null){
     h += '<tr class="avg"><td class="yl">均值</td>' +
       def.secs.map(function(d){ return '<td>'+cell(avg(sums[d.k]), sums[d.k].length?sums[d.k].length+' 年':'')+'</td>'; }).join('') +
       '<td>'+cell(avg(wholes))+'</td></tr>';
   }
   h += '</tbody></table></div>';
 
-  /* 点击年份展开的「卷后记录」：可重做题号 + 试卷评价 */
-  if(BD_YEAR!=null){
-    h += boardYearDetail(BSUBJ, BD_YEAR);
-  }
+  /* 卷后记录已内嵌到对应年份行下方（手风琴：一次只展开一个年份，详见上方 forEach） */
 
-  /* 洞察：最弱题型 + 错因分布 */
-  let weak = null;
-  def.secs.forEach(function(d){
-    const a = avg(sums[d.k]); if(a===null) return;
-    if(!weak || a < weak.a) weak = { d:d, a:a, n:sums[d.k].length };
-  });
-  const rc = {}; let mkTotal = 0;
-  rows.forEach(function(p){
-    Object.keys(p.marks).forEach(function(key){
-      const r = p.marks[key].r; if(!r) return;
-      rc[r] = (rc[r]||0)+1; mkTotal++;
+  /* 洞察：最弱题型 + 错因分布（展开单一年份时收起，避免与未显示的年份混淆） */
+  if(BD_YEAR==null){
+    let weak = null;
+    def.secs.forEach(function(d){
+      const a = avg(sums[d.k]); if(a===null) return;
+      if(!weak || a < weak.a) weak = { d:d, a:a, n:sums[d.k].length };
     });
-  });
-  const rlist = RS_ORDER.filter(function(r){ return rc[r]; })
-    .sort(function(a,b){ return rc[b]-rc[a]; })
-    .map(function(r){ return REASONS[r]+' '+rc[r]; });
-  h += '<div style="border-top:1px solid var(--line2);margin-top:10px;padding-top:10px;font-size:12px;color:var(--ink2);line-height:1.75">';
-  if(weak){
-    h += '<div style="display:flex;gap:6px;align-items:flex-start">'+ic('target',13,2.2) +
-      '<span>最该补的是 <b style="color:'+accColor(weak.a).f+'">'+esc(weak.d.n)+'</b>，' +
-      (rows.length>1 ? weak.n+' 份卷平均 ' : '') + '<b>'+Math.round(weak.a*100)+'%</b>。</span></div>';
+    const rc = {}; let mkTotal = 0;
+    rows.forEach(function(p){
+      Object.keys(p.marks).forEach(function(key){
+        const r = p.marks[key].r; if(!r) return;
+        rc[r] = (rc[r]||0)+1; mkTotal++;
+      });
+    });
+    const rlist = RS_ORDER.filter(function(r){ return rc[r]; })
+      .sort(function(a,b){ return rc[b]-rc[a]; })
+      .map(function(r){ return REASONS[r]+' '+rc[r]; });
+    h += '<div style="border-top:1px solid var(--line2);margin-top:10px;padding-top:10px;font-size:12px;color:var(--ink2);line-height:1.75">';
+    if(weak){
+      h += '<div style="display:flex;gap:6px;align-items:flex-start">'+ic('target',13,2.2) +
+        '<span>最该补的是 <b style="color:'+accColor(weak.a).f+'">'+esc(weak.d.n)+'</b>，' +
+        (rows.length>1 ? weak.n+' 份卷平均 ' : '') + '<b>'+Math.round(weak.a*100)+'%</b>。</span></div>';
+    }
+    h += '<div style="display:flex;gap:6px;align-items:flex-start;margin-top:3px">'+ic('tag',13,2.2) +
+      '<span>'+(mkTotal ? '标过原因的 '+mkTotal+' 道题里：'+rlist.join(' · ')
+                        : '还没给错题标原因 —— 标上以后，这里会告诉你到底是不会，还是马虎。')+'</span></div>';
+    h += '</div>';   /* 关闭洞察包裹层（仅未展开年份时渲染） */
   }
-  h += '<div style="display:flex;gap:6px;align-items:flex-start;margin-top:3px">'+ic('tag',13,2.2) +
-    '<span>'+(mkTotal ? '标过原因的 '+mkTotal+' 道题里：'+rlist.join(' · ')
-                      : '还没给错题标原因 —— 标上以后，这里会告诉你到底是不会，还是马虎。')+'</span></div>';
-  h += '</div></div></div>';
+  h += '</div></div>';   /* 关闭 card 与 sec（始终渲染，保证结构闭合） */
   return h;
 }
 /* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」 */
@@ -2115,7 +2121,8 @@ function paperCard(p, first){
     const v = p.secs[d.k]; if(!v) return;
     const a = secAcc(p.subj, d.k, v), c = accColor(a);
     const right = d.mode==='sub' ? (nfm(v.score)+'/'+d.pt+' 分')
-                                 : ((v.total-v.wrong.length)+'/'+v.total+' 题');
+                 : d.mode==='subq' ? (nfm(subqSum(v.scores,d.maxPer))+'/'+d.pt+' 分')
+                 : ((v.total-v.wrong.length)+'/'+v.total+' 题');
     h += '<div class="pbar"><span class="pn">'+esc(d.n)+'</span>' +
       '<span class="pt"><i style="width:'+(a*100).toFixed(1)+'%;background:'+c.f+'"></i></span>' +
       '<span class="pv" style="color:'+c.f+'">'+Math.round(a*100)+'% <span style="color:var(--faint);font-weight:600">'+right+'</span></span></div>';
@@ -2131,6 +2138,7 @@ function paperCard(p, first){
         esc(d.s)+(has ? (m.r?' <em>'+REASONS[m.r]+'</em>':' <em>已备注</em>') : ' <em>加备注</em>')+'</button>');
       return;
     }
+    if(d.mode==='subq'){ return; }   /* 解答题按得分计，不逐题标错，跳过错题 chip */
     v.wrong.forEach(function(no){
       const key = d.k+'#'+no, m = p.marks[key] || {r:'',t:'',redo:0};
       chips.push('<button class="wchip '+(m.redo?'done':(m.r?'r-'+m.r:''))+'" data-act="mark" data-id="'+p.id+'" data-key="'+key+'">' +
@@ -2622,7 +2630,7 @@ function pfRowsHTML(){
     h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>';
     if(d.mode==='sub') h += '第 '+d.no+' 题 · 满分 '+d.pt+' 分';
     else if(d.mode==='subq') h += '第 '+d.from+'-'+d.to+' 题 · 每题 ≤ '+d.maxPer+' 分（共 '+d.pt+' 分）';
-    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分（共 '+d.pt+' 分）';
+    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+(d.per!=null?d.per:Math.round(d.pt/d.q*10)/10)+' 分（共 '+d.pt+' 分）';
     h += '</span></div>';
     if(d.mode==='sub'){
       h += '<div class="pr"><input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.pt+'" step="0.5" ' +
@@ -2638,7 +2646,7 @@ function pfRowsHTML(){
       }
       h += '</div>';
     } else {
-      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分</span>' +
+      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+(d.per!=null?d.per:Math.round(d.pt/d.q*10)/10)+' 分</span>' +
         '<button class="btn btn-xs '+(r.on&&!r.wrong.length?'btn-pri':'btn-ghost')+'" data-act="pfull" data-k="'+d.k+'">全对</button></div>' +
         qgridHTML(d.k);
     }
@@ -2782,7 +2790,7 @@ function savePaper(){
     } else if(d.mode==='subq'){
       const arr = (r.scores||[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
       const sum = arr.reduce(function(a,b){return a+b;},0);
-      if(sum<=0) return;
+      /* 不在 sum<=0 时丢弃：数学解答题即使全 0 分/未填，也要保留记录，否则刷新后整条被丢 */
       secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
     } else {
       const t = Math.max(1, Math.round(r.total)||d.q);
@@ -3305,6 +3313,8 @@ document.addEventListener('click', function(ev){
       const ys = el('pfYear'); if(ys) ys.value = PF.year;
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
       el('pfMeta').innerHTML = pfMetaHTML();   /* 切科目同步刷新「评价/可重做」显隐 */
+      /* 切科目同步「每日生词」显隐：仅英语二显示，切到其他科目立即收起，避免残留 */
+      if(el('vocabBox')) el('vocabBox').style.display = (PF.subj==='eng2') ? 'block' : 'none';
       break;
     }
     case 'loadex': {
