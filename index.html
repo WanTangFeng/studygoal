@@ -905,10 +905,10 @@ let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
   return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:{}, ui:{ bannerAck:0 },
-    pol:{ stars:{}, res:{}, wrong:{}, last:0, settings:{remindDays:3} }, createdAt:new Date().toISOString() };
+    pol:{ stars:{}, res:{}, wrong:{}, last:{}, filter:'all', settings:{remindDays:3} }, createdAt:new Date().toISOString() };
 }
 function normalizePol(o){
-  const d = { stars:{}, res:{}, wrong:{}, settings:{remindDays:3} };
+  const d = { stars:{}, res:{}, wrong:{}, last:{}, filter:'all', settings:{remindDays:3} };
   if(!o || typeof o!=='object') return d;
   if(o.stars && typeof o.stars==='object'){
     Object.keys(o.stars).forEach(function(k){ const n=Math.round(Number(o.stars[k])||0); if(n>=0&&n<=3) d.stars[k]=n; });
@@ -925,7 +925,13 @@ function normalizePol(o){
   if(o.settings && typeof o.settings==='object'){
     const n=Math.round(Number(o.settings.remindDays)||0); d.settings.remindDays = (n>=1&&n<=60)?n:3;
   }
-  d.last = Math.max(0, Math.round(Number(o.last)||0));
+  d.last = {};
+  if(o.last){
+    if(typeof o.last==='object'){
+      Object.keys(o.last).forEach(function(k){ const n=Math.round(Number(o.last[k])||0); if(n>0) d.last[k]=n; });
+    } else if(typeof o.last==='number' && o.last>0){ d.last.all = Math.round(o.last); }  /* 旧版：单个数字，迁移到 all */
+  }
+  if(typeof o.filter==='string' && /^(all|s1|s2|s3|none|wrong)$/.test(o.filter)) d.filter = o.filter;
   return d;
 }
 function save(){
@@ -1404,7 +1410,7 @@ function go(tab){
   if(tab==='today') renderToday();
   if(tab==='board') renderBoard();
   if(tab==='papers') renderPapers();
-  if(tab==='pol'){ if(TAB!=='pol') POL_RESUMED = false; renderPol(); }
+  if(tab==='pol'){ renderPol(); }
   if(tab==='me') renderMe();
   window.scrollTo(0,0);
 }
@@ -3140,10 +3146,11 @@ function renderPol(){
 
   if(POL_IDX>=deck.length) POL_IDX=0;
   if(POL_IDX<0) POL_IDX=deck.length-1;
-  /* 续接上次做到的第几题（仅第一次渲染本板块时生效，筛选/模式切换后保持当前位置） */
-  if(!POL_RESUMED && S.pol.last){
-    const pos = deck.indexOf(S.pol.last);
-    if(pos>=0) POL_IDX = pos;
+  /* 续接：进入板块 / 切换筛选·模式时，跳到「当前目录下最新刷过的题」；无记录则从头开始 */
+  if(!POL_RESUMED){
+    const lid = S.pol.last[POL_FILTER];
+    const pos = (lid!=null) ? deck.indexOf(Number(lid)) : -1;
+    POL_IDX = (pos>=0) ? pos : 0;
   }
   POL_RESUMED = true;
   const id = deck[POL_IDX];
@@ -3506,8 +3513,8 @@ document.addEventListener('click', function(ev){
       break;
     }
     /* ---- 考研政治时政 ---- */
-    case 'pol-filter': { POL_FILTER = b.dataset.f; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
-    case 'pol-mode':   { POL_MODE = b.dataset.m; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
+    case 'pol-filter': { POL_FILTER = b.dataset.f; S.pol.filter = POL_FILTER; POL_ANS = {}; POL_RESUMED = false; renderPol(); save(); break; }
+    case 'pol-mode':   { POL_MODE = b.dataset.m; POL_ANS = {}; POL_RESUMED = false; renderPol(); save(); break; }
     case 'pol-star': {
       const pid = b.dataset.id;
       const dflt = POL_STAR_DEFAULT[pid] || 0;
@@ -3530,7 +3537,7 @@ document.addEventListener('click', function(ev){
       const ans = it.ans.split('').sort();
       const correct = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
       S.pol.res[pid] = correct ? 'right' : 'wrong';
-      S.pol.last = Number(pid);
+      S.pol.last[POL_FILTER] = Number(pid);
       if(correct){
         if(S.pol.wrong[pid]){ delete S.pol.wrong[pid]; toast('答对啦，已移出错题本'); }
         else toast('答对啦');
@@ -3547,10 +3554,10 @@ document.addEventListener('click', function(ev){
       const dk = polDeck();
       if(!dk.length){ POL_IDX = 0; renderPol(); break; }
       POL_IDX = (POL_IDX+1) % dk.length;
-      S.pol.last = dk[POL_IDX];
+      S.pol.last[POL_FILTER] = dk[POL_IDX];
       save(); renderPol(); break;
     }
-    case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
+    case 'go-pol-wrong': { POL_FILTER='wrong'; S.pol.filter='wrong'; POL_RESUMED=false; go('pol'); save(); break; }
     /* ---- 生词本看板 ---- */
     case 'vb-toggle': {
       var item = b.closest('.vb-item');
@@ -3778,6 +3785,8 @@ document.addEventListener('visibilitychange', function(){
 (function init(){
   const how = load();
   WEEK_CURSOR = mondayOf(todayStr());
+  /* 恢复政治板块上次停留的目录（刷新也记忆） */
+  if(S.pol && S.pol.filter) POL_FILTER = S.pol.filter;
   go('today');
   if(how==='migrated') setTimeout(function(){ toast('已自动迁移旧版本数据'); }, 500);
   
