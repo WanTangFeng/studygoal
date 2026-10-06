@@ -1971,6 +1971,7 @@ function paperMatrix(){
 }
 /* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」 */
 function boardYearDetail(subj, year){
+  if(subj!=='math2') return '';   /* 卷后记录（评价/可重做）仅数学二展示 */
   const list = S.papers.filter(function(p){ return p.subj===subj && p.year===year; });
   if(!list.length) return '';
   /* 取最新一轮 */
@@ -2604,6 +2605,15 @@ function qgridHTML(k){
   }
   return s + '</div>';
 }
+function pfMetaHTML(){
+  if(PF.subj!=='math2') return '';   /* 卷后评价 + 可重做题号：仅数学二录入时显示 */
+  return '<div class="fld" style="margin-top:12px"><label>试卷评价 <em>选填，写给自己以后复习看</em></label>' +
+    '<textarea id="pfEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟、选择题陷阱多…"' +
+    ' style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
+    'font-size:15px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit">'+esc(PF.eval||'')+'</textarea></div>' +
+    '<div class="fld"><label>可再做的题号 <em>选填，填题号，逗号或空格分隔</em></label>' +
+    '<input id="pfRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" value="'+((PF.redo||[]).join(','))+'"></div>';
+}
 function pfRowsHTML(){
   const secs = secsOf(PF.subj, PF.year);
   let h = '<div class="card" style="padding:4px 13px;margin-bottom:10px">';
@@ -2746,12 +2756,7 @@ function paperForm(pid, opts){
     '<div id="pfTip">'+pfTip()+'</div>' +
     '<div class="fld"><label>各题型 <em>只填做过的，没做的留空</em></label></div>' +
     '<div id="pfBody">'+pfRowsHTML()+'</div>' +
-    '<div class="fld" style="margin-top:12px"><label>试卷评价 <em>选填，写给自己以后复习看</em></label>' +
-      '<textarea id="pfEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟、选择题陷阱多…"' +
-      ' style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
-      'font-size:15px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit">'+esc(PF.eval||'')+'</textarea></div>' +
-    '<div class="fld"><label>可再做的题号 <em>选填，填题号，逗号或空格分隔</em></label>' +
-      '<input id="pfRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" value="'+((PF.redo||[]).join(','))+'"></div>' +
+    '<div id="pfMeta">'+pfMetaHTML()+'</div>' +
     (PF.subj==='eng2' ? vocabBoxHTML() : '');
   openModal(title, body,
     '<button class="btn btn-ghost" data-act="closem">取消</button>' +
@@ -3299,6 +3304,7 @@ document.addEventListener('click', function(ev){
       });
       const ys = el('pfYear'); if(ys) ys.value = PF.year;
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
+      el('pfMeta').innerHTML = pfMetaHTML();   /* 切科目同步刷新「评价/可重做」显隐 */
       break;
     }
     case 'loadex': {
