@@ -1,4 +1,4 @@
-const CACHE = 'studygoal-pwa-v2';
+const CACHE = 'studygoal-pwa-v3';
 const PRECACHE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {
