@@ -904,8 +904,8 @@ let TAB = 'today';
 let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
-  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, ui:{ bannerAck:0 },
-    pol:{ stars:{}, res:{}, wrong:{}, settings:{remindDays:3} }, createdAt:new Date().toISOString() };
+  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:{}, ui:{ bannerAck:0 },
+    pol:{ stars:{}, res:{}, wrong:{}, last:0, settings:{remindDays:3} }, createdAt:new Date().toISOString() };
 }
 function normalizePol(o){
   const d = { stars:{}, res:{}, wrong:{}, settings:{remindDays:3} };
@@ -925,6 +925,7 @@ function normalizePol(o){
   if(o.settings && typeof o.settings==='object'){
     const n=Math.round(Number(o.settings.remindDays)||0); d.settings.remindDays = (n>=1&&n<=60)?n:3;
   }
+  d.last = Math.max(0, Math.round(Number(o.last)||0));
   return d;
 }
 function save(){
@@ -959,7 +960,7 @@ function normalize(o){
   b.ui = Object.assign({bannerAck:0}, o.ui||{});
   b.vocab = (o.vocab && typeof o.vocab==='object') ? o.vocab : {};
   b.pol = normalizePol(o.pol);
-  b.lastYear = Math.round(Number(o.lastYear)||0);
+  b.lastYear = (o.lastYear && typeof o.lastYear==='object') ? o.lastYear : {};
 
   /* 升级路径：旧 v3（goals/records）或无 cats 的备份 —— 清空重来，仅保留 papers/weekly */
   if(!o.cats || !Array.isArray(o.cats)){
@@ -1038,6 +1039,8 @@ function normalize(o){
     });
     return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, round: Math.max(1, Math.round(Number(p.round)||1)),
              secs:secs, marks:marks,
+             eval: (p.eval ? String(p.eval).slice(0,500) : ''),
+             redo: (Array.isArray(p.redo) ? p.redo.filter(function(n){ return isFinite(Number(n)) && Number(n)>0; }).map(function(n){ return Math.round(Number(n)); }) : []),
              updated: String(p.updated||'').slice(0,10) || todayStr(), seed: !!p.seed };
   }).filter(function(p){
     if(!p) return false;
@@ -1088,6 +1091,8 @@ function normalizePapers(arr){
       marks[key] = { r:r, t:t, redo: mk.redo?1:0 };
     });
     return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, round:(p.round||1), secs:secs, marks:marks,
+             eval: (p.eval ? String(p.eval).slice(0,500) : ''),
+             redo: (Array.isArray(p.redo) ? p.redo.filter(function(n){ return isFinite(Number(n)) && Number(n)>0; }).map(function(n){ return Math.round(Number(n)); }) : []),
              updated: String(p.updated||'').slice(0,10) || todayStr(), seed: !!p.seed };
   }).filter(function(p){ return !!p; });
   /* 合并同一「科目+年份+轮次」的重复记录：先到者保留，后到者仅补充空缺题型与错因，避免拆成多条、并修复二刷三刷被误吞 */
@@ -1399,7 +1404,7 @@ function go(tab){
   if(tab==='today') renderToday();
   if(tab==='board') renderBoard();
   if(tab==='papers') renderPapers();
-  if(tab==='pol') renderPol();
+  if(tab==='pol'){ if(TAB!=='pol') POL_RESUMED = false; renderPol(); }
   if(tab==='me') renderMe();
   window.scrollTo(0,0);
 }
@@ -1867,6 +1872,7 @@ function renderBoard(){
 
 /* ---------- 看板 · 真题正确率矩阵 ---------- */
 let BSUBJ = null;
+let BD_YEAR = null;   /* 看板中点击展开详情的年份（null=未展开） */
 function paperMatrix(){
   const have = subjHave();
   const pset = {}; S.papers.forEach(function(p){ pset[p.subj+'@'+p.year]=1; });
@@ -1905,7 +1911,8 @@ function paperMatrix(){
   const sums = {}; def.secs.forEach(function(d){ sums[d.k] = []; });
   const wholes = [];
   rows.forEach(function(p){
-    h += '<tr><td class="yl">'+p.year+'</td>';
+    const ylOn = (BD_YEAR===p.year) ? ' style="background:var(--grad-soft);color:var(--purple);font-weight:700"' : '';
+    h += '<tr><td class="yl" data-act="board-year" data-y="'+p.year+'"'+ylOn+' title="点击查看这份卷的重做题号与评价">'+p.year+'</td>';
     secsOf(BSUBJ, p.year).forEach(function(d){
       const v = p.secs[d.k];
       if(!v){ h += '<td>'+cell(null)+'</td>'; return; }
@@ -1928,6 +1935,11 @@ function paperMatrix(){
       '<td>'+cell(avg(wholes))+'</td></tr>';
   }
   h += '</tbody></table></div>';
+
+  /* 点击年份展开的「卷后记录」：可重做题号 + 试卷评价 */
+  if(BD_YEAR!=null){
+    h += boardYearDetail(BSUBJ, BD_YEAR);
+  }
 
   /* 洞察：最弱题型 + 错因分布 */
   let weak = null;
@@ -1957,7 +1969,37 @@ function paperMatrix(){
   h += '</div></div></div>';
   return h;
 }
-
+/* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」 */
+function boardYearDetail(subj, year){
+  const list = S.papers.filter(function(p){ return p.subj===subj && p.year===year; });
+  if(!list.length) return '';
+  /* 取最新一轮 */
+  const p = list.reduce(function(a,b){ return (b.round||1) > (a.round||1) ? b : a; }, list[0]);
+  let h = '<div class="card" style="margin-top:10px;padding:12px 13px;border-color:var(--purple-line)">';
+  h += '<div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink)">'+ic('doc',14,2.1)+
+       '<span>'+PAPERS[subj].s+' '+year+' 年 · 卷后记录</span>' +
+       '<span class="sp"></span>' +
+       '<button class="btn btn-xs btn-ghost" data-act="board-year" data-y="'+year+'">收起</button></div>';
+  /* 可重做题号 */
+  if(p.redo && p.redo.length){
+    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号</div>' +
+         '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">';
+    h += p.redo.map(function(n){ return '<span class="qchip on" style="cursor:default;pointer-events:none">'+n+'</span>'; }).join('');
+    h += '</div>';
+  } else {
+    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">还没标可再做的题</div>';
+  }
+  /* 试卷评价 */
+  if(p.eval){
+    h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">试卷评价</div>' +
+         '<div style="margin-top:5px;font-size:13px;color:var(--ink2);line-height:1.65;background:var(--bg2);' +
+         'border-radius:10px;padding:9px 11px;white-space:pre-wrap">'+esc(p.eval)+'</div>';
+  } else {
+    h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">还没写试卷评价</div>';
+  }
+  h += '</div>';
+  return h;
+}
 /* (近14天打卡趋势板块已移除) */
 function niceTick(max){
   const raw = max/4;
@@ -2542,6 +2584,8 @@ function pfLoad(srcObj){
       PF.rows[d.k] = { on: !!v, scores: arr };
     } else PF.rows[d.k] = { on: !!v, allright: !!(v && !v.wrong.length), total: v ? v.total : d.q, wrong: v ? v.wrong.slice() : [] };
   });
+  PF.eval = src && src.eval ? src.eval : '';
+  PF.redo = src && Array.isArray(src.redo) ? src.redo.slice() : [];
 }
 function existingPaper(subj,year,round){
   return S.papers.filter(function(x){ return x.subj===subj && x.year===year && (x.round||1)===round; })[0] || null;
@@ -2675,7 +2719,7 @@ function paperForm(pid, opts){
     subj = src.subj; year = src.year; lock = true; roundSrc = src.id;
     round = maxRound(subj, year) + 1; editId = null;
   } else {                         /* 记一份真题：自由新建，科目/年份始终可选，不自动转编辑、不锁死 */
-    subj = 'eng2'; year = S.lastYear || (new Date().getFullYear()-1); lock = false; round = 1;
+    subj = 'eng2'; year = (S.lastYear[subj]||0) || (new Date().getFullYear()-1); lock = false; round = 1;
     editId = null; roundSrc = null;
   }
   PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId:editId, lock:lock, roundSrc:roundSrc };
@@ -2702,6 +2746,12 @@ function paperForm(pid, opts){
     '<div id="pfTip">'+pfTip()+'</div>' +
     '<div class="fld"><label>各题型 <em>只填做过的，没做的留空</em></label></div>' +
     '<div id="pfBody">'+pfRowsHTML()+'</div>' +
+    '<div class="fld" style="margin-top:12px"><label>试卷评价 <em>选填，写给自己以后复习看</em></label>' +
+      '<textarea id="pfEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟、选择题陷阱多…"' +
+      ' style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
+      'font-size:15px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit">'+esc(PF.eval||'')+'</textarea></div>' +
+    '<div class="fld"><label>可再做的题号 <em>选填，填题号，逗号或空格分隔</em></label>' +
+      '<input id="pfRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" value="'+((PF.redo||[]).join(','))+'"></div>' +
     (PF.subj==='eng2' ? vocabBoxHTML() : '');
   openModal(title, body,
     '<button class="btn btn-ghost" data-act="closem">取消</button>' +
@@ -2758,6 +2808,12 @@ function savePaper(){
     p = { id:uid('p'), subj:PF.subj, year:PF.year, round:PF.round, secs:secs, marks:{}, updated:todayStr(), seed:false };
     S.papers.push(p);
   }
+  /* 卷后评价 + 可重做题号（选填） */
+  const elEval = el('pfEval'), elRedo = el('pfRedo');
+  const evalTxt = elEval ? elEval.value.trim().slice(0,500) : '';
+  const redoArr = parseNums(elRedo ? elRedo.value : '');
+  p.eval = evalTxt; p.redo = redoArr;
+  S.lastYear[PF.subj] = PF.year;
   /* 生词与年份记忆（英语二录入时记生词） */
   if(PF.subj==='eng2'){
     const done = VSECS.filter(function(k){ return PF.rows[k] && PF.rows[k].on; });
@@ -2768,7 +2824,6 @@ function savePaper(){
     rec.eng2done = done.length>0; rec.eng2allright = allright;
     S.vocab[todayStr()] = rec;
   }
-  S.lastYear = PF.year;
   const sc = paperScore(p);
   save(); closeModal(); PSUBJ = 'all'; go('papers');
   toast('已记下 '+PAPERS[p.subj].s+' '+p.year+(p.round>1?(' · '+roundLabel(p.round)):'')+' · 估分 '+nfm(sc.got)+'/'+sc.full +
@@ -3005,6 +3060,7 @@ function confetti(color){
    ========================================================= */
 let POL_IDX = 0;            /* 当前卡片在牌组中的下标 */
 let POL_ANS = {};           /* 当前题已选选项 {A:true,...} */
+let POL_RESUMED = false;    /* 进入政治板块后是否已完成「续接上次题号」 */
 let POL_FILTER = 'all';     /* all | s1 | s2 | s3 | none | wrong */
 let POL_MODE = 'order';     /* order | random */
 
@@ -3071,6 +3127,12 @@ function renderPol(){
 
   if(POL_IDX>=deck.length) POL_IDX=0;
   if(POL_IDX<0) POL_IDX=deck.length-1;
+  /* 续接上次做到的第几题（仅第一次渲染本板块时生效，筛选/模式切换后保持当前位置） */
+  if(!POL_RESUMED && S.pol.last){
+    const pos = deck.indexOf(S.pol.last);
+    if(pos>=0) POL_IDX = pos;
+  }
+  POL_RESUMED = true;
   const id = deck[POL_IDX];
   const it = polById(id);
   const res = S.pol.res[id];
@@ -3216,7 +3278,12 @@ document.addEventListener('click', function(ev){
     case 'dodelpaper': doDelPaper(id); break;
     case 'savepaper':  savePaper(); break;
     case 'pfilter':    PSUBJ = b.dataset.subj; renderPapers(); break;
-    case 'bsubj':      BSUBJ = b.dataset.k; renderBoard(); break;
+    case 'bsubj':      BSUBJ = b.dataset.k; BD_YEAR = null; renderBoard(); break;
+    case 'board-year': {
+      const y = Number(b.dataset.y);
+      BD_YEAR = (BD_YEAR===y) ? null : y;
+      renderBoard(); break;
+    }
     case 'mark':       markModal(id, b.dataset.key); break;
     case 'savemark':   saveMark(); break;
     case 'clearmark':  clearMark(); break;
@@ -3225,10 +3292,12 @@ document.addEventListener('click', function(ev){
       if(!PF || PF.lock) break;
       PF.subj = b.dataset.k;
       PF.editId = null;  /* 切换科目取消载入态，回到自由新建 */
+      PF.year = (S.lastYear[PF.subj]||0) || (new Date().getFullYear()-1);  /* 切科目同步该科记住的年份 */
       pfLoad();
       Array.prototype.forEach.call(el('pfSubj').querySelectorAll('button'), function(x){
         x.classList.toggle('on', x.dataset.k===PF.subj);
       });
+      const ys = el('pfYear'); if(ys) ys.value = PF.year;
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
       break;
     }
@@ -3445,6 +3514,7 @@ document.addEventListener('click', function(ev){
       const ans = it.ans.split('').sort();
       const correct = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
       S.pol.res[pid] = correct ? 'right' : 'wrong';
+      S.pol.last = Number(pid);
       if(correct){
         if(S.pol.wrong[pid]){ delete S.pol.wrong[pid]; toast('答对啦，已移出错题本'); }
         else toast('答对啦');
@@ -3461,7 +3531,8 @@ document.addEventListener('click', function(ev){
       const dk = polDeck();
       if(!dk.length){ POL_IDX = 0; renderPol(); break; }
       POL_IDX = (POL_IDX+1) % dk.length;
-      renderPol(); break;
+      S.pol.last = dk[POL_IDX];
+      save(); renderPol(); break;
     }
     case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
     /* ---- 生词本看板 ---- */
