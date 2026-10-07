@@ -531,6 +531,9 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .vb-ico:hover{color:var(--purple);background:var(--bg2)}
 .vb-ico:active{background:var(--bg2)}
 .vb-body{background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:0 0 16px;min-height:200px}
+.vb-search{padding:10px 16px 4px;background:var(--card);border:1px solid var(--line);border-top:none}
+.vb-search input{width:100%;height:42px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font-size:15px;background:#fbfcff;outline:none;box-sizing:border-box}
+.vb-search input:focus{border-color:var(--purple);background:#fff}
 .vb-count{padding:14px 18px 8px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px}
 .vb-list{padding:0 8px}
 .vb-item{position:relative;overflow:hidden;border-bottom:1px solid var(--line2);transition:transform .25s ease;-webkit-overflow-scrolling:touch;user-select:none}
@@ -1772,7 +1775,8 @@ function vocabBoard(){
        '<span class="vb-ico" data-act="vb-reveal-all" title="显示/隐藏全部词义">'+ic('eye',20)+'</span>' +
        '<span class="vb-ico" data-act="vb-add" title="添加生词">'+ic('plus',20)+'</span>' +
        '</div>';
-  h += '<div id="vbBody" class="vb-body"></div>' +
+  h += '<div class="vb-search"><input id="vbSearch" type="text" inputmode="search" placeholder="查词：整词 / 首字母 / 任意字母" maxlength="30" autocomplete="off"></div>' +
+       '<div id="vbBody" class="vb-body"></div>' +
        '<div id="vbExitHint" class="vb-exit-hint" style="display:none">'+ic('right',15)+' 右滑收起</div></div>';
   return h;
 }
@@ -1781,12 +1785,21 @@ function renderVbWords(dateStr){
   var eh = el('vbExitHint'); if(eh) eh.style.display='none';
   var rec = S.vocab[dateStr];
   var words = (rec && rec.words) ? rec.words : [];
+  var sb = el('vbSearch');
+  var q = sb ? sb.value.trim().toLowerCase() : '';
   if(!words.length){
     body.innerHTML = '<div class="vb-empty">'+ic('book',36,1.6)+'<p>该日没有生词</p></div>';
     return;
   }
-  var h = '<div class="vb-count">│ '+words.length+' 词</div><div class="vb-list">';
-  words.forEach(function(w, i){
+  var shown = [];
+  words.forEach(function(w, i){ if(!q || (w.w||'').toLowerCase().indexOf(q)>=0) shown.push({w:w, i:i}); });
+  if(!shown.length){
+    body.innerHTML = '<div class="vb-empty">'+ic('search',36,1.6)+'<p>没有匹配「'+esc(q)+'」的生词</p></div>';
+    return;
+  }
+  var h = '<div class="vb-count">│ '+shown.length+(q?' / '+words.length:'')+' 词</div><div class="vb-list">';
+  shown.forEach(function(o){
+    var w = o.w, i = o.i;
     h += '<div class="vb-item" data-date="'+dateStr+'" data-idx="'+i+'" data-act="vb-toggle">'+
         '<div class="vb-word-inner">'+
           '<span class="vb-w">'+esc(w.w)+'</span>'+
@@ -1800,6 +1813,9 @@ function renderVbWords(dateStr){
   });
   h += '</div>';
   body.innerHTML = h;
+  /* 绑定搜索框 */
+  var sb2 = el('vbSearch');
+  if(sb2) sb2.oninput = function(){ renderVbWords(dateStr); };
   /* bind date change */
   var picker = el('vbDatePick');
   if(picker){
@@ -1879,6 +1895,7 @@ function renderBoard(){
 /* ---------- 看板 · 真题正确率矩阵 ---------- */
 let BSUBJ = null;
 let BD_YEAR = null;   /* 看板中点击展开详情的年份（null=未展开） */
+let BD_EDIT = null;   /* 看板年份详情编辑态：{subj, year} 或 null */
 function paperMatrix(){
   const have = subjHave();
   const pset = {}; S.papers.forEach(function(p){ pset[p.subj+'@'+p.year]=1; });
@@ -1981,34 +1998,50 @@ function paperMatrix(){
   h += '</div></div>';   /* 关闭 card 与 sec（始终渲染，保证结构闭合） */
   return h;
 }
-/* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」 */
+/* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」；可进入编辑态修改 */
 function boardYearDetail(subj, year){
   if(subj!=='math2') return '';   /* 卷后记录（评价/可重做）仅数学二展示 */
   const list = S.papers.filter(function(p){ return p.subj===subj && p.year===year; });
   if(!list.length) return '';
   /* 取最新一轮 */
   const p = list.reduce(function(a,b){ return (b.round||1) > (a.round||1) ? b : a; }, list[0]);
+  const editing = BD_EDIT && BD_EDIT.subj===subj && BD_EDIT.year===year;
   let h = '<div class="card" style="margin-top:10px;padding:12px 13px;border-color:var(--purple-line)">';
   h += '<div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink)">'+ic('doc',14,2.1)+
        '<span>'+PAPERS[subj].s+' '+year+' 年 · 卷后记录</span>' +
        '<span class="sp"></span>' +
-       '<button class="btn btn-xs btn-ghost" data-act="board-year" data-y="'+year+'">收起</button></div>';
-  /* 可重做题号 */
-  if(p.redo && p.redo.length){
-    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号</div>' +
-         '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">';
-    h += p.redo.map(function(n){ return '<span class="qchip on" style="cursor:default;pointer-events:none">'+n+'</span>'; }).join('');
-    h += '</div>';
-  } else {
-    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">还没标可再做的题</div>';
-  }
-  /* 试卷评价 */
-  if(p.eval){
+       (editing
+          ? '<button class="btn btn-xs btn-pri" data-act="by-save" data-pid="'+p.id+'">保存</button>' +
+            '<button class="btn btn-xs btn-ghost" data-act="by-cancel">取消</button>'
+          : '<button class="btn btn-xs btn-ghost" data-act="by-edit" data-y="'+year+'">编辑</button>' +
+            '<button class="btn btn-xs btn-ghost" data-act="board-year" data-y="'+year+'">收起</button>') +
+       '</div>';
+  if(editing){
+    /* 编辑态：可重做题号 + 试卷评价 均可改 */
+    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号 <em style="font-style:normal">逗号 / 空格分隔</em></div>' +
+         '<input id="byRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" ' +
+         'style="width:100%;margin-top:5px" value="'+((p.redo||[]).join(','))+'">';
     h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">试卷评价</div>' +
-         '<div style="margin-top:5px;font-size:13px;color:var(--ink2);line-height:1.65;background:var(--bg2);' +
-         'border-radius:10px;padding:9px 11px;white-space:pre-wrap">'+esc(p.eval)+'</div>';
+         '<textarea id="byEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟…" ' +
+         'style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
+         'font-size:14px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit;margin-top:5px">'+esc(p.eval||'')+'</textarea>';
   } else {
-    h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">还没写试卷评价</div>';
+    /* 展示态 */
+    if(p.redo && p.redo.length){
+      h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号</div>' +
+           '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">';
+      h += p.redo.map(function(n){ return '<span class="qchip on" style="cursor:default;pointer-events:none">'+n+'</span>'; }).join('');
+      h += '</div>';
+    } else {
+      h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">还没标可再做的题</div>';
+    }
+    if(p.eval){
+      h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">试卷评价</div>' +
+           '<div style="margin-top:5px;font-size:13px;color:var(--ink2);line-height:1.65;background:var(--bg2);' +
+           'border-radius:10px;padding:9px 11px;white-space:pre-wrap">'+esc(p.eval)+'</div>';
+    } else {
+      h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">还没写试卷评价</div>';
+    }
   }
   h += '</div>';
   return h;
@@ -3298,11 +3331,28 @@ document.addEventListener('click', function(ev){
     case 'dodelpaper': doDelPaper(id); break;
     case 'savepaper':  savePaper(); break;
     case 'pfilter':    PSUBJ = b.dataset.subj; renderPapers(); break;
-    case 'bsubj':      BSUBJ = b.dataset.k; BD_YEAR = null; renderBoard(); break;
+    case 'bsubj':      BSUBJ = b.dataset.k; BD_YEAR = null; BD_EDIT = null; renderBoard(); break;
     case 'board-year': {
       const y = Number(b.dataset.y);
       BD_YEAR = (BD_YEAR===y) ? null : y;
+      BD_EDIT = null;
       renderBoard(); break;
+    }
+    case 'by-edit': {
+      BD_EDIT = { subj:BSUBJ, year:Number(b.dataset.y) };
+      renderBoard(); break;
+    }
+    case 'by-cancel': { BD_EDIT = null; renderBoard(); break; }
+    case 'by-save': {
+      const pid = b.dataset.pid;
+      const p = S.papers.filter(function(x){ return x.id===pid; })[0];
+      if(p){
+        const elRedo = el('byRedo'), elEval = el('byEval');
+        p.redo = parseNums(elRedo ? elRedo.value : '');
+        p.eval = elEval ? elEval.value.trim().slice(0,500) : '';
+        save(); toast('已保存卷后记录');
+      }
+      BD_EDIT = null; renderBoard(); break;
     }
     case 'mark':       markModal(id, b.dataset.key); break;
     case 'savemark':   saveMark(); break;
@@ -3331,6 +3381,7 @@ document.addEventListener('click', function(ev){
         PF.editId = null;          /* 仅预填数据，保存仍走合并，不覆盖丢失旧题型 */
         pfLoad(ex);
         el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
+        if(el('pfMeta')) el('pfMeta').innerHTML = pfMetaHTML();   /* 同步「评价 / 可重做题号」到表单，便于修改 */
         if(PF.subj==='eng2' && el('vocabBox')) el('vocabBox').style.display = 'block';
       }
       break;
