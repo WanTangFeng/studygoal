@@ -680,6 +680,52 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-chip.on i{background:rgba(255,255,255,.26);color:#fff}
 .kb-sres-tag{font-style:normal;font-size:10.5px;font-weight:800;color:#7355f7;
   background:#f1edff;border-radius:6px;padding:1px 6px;margin-right:6px}
+/* ---- 顶部考研冲刺条 ---- */
+.exambar{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  margin:2px 0 14px;padding:14px 15px 16px;border:none;border-radius:18px;cursor:pointer;overflow:hidden;
+  font-family:inherit;color:#fff;
+  background:linear-gradient(118deg,#6d5efc 0%,#8b5cf6 42%,#c026d3 78%,#f472b6 100%);
+  box-shadow:0 12px 28px rgba(115,85,247,.30),0 2px 6px rgba(25,27,46,.06);
+  transition:transform .16s,box-shadow .2s}
+.exambar:active{transform:scale(.985)}
+.exambar::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(150px 74px at 88% -12%,rgba(255,255,255,.34),transparent 70%)}
+.exambar-ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+  background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.exambar-body{flex:none;display:flex;flex-direction:column;gap:1px;min-width:0}
+.exambar-tag{font-size:11.5px;font-weight:600;opacity:.9;letter-spacing:.2px;white-space:nowrap}
+.exambar-big{font-size:29px;font-weight:800;line-height:1.05;letter-spacing:-.6px;font-variant-numeric:tabular-nums;
+  text-shadow:0 2px 8px rgba(40,10,90,.18)}
+.exambar-big i{font-size:13px;font-weight:700;font-style:normal;margin-left:2px;opacity:.92}
+.exambar-right{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.exambar-phase{font-size:12.5px;font-weight:800;background:rgba(255,255,255,.24);border-radius:20px;
+  padding:3px 11px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);white-space:nowrap}
+.exambar-tip{font-size:11px;opacity:.9;line-height:1.4;text-align:right}
+.exambar-bar{position:absolute;left:15px;right:15px;bottom:8px;height:4px;border-radius:4px;
+  background:rgba(255,255,255,.26);overflow:hidden}
+.exambar-bar i{display:block;height:100%;border-radius:4px;background:#fff;opacity:.95;
+  box-shadow:0 0 8px rgba(255,255,255,.7);transition:width .5s}
+/* ---- 我的 · 打卡统计 ---- */
+.ck-total{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.ck-total b{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.8px;line-height:1;
+  font-variant-numeric:tabular-nums}
+.ck-total span{font-size:12px;color:var(--muted)}
+.ck-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px dashed var(--line2)}
+.ck-row:first-of-type{border-top:none}
+.ck-dot{flex:none;width:9px;height:9px;border-radius:50%}
+.ck-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ck-name{font-size:13.5px;font-weight:650;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-bar{height:5px;border-radius:5px;background:var(--bg2);overflow:hidden}
+.ck-bar i{display:block;height:100%;border-radius:5px;transition:width .45s}
+.ck-num{flex:none;display:flex;align-items:baseline;gap:2px;min-width:44px;justify-content:flex-end}
+.ck-num b{font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.ck-num i{font-size:10.5px;font-style:normal;color:var(--muted)}
+.ck-streak{flex:none;font-size:11px;color:var(--muted);min-width:56px;text-align:right;white-space:nowrap}
+.ck-empty{font-size:13px;color:var(--muted);text-align:center;padding:10px 0}
+.ck-hint{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;
+  border-top:1px solid var(--line2);font-size:11.5px;line-height:1.5;color:var(--muted)}
+.ck-hint svg{flex:none;opacity:.75}
+.exambar-ic svg,.ck-hint svg{display:block}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -1510,7 +1556,7 @@ function go(tab){
   ['today','board','papers','pol','me'].forEach(function(k){
     el('tab-'+k).classList.toggle('hide', k!==tab);
   });
-  renderNav(); renderBanner();
+  renderNav(); renderTopStrip();
   if(tab==='today') renderToday();
   if(tab==='board') renderBoard();
   if(tab==='papers') renderPapers();
@@ -1523,19 +1569,39 @@ function go(tab){
    备份横幅
    ========================================================= */
 function totalCheckins(){ let n=0; S.cats.forEach(function(c){ n += Object.keys(c.checkins||{}).length; }); return n; }
-function renderBanner(){
-  let n = 0; S.cats.forEach(function(c){ n += Object.keys(c.checkins).length; });
-  const ack = S.ui.bannerAck || 0;
-  const show = n >= 20 && n >= ack + 20;
-  if(!show){ el('bannerSlot').innerHTML = ''; return; }
+/* 备考阶段：按距初试天数划分 */
+function examPhase(d){
+  if(d > 240) return { name:'基础期', tip:'打地基，别急着刷套卷' };
+  if(d > 120) return { name:'强化期', tip:'主攻弱项，逐章过一遍' };
+  if(d > 45)  return { name:'冲刺期', tip:'真题为王，稳住节奏' };
+  if(d > 15)  return { name:'决战期', tip:'背大题，保持手感' };
+  return { name:'收官期', tip:'调作息，别熬夜' };
+}
+/* 顶部考研冲刺条（替代原来的备份横幅）
+   今日页已有一张完整的考研倒计时卡，这里就不再重复显示 */
+function renderTopStrip(){
+  if(TAB === 'today'){ el('bannerSlot').innerHTML = ''; return; }
+  const e = examInfo();
+  const d = Math.max(0, e.days);
+  const ph = examPhase(d);
+  const WIN = 365;
+  let passed = Math.round((WIN - Math.min(d, WIN)) / WIN * 100);
+  passed = Math.max(4, Math.min(100, passed));
+  const yy = String(e.year + 1).slice(2);
+  const dayStr = d === 0 ? '就是今天' : String(d);
   el('bannerSlot').innerHTML =
-    '<div class="banner">' +
-      '<div class="bi">'+ic('shield',19)+'</div>' +
-      '<div class="bt"><b>已经累计 '+n+' 次打卡了</b>' +
-      '<span>数据只存在这台设备上，导一份 JSON 放着更安心。</span></div>' +
-      '<button class="btn btn-sm btn-pri" data-act="banner-export">导出</button>' +
-      '<button class="iconbtn" data-act="banner-close" aria-label="关闭">'+ic('x',16)+'</button>' +
-    '</div>';
+    '<button class="exambar" data-act="go-today" aria-label="查看今日">' +
+      '<span class="exambar-ic">' + ic('cap',20,1.9) + '</span>' +
+      '<span class="exambar-body">' +
+        '<span class="exambar-tag">距 ' + yy + ' 考研初试</span>' +
+        '<span class="exambar-big">' + dayStr + (d===0?'':'<i>天</i>') + '</span>' +
+      '</span>' +
+      '<span class="exambar-right">' +
+        '<span class="exambar-phase">' + ph.name + '</span>' +
+        '<span class="exambar-tip">' + ph.tip + '</span>' +
+      '</span>' +
+      '<span class="exambar-bar"><i style="width:' + passed + '%"></i></span>' +
+    '</button>';
 }
 
 /* =========================================================
@@ -2402,6 +2468,36 @@ function renderMe(){
     '<div style="font-size:12px;color:var(--muted);line-height:1.5">数据全部保存在这台设备的浏览器里（约 '+(bytes/1024).toFixed(1)+' KB），换设备、清缓存都会丢，导出是唯一的保险。</div></div>' +
     '</div></div>';
 
+  /* ---- 打卡统计（原顶部横幅的「累计打卡」集中到这里）---- */
+  (function(){
+    const cats = S.cats;
+    let maxN = 1;
+    cats.forEach(function(c){ maxN = Math.max(maxN, Object.keys(c.checkins||{}).length); });
+    h += '<div class="sec"><div class="sec-hd">'+ic('flame',16)+'<h2>打卡统计</h2>'+
+         '<span class="cnt">累计 '+totalChecks+' 次</span></div><div class="card" style="padding:14px">';
+    if(!cats.length){
+      h += '<div class="ck-empty">还没有分类，先去「今日」建一个吧。</div>';
+    } else {
+      h += '<div class="ck-total"><b>'+totalChecks+'</b><span>次累计打卡 · '+cats.length+' 个分类</span></div>';
+      cats.forEach(function(c){
+        const col = pal(c.color);
+        const n = Object.keys(c.checkins||{}).length;
+        const sk = catStreak(c);
+        const pct = Math.round(n / maxN * 100);
+        h += '<div class="ck-row">'+
+               '<span class="ck-dot" style="background:'+col.m+'"></span>'+
+               '<span class="ck-mid"><span class="ck-name">'+esc(c.name)+'</span>'+
+                 '<span class="ck-bar"><i style="width:'+pct+'%;background:'+col.m+'"></i></span></span>'+
+               '<span class="ck-num"><b>'+n+'</b><i>次</i></span>'+
+               '<span class="ck-streak">'+(sk.n>0?('连续 '+sk.n+' 天'):'未开始')+'</span>'+
+             '</div>';
+      });
+    }
+    h += '<div class="ck-hint">'+ic('shield',13)+' 数据只存在这台设备上，导一份 JSON 备份更安心。</div>';
+    h += '<button class="btn btn-line btn-xs" data-act="me-export" style="margin-top:10px">'+ic('down',13)+' 马上导出备份</button>';
+    h += '</div></div>';
+  })();
+
   h += '<div class="sec"><div class="sec-hd">'+ic('shield',16)+'<h2>数据备份</h2></div><div class="card">' +
     mrow('down','导出 JSON 备份','把全部分类、打卡、子计划、周报复盘存成一个文件','export') +
     mrow('up','导入恢复','选择备份文件，覆盖前会先确认，不限条数','import') +
@@ -2964,7 +3060,7 @@ function exportJSON(){
   a.href = url; a.download = '学习目标台备份_'+todayStr()+'.json';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
-  S.ui.bannerAck = totalCheckins(); save(); renderBanner();
+  S.ui.bannerAck = totalCheckins(); save(); renderTopStrip();
   toast('已导出 '+S.cats.length+' 个待办分类');
 }
 function importJSON(){
@@ -3689,7 +3785,7 @@ document.addEventListener('click', function(ev){
       }
       save();
       if(TAB==='today') renderToday(); else if(TAB==='board') renderBoard();
-      renderNav(); renderBanner();
+      renderNav(); renderTopStrip();
       break;
     }
     case 'toggle-sec': {
@@ -3718,7 +3814,7 @@ document.addEventListener('click', function(ev){
         delete c.checkins[d];
       }
       save(); renderToday();
-      renderNav(); renderBanner();
+      renderNav(); renderTopStrip();
       break;
     }
     case 'closem':     closeModal(); break;
@@ -4188,8 +4284,9 @@ case 'qpick': {
       });
       break;
     }
-    case 'export': case 'banner-export': exportJSON(); break;
-    case 'banner-close': S.ui.bannerAck = totalCheckins(); save(); renderBanner(); break;
+    case 'export': exportJSON(); break;
+    case 'go-today': { go('today'); break; }
+    case 'me-export': { exportJSON(); break; }
     case 'import':   importJSON(); break;
     case 'migrate':  doMigrate(); break;
     case 'clearseed':clearSeed(); break;
