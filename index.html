@@ -650,6 +650,36 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-quiz-q{font-size:14.5px;font-weight:700;color:var(--ink);line-height:1.6;margin-bottom:10px}
 .kb-quiz-a{font-size:13.5px;line-height:1.8;color:var(--ink2);background:var(--bg2);border-radius:10px;padding:11px 12px;margin-bottom:11px}
 .kb-wrongbar{margin-bottom:10px}
+/* ---- 政治顶部搜索框 ---- */
+.polsearch{margin:2px 0 12px}
+.polsearch-box{position:relative;display:flex;align-items:center;gap:10px;height:52px;padding:0 15px;
+  border-radius:17px;border:1.6px solid transparent;
+  background:linear-gradient(var(--card),var(--card)) padding-box,
+             linear-gradient(120deg,#6d5efc,#a855f7 46%,#22d3ee) border-box;
+  box-shadow:0 8px 22px rgba(115,85,247,.13),0 1px 2px rgba(25,27,46,.04);
+  transition:box-shadow .22s,transform .16s}
+.polsearch-box:active{transform:scale(.994)}
+.polsearch-box:focus-within{box-shadow:0 12px 30px rgba(115,85,247,.24),0 1px 2px rgba(25,27,46,.04)}
+.polsearch-ic{flex:none;display:flex;color:#7355f7;opacity:.95}
+.polsearch-in{flex:1;min-width:0;border:none;background:transparent;outline:none;height:48px;
+  font-size:15px;font-weight:600;color:var(--ink);font-family:inherit;letter-spacing:.1px}
+.polsearch-in::placeholder{color:var(--faint);font-weight:500}
+.polsearch-x{flex:none;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;
+  display:grid;place-items:center;background:var(--bg2);color:var(--muted)}
+.polsearch-badge{flex:none;font-size:11px;font-weight:700;color:#7355f7;
+  background:linear-gradient(135deg,#f1edff,#e8f6ff);border-radius:20px;padding:4px 9px;white-space:nowrap}
+.polsearch-hint{margin:7px 3px 0;font-size:11.5px;line-height:1.55;color:var(--muted);opacity:.92}
+.kb-chips{display:flex;gap:6px;margin-bottom:11px;flex-wrap:wrap}
+.kb-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink2);font-size:12.5px;font-weight:650;border-radius:20px;padding:5px 11px;cursor:pointer;font-family:inherit;
+  transition:.16s}
+.kb-chip i{font-style:normal;font-size:11px;font-weight:800;color:var(--muted);
+  background:var(--bg2);border-radius:20px;padding:1px 6px}
+.kb-chip.on{background:linear-gradient(135deg,#6d5efc,#a855f7);border-color:transparent;color:#fff;
+  box-shadow:0 5px 14px rgba(115,85,247,.28)}
+.kb-chip.on i{background:rgba(255,255,255,.26);color:#fff}
+.kb-sres-tag{font-style:normal;font-size:10.5px;font-weight:800;color:#7355f7;
+  background:#f1edff;border-radius:6px;padding:1px 6px;margin-right:6px}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -3201,6 +3231,7 @@ let POL_SUB = 'sz';           /* sz 时政 | my 马哲 | mt 毛特 | sg 史纲 *
 let KB_OPEN = {};             /* 章节展开状态 */
 let KB_FILL = {};             /* 填空题作答：key -> {v:输入, ok:true/false} */
 let KB_SEARCH = '';           /* 搜索词 */
+let KB_SRES_SUBJ = 'all';     /* 搜索结果按书过滤：all|my|mt|sg */
 let KB_QUIZ = null;           /* 随机抽查会话 */
 let KB_WRONGMODE = false;     /* 填空题错题本视图 */
 
@@ -3213,8 +3244,11 @@ function polSubBar(){
 function kbKey(subj, ci, ki){ return subj+'-'+ci+'-'+ki; }
 
 function renderPol(){
-  let h = polSubBar();
-  if(POL_SUB==='sz'){
+  let h = kbSearchBar();
+  h += polSubBar();
+  if(KB_SEARCH.trim()){
+    h += kbSearchResults(KB_SEARCH.trim());
+  } else if(POL_SUB==='sz'){
     h += polSzBody();
   } else {
     h += kbBody(POL_SUB);
@@ -3264,13 +3298,6 @@ function kbFillKey(subj,ci,ki,fi){ return subj+'-'+ci+'-'+ki+'-'+fi; }
 
 function kbBody(subj){
   let h = '';
-  h += '<div class="sec kb-searchwrap">'+
-       '<div class="kb-searchbox">'+ic('search',16)+
-       '<input id="kbSearch" class="kb-search" placeholder="搜索知识点…（如 实践、矛盾、遵义会议）" value="'+esc(KB_SEARCH)+'" autocomplete="off">'+
-       (KB_SEARCH?'<button class="kb-clr" data-act="kb-search-clear" aria-label="清空">×</button>':'')+
-       '</div></div>';
-  if(KB_SEARCH.trim()){ h += kbSearchResults(KB_SEARCH.trim()); return h; }
-
   h += kbStats(subj);
 
   if(subj==='my'){
@@ -3413,6 +3440,23 @@ function kbAudioCard(ci, ch){
   return h;
 }
 
+function kbSearchBar(){
+  const nQ = KB_SEARCH.trim();
+  const total = KB.my.reduce(function(a,c){return a+c.kps.length;},0)
+              + KB.mt.reduce(function(a,c){return a+c.points.length;},0)
+              + KB.sg.reduce(function(a,c){return a+c.points.length;},0);
+  let h = '<div class="polsearch">';
+  h += '<div class="polsearch-box">';
+  h += '<span class="polsearch-ic">'+ic('search',19,2)+'</span>';
+  h += '<input id="kbSearch" class="polsearch-in" placeholder="搜索三本书的知识点…" value="'+esc(KB_SEARCH)+'" autocomplete="off" spellcheck="false">';
+  if(nQ) h += '<button class="polsearch-x" data-act="kb-search-clear" aria-label="清空">'+ic('x',14,2.2)+'</button>';
+  else   h += '<span class="polsearch-badge">'+total+' 个知识点</span>';
+  h += '</div>';
+  if(!nQ) h += '<div class="polsearch-hint">搜「实践」「矛盾」「遵义会议」「中国式现代化」试试 · 马哲 / 毛特 / 史纲全覆盖</div>';
+  h += '</div>';
+  return h;
+}
+
 function kbSearchResults(q){
   const nq = kbNorm(q);
   const hits = [];
@@ -3430,13 +3474,24 @@ function kbSearchResults(q){
       });
     });
   });
+  const by = { all:hits.length, my:0, mt:0, sg:0 };
+  hits.forEach(function(x){ by[x.subj]++; });
+
   let h = '<div class="sec kb-sres">';
-  h += '<div class="kb-sres-hd">共找到 <b>'+hits.length+'</b> 条</div>';
-  if(!hits.length){ h += '<div class="card empty">'+ic('cap',30,1.6)+'<b>没有找到</b><span>换个关键词试试。</span></div>'; }
-  hits.slice(0,120).forEach(function(x){
+  h += '<div class="kb-chips">'+
+    [['all','全部'],['my','马哲'],['mt','毛特'],['sg','史纲']].map(function(f){
+      return '<button class="kb-chip'+(KB_SRES_SUBJ===f[0]?' on':'')+'" data-act="kb-sres-subj" data-s="'+f[0]+'">'+
+             f[1]+'<i>'+by[f[0]]+'</i></button>';
+    }).join('')+'</div>';
+
+  const list = KB_SRES_SUBJ==='all' ? hits : hits.filter(function(x){ return x.subj===KB_SRES_SUBJ; });
+  if(!list.length){
+    h += '<div class="card empty">'+ic('search',30,1.6)+'<b>没有找到</b><span>换个关键词，或点上面「全部」看看。</span></div>';
+  }
+  list.slice(0,150).forEach(function(x){
     h += '<button class="kb-sres-item" data-act="kb-jump" data-subj="'+x.subj+'" data-ci="'+x.ci+'" data-ii="'+x.ii+'">'+
          '<div class="kb-sres-t">'+esc(x.t)+'</div>'+
-         '<div class="kb-sres-m">'+KB_META[x.subj].name+' · '+esc(x.ch)+'</div>'+
+         '<div class="kb-sres-m"><i class="kb-sres-tag">'+KB_META[x.subj].name+'</i>'+esc(x.ch)+'</div>'+
          '<div class="kb-sres-s">'+esc(x.snippet)+'</div></button>';
   });
   h += '</div>';
@@ -3547,7 +3602,7 @@ function kbReveal(key){
   renderPol();
 }
 function kbJump(subj, ci, ii){
-  KB_SEARCH = ''; KB_WRONGMODE = false; KB_QUIZ = null;
+  KB_SEARCH = ''; KB_WRONGMODE = false; KB_QUIZ = null; KB_SRES_SUBJ = 'all';
   POL_SUB = subj;
   KB_OPEN[subj+'-c-'+ci] = true;
   renderPol();
@@ -3947,7 +4002,7 @@ document.addEventListener('click', function(ev){
     }
     case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
     /* ---- 政治知识库 ---- */
-    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_WRONGMODE=false; KB_QUIZ=null; renderPol(); break; }
+    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; renderPol(); break; }
     case 'kb-toggle': { const kk=b.dataset.k; KB_OPEN[kk]=!KB_OPEN[kk]; if(KB_OPEN['__all']) KB_OPEN['__all']=false; renderPol(); break; }
     case 'kb-expand-all':   { KB_OPEN={'__all':true}; renderPol(); break; }
     case 'kb-collapse-all': { KB_OPEN={}; renderPol(); break; }
@@ -3956,7 +4011,8 @@ document.addEventListener('click', function(ev){
     case 'kb-seen':   { const sk=b.dataset.k; S.pol.kb.seen[sk]=!S.pol.kb.seen[sk]; save(); renderPol(); break; }
     case 'kb-wrong-open': { KB_WRONGMODE=true; renderPol(); break; }
     case 'kb-wrong-back': { KB_WRONGMODE=false; renderPol(); break; }
-    case 'kb-search-clear': { KB_SEARCH=''; renderPol(); break; }
+    case 'kb-search-clear': { KB_SEARCH=''; KB_SRES_SUBJ='all'; renderPol(); break; }
+    case 'kb-sres-subj': { KB_SRES_SUBJ=b.dataset.s; renderPol(); break; }
     case 'kb-jump':   { kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
     case 'kb-copy':   { kbCopyAudio(+b.dataset.ci); break; }
     case 'kb-quiz':        { kbQuizStart(POL_SUB); break; }
