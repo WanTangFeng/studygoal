@@ -531,13 +531,6 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .vb-ico:hover{color:var(--purple);background:var(--bg2)}
 .vb-ico:active{background:var(--bg2)}
 .vb-body{background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;padding:0 0 16px;min-height:200px}
-.vb-search{padding:10px 16px 4px;background:var(--card);border:1px solid var(--line);border-top:none}
-.vb-search-row{display:flex;gap:8px;align-items:center}
-.vb-search input{flex:1;height:42px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font-size:15px;background:#fbfcff;outline:none;box-sizing:border-box;min-width:0}
-.vb-search input:focus{border-color:var(--purple);background:#fff}
-.vb-mode{flex-shrink:0;height:42px;padding:0 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink2);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
-.vb-mode.on{background:var(--purple);color:#fff;border-color:var(--purple)}
-.vb-group-hd{padding:10px 18px 4px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.3px}
 .vb-count{padding:14px 18px 8px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.5px}
 .vb-list{padding:0 8px}
 .vb-item{position:relative;overflow:hidden;border-bottom:1px solid var(--line2);transition:transform .25s ease;-webkit-overflow-scrolling:touch;user-select:none}
@@ -687,31 +680,48 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-chip.on i{background:rgba(255,255,255,.26);color:#fff}
 .kb-sres-tag{font-style:normal;font-size:10.5px;font-weight:800;color:#7355f7;
   background:#f1edff;border-radius:6px;padding:1px 6px;margin-right:6px}
-/* ---- 顶部考研冲刺条 ---- */
-.exambar{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;
-  margin:2px 0 14px;padding:14px 15px 16px;border:none;border-radius:18px;cursor:pointer;overflow:hidden;
-  font-family:inherit;color:#fff;
-  background:linear-gradient(118deg,#6d5efc 0%,#8b5cf6 42%,#c026d3 78%,#f472b6 100%);
-  box-shadow:0 12px 28px rgba(115,85,247,.30),0 2px 6px rgba(25,27,46,.06);
-  transition:transform .16s,box-shadow .2s}
-.exambar:active{transform:scale(.985)}
-.exambar::after{content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(150px 74px at 88% -12%,rgba(255,255,255,.34),transparent 70%)}
-.exambar-ic{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
-  background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
-.exambar-body{flex:none;display:flex;flex-direction:column;gap:1px;min-width:0}
-.exambar-tag{font-size:11.5px;font-weight:600;opacity:.9;letter-spacing:.2px;white-space:nowrap}
-.exambar-big{font-size:29px;font-weight:800;line-height:1.05;letter-spacing:-.6px;font-variant-numeric:tabular-nums;
-  text-shadow:0 2px 8px rgba(40,10,90,.18)}
-.exambar-big i{font-size:13px;font-weight:700;font-style:normal;margin-left:2px;opacity:.92}
-.exambar-right{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.exambar-phase{font-size:12.5px;font-weight:800;background:rgba(255,255,255,.24);border-radius:20px;
-  padding:3px 11px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);white-space:nowrap}
-.exambar-tip{font-size:11px;opacity:.9;line-height:1.4;text-align:right}
-.exambar-bar{position:absolute;left:15px;right:15px;bottom:8px;height:4px;border-radius:4px;
-  background:rgba(255,255,255,.26);overflow:hidden}
-.exambar-bar i{display:block;height:100%;border-radius:4px;background:#fff;opacity:.95;
-  box-shadow:0 0 8px rgba(255,255,255,.7);transition:width .5s}
+/* ---- 顶部考研关键节点提醒 ---- */
+.kynote{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:2px 0 14px;
+  padding:13px 15px;border:1px solid var(--amber-line);border-radius:16px;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,#fffaef,#fff6e2);box-shadow:0 6px 18px rgba(217,136,10,.10);
+  transition:transform .16s,box-shadow .2s;position:relative;overflow:hidden}
+.kynote:active{transform:scale(.987)}
+.kynote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--amber);border-radius:0 4px 4px 0}
+.kynote.live::before,.kynote.final::before{background:var(--red)}
+.kynote-ic{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  background:#fff;color:var(--amber);box-shadow:var(--sh-sm)}
+.kynote.live .kynote-ic,.kynote.final .kynote-ic{color:var(--red)}
+.kynote-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.kynote-t{display:flex;align-items:center;gap:7px;font-size:14.5px;font-weight:800;color:var(--ink)}
+.kynote-badge{font-style:normal;font-size:10.5px;font-weight:800;color:#fff;background:var(--amber);
+  border-radius:20px;padding:1px 7px;white-space:nowrap}
+.kynote.live .kynote-badge,.kynote.final .kynote-badge{background:var(--red)}
+.kynote-s{font-size:12.5px;font-weight:650;color:var(--amber)}
+.kynote.live .kynote-s,.kynote.final .kynote-s{color:var(--red)}
+.kynote-tip{font-size:11.5px;color:var(--muted);line-height:1.45}
+.kynote-arrow{flex:none;color:var(--faint);display:flex}
+.kynote svg{display:block}
+/* ---- 填空题每个空的判分状态 ---- */
+.kb-fill-in.ok{border-bottom-color:var(--green);color:var(--green)}
+.kb-fill-in.bad{border-bottom-color:var(--red);color:var(--red);background:var(--red-soft)}
+.kb-ans2.bad{color:var(--red);text-decoration:underline}
+.kb-fill-note{font-size:11px;color:var(--muted);align-self:center}
+/* ---- 文稿朗读器 ---- */
+.kb-tts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.kb-tts-play{display:inline-flex;align-items:center;gap:5px;border:none;border-radius:11px;cursor:pointer;
+  background:var(--grad);color:#fff;font-size:13px;font-weight:750;padding:9px 15px;font-family:inherit;
+  box-shadow:0 6px 16px rgba(115,85,247,.28);transition:transform .14s}
+.kb-tts-play:active{transform:scale(.97)}
+.kb-tts-stop{border:none;border-radius:11px;cursor:pointer;background:var(--red-soft);color:var(--red);
+  font-size:12.5px;font-weight:700;padding:9px 12px;font-family:inherit}
+.kb-tts-spd{display:flex;gap:2px;background:var(--bg2);padding:3px;border-radius:11px}
+.kb-tts-spd button{border:none;background:transparent;color:var(--muted);font-size:11.5px;font-weight:750;
+  padding:5px 8px;border-radius:8px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.kb-tts-spd button.on{background:var(--card);color:#7355f7;box-shadow:0 1px 4px rgba(25,27,46,.12)}
+.kb-tts-prog{font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.kb-tts-para{transition:background .25s}
+.kb-tts-para.cur{background:#fff6d8;box-shadow:0 0 0 3px #fff6d8;border-radius:4px}
 /* ---- 我的 · 打卡统计 ---- */
 .ck-total{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
 .ck-total b{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.8px;line-height:1;
@@ -732,7 +742,7 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .ck-hint{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;
   border-top:1px solid var(--line2);font-size:11.5px;line-height:1.5;color:var(--muted)}
 .ck-hint svg{flex:none;opacity:.75}
-.exambar-ic svg,.ck-hint svg{display:block}
+.kynote svg,.ck-hint svg,.kb-tts svg{display:block}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -1057,12 +1067,12 @@ let TAB = 'today';
 let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
-  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:{}, ui:{ bannerAck:0 },
-    pol:{ stars:{}, res:{}, wrong:{}, last:{}, filter:'all', settings:{remindDays:3},
+  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, ui:{ bannerAck:0, ttsRate:1 },
+    pol:{ stars:{}, res:{}, wrong:{}, settings:{remindDays:3},
           kb:{ fills:{}, wrong:{}, seen:{} } }, createdAt:new Date().toISOString() };
 }
 function normalizePol(o){
-  const d = { stars:{}, res:{}, wrong:{}, last:{}, filter:'all', settings:{remindDays:3}, kb:{ fills:{}, wrong:{}, seen:{} } };
+  const d = { stars:{}, res:{}, wrong:{}, settings:{remindDays:3}, kb:{ fills:{}, wrong:{}, seen:{} } };
   if(!o || typeof o!=='object') return d;
   if(o.stars && typeof o.stars==='object'){
     Object.keys(o.stars).forEach(function(k){ const n=Math.round(Number(o.stars[k])||0); if(n>=0&&n<=3) d.stars[k]=n; });
@@ -1093,14 +1103,6 @@ function normalizePol(o){
       Object.keys(o.kb.seen).forEach(function(k){ if(o.kb.seen[k]) d.kb.seen[k]=true; });
     }
   }
-  /* 按目录分别记忆「上次刷到第几题」 */
-  d.last = {};
-  if(o.last){
-    if(typeof o.last==='object'){
-      Object.keys(o.last).forEach(function(k){ const n=Math.round(Number(o.last[k])||0); if(n>0) d.last[k]=n; });
-    } else if(typeof o.last==='number' && o.last>0){ d.last.all = Math.round(o.last); }  /* 旧版：单个数字，迁移到 all */
-  }
-  if(typeof o.filter==='string' && /^(all|s1|s2|s3|none|wrong)$/.test(o.filter)) d.filter = o.filter;
   return d;
 }
 function save(){
@@ -1132,10 +1134,11 @@ function normalize(o){
   b.vocabCollapsed = !!o.vocabCollapsed;
   b.createdAt = o.createdAt || b.createdAt;
   b.weekly = (o.weekly && typeof o.weekly==='object') ? o.weekly : {};
-  b.ui = Object.assign({bannerAck:0}, o.ui||{});
+  b.ui = Object.assign({bannerAck:0, ttsRate:1}, o.ui||{});
+  if(!(Number(b.ui.ttsRate) > 0)) b.ui.ttsRate = 1;
   b.vocab = (o.vocab && typeof o.vocab==='object') ? o.vocab : {};
   b.pol = normalizePol(o.pol);
-  b.lastYear = (o.lastYear && typeof o.lastYear==='object') ? o.lastYear : {};
+  b.lastYear = Math.round(Number(o.lastYear)||0);
 
   /* 升级路径：旧 v3（goals/records）或无 cats 的备份 —— 清空重来，仅保留 papers/weekly */
   if(!o.cats || !Array.isArray(o.cats)){
@@ -1190,7 +1193,7 @@ function normalize(o){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0 && !arr.length) return;   /* 仅当分数数组为空才丢弃；全 0 分仍保留记录 */
+        if(sum<=0) return;
         secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
@@ -1214,8 +1217,6 @@ function normalize(o){
     });
     return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, round: Math.max(1, Math.round(Number(p.round)||1)),
              secs:secs, marks:marks,
-             eval: (p.eval ? String(p.eval).slice(0,500) : ''),
-             redo: (Array.isArray(p.redo) ? p.redo.filter(function(n){ return isFinite(Number(n)) && Number(n)>0; }).map(function(n){ return Math.round(Number(n)); }) : []),
              updated: String(p.updated||'').slice(0,10) || todayStr(), seed: !!p.seed };
   }).filter(function(p){
     if(!p) return false;
@@ -1243,7 +1244,7 @@ function normalizePapers(arr){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0 && !arr.length) return;   /* 仅当分数数组为空才丢弃；全 0 分仍保留记录 */
+        if(sum<=0) return;
         secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
@@ -1266,8 +1267,6 @@ function normalizePapers(arr){
       marks[key] = { r:r, t:t, redo: mk.redo?1:0 };
     });
     return { id: p.id || ('p'+Date.now()+'_'+i), subj:p.subj, year:yr, round:(p.round||1), secs:secs, marks:marks,
-             eval: (p.eval ? String(p.eval).slice(0,500) : ''),
-             redo: (Array.isArray(p.redo) ? p.redo.filter(function(n){ return isFinite(Number(n)) && Number(n)>0; }).map(function(n){ return Math.round(Number(n)); }) : []),
              updated: String(p.updated||'').slice(0,10) || todayStr(), seed: !!p.seed };
   }).filter(function(p){ return !!p; });
   /* 合并同一「科目+年份+轮次」的重复记录：先到者保留，后到者仅补充空缺题型与错因，避免拆成多条、并修复二刷三刷被误吞 */
@@ -1588,39 +1587,40 @@ function go(tab){
    备份横幅
    ========================================================= */
 function totalCheckins(){ let n=0; S.cats.forEach(function(c){ n += Object.keys(c.checkins||{}).length; }); return n; }
-/* 备考阶段：按距初试天数划分 */
-function examPhase(d){
-  if(d > 240) return { name:'基础期', tip:'打地基，别急着刷套卷' };
-  if(d > 120) return { name:'强化期', tip:'主攻弱项，逐章过一遍' };
-  if(d > 45)  return { name:'冲刺期', tip:'真题为王，稳住节奏' };
-  if(d > 15)  return { name:'决战期', tip:'背大题，保持手感' };
-  return { name:'收官期', tip:'调作息，别熬夜' };
+/* =========================================================
+   顶部 · 考研关键节点提醒（替代原来的备份横幅/冲刺条）
+   ========================================================= */
+const KAOYAN_STEPS = [
+  { t:'网上预报名', from:'09-24', to:'09-27', tip:'研招网先填信息占位' },
+  { t:'正式报名',   from:'10-05', to:'10-25', tip:'缴费才算报名成功，别拖到最后一天' },
+  { t:'网上确认',   from:'11-01', to:'11-05', tip:'上传照片和证件，各省时间略有不同' },
+  { t:'打印准考证', from:'12-11', to:'12-20', tip:'多打几份，正反面别乱写' },
+  { t:'初试',       from:'12-19', to:'12-20', tip:'第一天政治+英语，第二天数学+专业课', final:true }
+];
+function kaoyanStep(){
+  const e = examInfo(), Y = e.year, T = todayStr();
+  for(let i=0;i<KAOYAN_STEPS.length;i++){
+    const s = KAOYAN_STEPS[i], a = Y+'-'+s.from, b = Y+'-'+s.to;
+    if(T >= a && T <= b) return { s:s, state:'now', b:b, left:dDiff(T,b) };
+    if(T < a) return { s:s, state:'next', a:a, left:dDiff(T,a) };
+  }
+  const s = KAOYAN_STEPS[0];
+  return { s:s, state:'next', a:(Y+1)+'-09-24', left:dDiff(T,(Y+1)+'-09-24') };
 }
-/* 顶部考研冲刺条（替代原来的备份横幅）
-   仅今日板块顶部显示；其余板块顶部不出现 */
 function renderTopStrip(){
-  /* 仅今日板块显示；其余板块顶部不出现 */
-  if(TAB !== 'today'){ el('bannerSlot').innerHTML = ''; return; }
-  const e = examInfo();
-  const d = Math.max(0, e.days);
-  const ph = examPhase(d);
-  const WIN = 365;
-  let passed = Math.round((WIN - Math.min(d, WIN)) / WIN * 100);
-  passed = Math.max(4, Math.min(100, passed));
-  const yy = String(e.year + 1).slice(2);
-  const dayStr = d === 0 ? '就是今天' : String(d);
+  const k = kaoyanStep(), st = k.state, s = k.s;
+  const when = st === 'now'
+    ? (k.left <= 0 ? ('今天（'+mmdd(k.b)+'）最后一天') : (mmdd(k.b)+' 截止 · 还剩 '+k.left+' 天'))
+    : (mmdd(k.a)+' 开始 · 还有 '+k.left+' 天');
   el('bannerSlot').innerHTML =
-    '<button class="exambar" data-act="go-today" aria-label="查看今日">' +
-      '<span class="exambar-ic">' + ic('cap',20,1.9) + '</span>' +
-      '<span class="exambar-body">' +
-        '<span class="exambar-tag">距 ' + yy + ' 考研初试</span>' +
-        '<span class="exambar-big">' + dayStr + (d===0?'':'<i>天</i>') + '</span>' +
+    '<button class="kynote'+(st==='now'?' live':'')+(s.final?' final':'')+'" data-act="go-today" aria-label="考研关键节点">' +
+      '<span class="kynote-ic">' + ic('cal',20,1.9) + '</span>' +
+      '<span class="kynote-main">' +
+        '<span class="kynote-t">' + esc(s.t) + '<i class="kynote-badge">' + (st==='now'?'进行中':'待开始') + '</i></span>' +
+        '<span class="kynote-s">' + esc(when) + '</span>' +
+        '<span class="kynote-tip">' + esc(s.tip) + '</span>' +
       '</span>' +
-      '<span class="exambar-right">' +
-        '<span class="exambar-phase">' + ph.name + '</span>' +
-        '<span class="exambar-tip">' + ph.tip + '</span>' +
-      '</span>' +
-      '<span class="exambar-bar"><i style="width:' + passed + '%"></i></span>' +
+      '<span class="kynote-arrow">' + ic('right',16,2) + '</span>' +
     '</button>';
 }
 
@@ -1944,7 +1944,6 @@ function ringSVG(pct, color, size){
     '</svg>';
 }
 
-let VB_FUZZY = false;   /* 生词搜索：false=精准相等（默认），true=模糊子串 */
 function vocabBoard(){
   var dates = Object.keys(S.vocab||{}).filter(function(d){
     var v = S.vocab[d]; return v && v.words && v.words.length;
@@ -1963,81 +1962,34 @@ function vocabBoard(){
        '<span class="vb-ico" data-act="vb-reveal-all" title="显示/隐藏全部词义">'+ic('eye',20)+'</span>' +
        '<span class="vb-ico" data-act="vb-add" title="添加生词">'+ic('plus',20)+'</span>' +
        '</div>';
-  h += '<div class="vb-search"><div class="vb-search-row">' +
-       '<input id="vbSearch" type="text" inputmode="search" placeholder="查词 / 短语（搜全部生词）" maxlength="60" autocomplete="off">' +
-       '<button type="button" id="vbMode" class="vb-mode on" data-act="vb-mode" title="切换精准 / 模糊匹配">精准</button>' +
-       '</div></div>' +
-       '<div id="vbBody" class="vb-body"></div>' +
+  h += '<div id="vbBody" class="vb-body"></div>' +
        '<div id="vbExitHint" class="vb-exit-hint" style="display:none">'+ic('right',15)+' 右滑收起</div></div>';
   return h;
-}
-/* 单条生词 HTML（i 为该日 words 数组中的原始下标，保证编辑/删除不错位） */
-function vbItemHTML(dateStr, i, w){
-  return '<div class="vb-item" data-date="'+dateStr+'" data-idx="'+i+'" data-act="vb-toggle">'+
-      '<div class="vb-word-inner">'+
-        '<span class="vb-w">'+esc(w.w)+'</span>'+
-        '<div class="vb-mean" style="display:none"><span class="vb-m">'+esc(w.m)+'</span></div>'+
-      '</div>'+
-      '<div class="vb-actions" style="display:none">'+
-        '<button class="vb-btn vb-edit-btn" data-act="vb-edit" data-date="'+dateStr+'" data-idx="'+i+'">'+ic('edit',15)+'编辑</button>'+
-        '<button class="vb-btn vb-del-btn" data-act="vb-del-word" data-date="'+dateStr+'" data-idx="'+i+'">'+ic('trash',15)+'删除</button>'+
-      '</div>'+
-    '</div>';
-}
-/* 判断某个词是否命中查询：fuzzy=false 精准相等（忽略大小写/首尾空格）；fuzzy=true 子串 */
-function vbMatch(text, q, fuzzy){
-  var t = String(text||'').trim().toLowerCase();
-  if(fuzzy) return t.indexOf(q) >= 0;
-  return t === q;
 }
 function renderVbWords(dateStr){
   var body = el('vbBody'); if(!body) return;
   var eh = el('vbExitHint'); if(eh) eh.style.display='none';
-  var sb = el('vbSearch');
-  var q = sb ? sb.value.trim().toLowerCase() : '';
-  var fuzzy = !!VB_FUZZY;
-  var modeBtn = el('vbMode');
-  if(modeBtn){ modeBtn.textContent = fuzzy ? '模糊' : '精准'; modeBtn.className = 'vb-mode'+(fuzzy?'':' on'); }
-
-  /* 有查询词：搜索「全部历史生词」，按日期分组显示 */
-  if(q){
-    var groups = [];
-    Object.keys(S.vocab||{}).sort().reverse().forEach(function(d){
-      var rec = S.vocab[d]; if(!rec || !rec.words) return;
-      var hits = [];
-      rec.words.forEach(function(w, i){ if(w && w.w && vbMatch(w.w, q, fuzzy)) hits.push({ w:w, i:i }); });
-      if(hits.length) groups.push({ date:d, hits:hits });
-    });
-    var total = groups.reduce(function(a,g){ return a+g.hits.length; }, 0);
-    if(!total){
-      body.innerHTML = '<div class="vb-empty">'+ic('search',36,1.6)+
-        '<p>没有'+(fuzzy?'包含':'等于')+'「'+esc(q)+'」的生词</p><p style="font-size:12.5px;margin-top:6px">'+
-        (fuzzy?'试试改成「精准」模式':'试试「模糊」模式，可按片段查找')+'</p></div>';
-      return;
-    }
-    var h = '<div class="vb-count">│ 找到 '+total+' 条 · '+groups.length+' 天'+(fuzzy?' · 模糊':' · 精准')+'</div>';
-    groups.forEach(function(g){
-      h += '<div class="vb-group-hd">'+md(g.date)+' '+wdOf(g.date)+'</div><div class="vb-list">';
-      g.hits.forEach(function(o){ h += vbItemHTML(g.date, o.i, o.w); });
-      h += '</div>';
-    });
-    body.innerHTML = h;
-  } else {
-    /* 无查询词：显示所选日期的生词 */
-    var rec2 = S.vocab[dateStr];
-    var words = (rec2 && rec2.words) ? rec2.words : [];
-    if(!words.length){
-      body.innerHTML = '<div class="vb-empty">'+ic('book',36,1.6)+'<p>该日没有生词</p></div>';
-      return;
-    }
-    var h2 = '<div class="vb-count">│ '+words.length+' 词</div><div class="vb-list">';
-    words.forEach(function(w, i){ h2 += vbItemHTML(dateStr, i, w); });
-    h2 += '</div>';
-    body.innerHTML = h2;
+  var rec = S.vocab[dateStr];
+  var words = (rec && rec.words) ? rec.words : [];
+  if(!words.length){
+    body.innerHTML = '<div class="vb-empty">'+ic('book',36,1.6)+'<p>该日没有生词</p></div>';
+    return;
   }
-  /* 绑定搜索框 */
-  var sb2 = el('vbSearch');
-  if(sb2) sb2.oninput = function(){ renderVbWords(dateStr); };
+  var h = '<div class="vb-count">│ '+words.length+' 词</div><div class="vb-list">';
+  words.forEach(function(w, i){
+    h += '<div class="vb-item" data-date="'+dateStr+'" data-idx="'+i+'" data-act="vb-toggle">'+
+        '<div class="vb-word-inner">'+
+          '<span class="vb-w">'+esc(w.w)+'</span>'+
+          '<div class="vb-mean" style="display:none"><span class="vb-m">'+esc(w.m)+'</span></div>'+
+        '</div>'+
+        '<div class="vb-actions" style="display:none">'+
+          '<button class="vb-btn vb-edit-btn" data-act="vb-edit" data-date="'+dateStr+'" data-idx="'+i+'">'+ic('edit',15)+'编辑</button>'+
+          '<button class="vb-btn vb-del-btn" data-act="vb-del-word" data-date="'+dateStr+'" data-idx="'+i+'">'+ic('trash',15)+'删除</button>'+
+        '</div>'+
+      '</div>';
+  });
+  h += '</div>';
+  body.innerHTML = h;
   /* bind date change */
   var picker = el('vbDatePick');
   if(picker){
@@ -2116,8 +2068,6 @@ function renderBoard(){
 
 /* ---------- 看板 · 真题正确率矩阵 ---------- */
 let BSUBJ = null;
-let BD_YEAR = null;   /* 看板中点击展开详情的年份（null=未展开） */
-let BD_EDIT = null;   /* 看板年份详情编辑态：{subj, year} 或 null */
 function paperMatrix(){
   const have = subjHave();
   const pset = {}; S.papers.forEach(function(p){ pset[p.subj+'@'+p.year]=1; });
@@ -2153,13 +2103,10 @@ function paperMatrix(){
        '<th class="yh">年份</th>' +
        def.secs.map(function(d){ return '<th>'+esc(d.s)+'</th>'; }).join('') +
        '<th>全卷</th></tr></thead><tbody>';
-  const cols = def.secs.length + 2;   /* 年份 + 各题型 + 全卷 */
   const sums = {}; def.secs.forEach(function(d){ sums[d.k] = []; });
   const wholes = [];
   rows.forEach(function(p){
-    if(BD_YEAR!=null && BD_YEAR!==p.year) return;   /* 展开某年后，其余年份行折叠收起 */
-    const ylOn = (BD_YEAR===p.year) ? ' style="background:var(--grad-soft);color:var(--purple);font-weight:700"' : '';
-    h += '<tr><td class="yl" data-act="board-year" data-y="'+p.year+'"'+ylOn+' title="点击查看这份卷的重做题号与评价">'+p.year+'</td>';
+    h += '<tr><td class="yl">'+p.year+'</td>';
     secsOf(BSUBJ, p.year).forEach(function(d){
       const v = p.secs[d.k];
       if(!v){ h += '<td>'+cell(null)+'</td>'; return; }
@@ -2174,100 +2121,44 @@ function paperMatrix(){
     const sc = paperScore(p);
     if(sc.rate!==null) wholes.push(sc.rate);
     h += '<td>'+cell(sc.rate, nfm(sc.got)+'/'+sc.full)+'</td></tr>';
-    /* 卷后记录（仅数学二）内嵌到该年份行正下方，作为独立一行展开 */
-    if(BD_YEAR===p.year){
-      h += '<tr class="ydrow"><td colspan="'+cols+'" style="padding:2px 0 8px;background:var(--grad-soft)">'+boardYearDetail(BSUBJ, p.year)+'</td></tr>';
-    }
   });
   const avg = function(arr){ return arr.length ? arr.reduce(function(a,b){return a+b;},0)/arr.length : null; };
-  if(rows.length>1 && BD_YEAR==null){
+  if(rows.length>1){
     h += '<tr class="avg"><td class="yl">均值</td>' +
       def.secs.map(function(d){ return '<td>'+cell(avg(sums[d.k]), sums[d.k].length?sums[d.k].length+' 年':'')+'</td>'; }).join('') +
       '<td>'+cell(avg(wholes))+'</td></tr>';
   }
   h += '</tbody></table></div>';
 
-  /* 卷后记录已内嵌到对应年份行下方（手风琴：一次只展开一个年份，详见上方 forEach） */
+  /* 洞察：最弱题型 + 错因分布 */
+  let weak = null;
+  def.secs.forEach(function(d){
+    const a = avg(sums[d.k]); if(a===null) return;
+    if(!weak || a < weak.a) weak = { d:d, a:a, n:sums[d.k].length };
+  });
+  const rc = {}; let mkTotal = 0;
+  rows.forEach(function(p){
+    Object.keys(p.marks).forEach(function(key){
+      const r = p.marks[key].r; if(!r) return;
+      rc[r] = (rc[r]||0)+1; mkTotal++;
+    });
+  });
+  const rlist = RS_ORDER.filter(function(r){ return rc[r]; })
+    .sort(function(a,b){ return rc[b]-rc[a]; })
+    .map(function(r){ return REASONS[r]+' '+rc[r]; });
+  h += '<div style="border-top:1px solid var(--line2);margin-top:10px;padding-top:10px;font-size:12px;color:var(--ink2);line-height:1.75">';
+  if(weak){
+    h += '<div style="display:flex;gap:6px;align-items:flex-start">'+ic('target',13,2.2) +
+      '<span>最该补的是 <b style="color:'+accColor(weak.a).f+'">'+esc(weak.d.n)+'</b>，' +
+      (rows.length>1 ? weak.n+' 份卷平均 ' : '') + '<b>'+Math.round(weak.a*100)+'%</b>。</span></div>';
+  }
+  h += '<div style="display:flex;gap:6px;align-items:flex-start;margin-top:3px">'+ic('tag',13,2.2) +
+    '<span>'+(mkTotal ? '标过原因的 '+mkTotal+' 道题里：'+rlist.join(' · ')
+                      : '还没给错题标原因 —— 标上以后，这里会告诉你到底是不会，还是马虎。')+'</span></div>';
+  h += '</div></div></div>';
+  return h;
+}
 
-  /* 洞察：最弱题型 + 错因分布（展开单一年份时收起，避免与未显示的年份混淆） */
-  if(BD_YEAR==null){
-    let weak = null;
-    def.secs.forEach(function(d){
-      const a = avg(sums[d.k]); if(a===null) return;
-      if(!weak || a < weak.a) weak = { d:d, a:a, n:sums[d.k].length };
-    });
-    const rc = {}; let mkTotal = 0;
-    rows.forEach(function(p){
-      Object.keys(p.marks).forEach(function(key){
-        const r = p.marks[key].r; if(!r) return;
-        rc[r] = (rc[r]||0)+1; mkTotal++;
-      });
-    });
-    const rlist = RS_ORDER.filter(function(r){ return rc[r]; })
-      .sort(function(a,b){ return rc[b]-rc[a]; })
-      .map(function(r){ return REASONS[r]+' '+rc[r]; });
-    h += '<div style="border-top:1px solid var(--line2);margin-top:10px;padding-top:10px;font-size:12px;color:var(--ink2);line-height:1.75">';
-    if(weak){
-      h += '<div style="display:flex;gap:6px;align-items:flex-start">'+ic('target',13,2.2) +
-        '<span>最该补的是 <b style="color:'+accColor(weak.a).f+'">'+esc(weak.d.n)+'</b>，' +
-        (rows.length>1 ? weak.n+' 份卷平均 ' : '') + '<b>'+Math.round(weak.a*100)+'%</b>。</span></div>';
-    }
-    h += '<div style="display:flex;gap:6px;align-items:flex-start;margin-top:3px">'+ic('tag',13,2.2) +
-      '<span>'+(mkTotal ? '标过原因的 '+mkTotal+' 道题里：'+rlist.join(' · ')
-                        : '还没给错题标原因 —— 标上以后，这里会告诉你到底是不会，还是马虎。')+'</span></div>';
-    h += '</div>';   /* 关闭洞察包裹层（仅未展开年份时渲染） */
-  }
-  h += '</div></div>';   /* 关闭 card 与 sec（始终渲染，保证结构闭合） */
-  return h;
-}
-/* 看板：点年份后展示该科该年的「可重做题号 + 试卷评价」；可进入编辑态修改 */
-function boardYearDetail(subj, year){
-  if(subj!=='math2') return '';   /* 卷后记录（评价/可重做）仅数学二展示 */
-  const list = S.papers.filter(function(p){ return p.subj===subj && p.year===year; });
-  if(!list.length) return '';
-  /* 取最新一轮 */
-  const p = list.reduce(function(a,b){ return (b.round||1) > (a.round||1) ? b : a; }, list[0]);
-  const editing = BD_EDIT && BD_EDIT.subj===subj && BD_EDIT.year===year;
-  let h = '<div class="card" style="margin-top:10px;padding:12px 13px;border-color:var(--purple-line)">';
-  h += '<div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--ink)">'+ic('doc',14,2.1)+
-       '<span>'+PAPERS[subj].s+' '+year+' 年 · 卷后记录</span>' +
-       '<span class="sp"></span>' +
-       (editing
-          ? '<button class="btn btn-xs btn-pri" data-act="by-save" data-pid="'+p.id+'">保存</button>' +
-            '<button class="btn btn-xs btn-ghost" data-act="by-cancel">取消</button>'
-          : '<button class="btn btn-xs btn-ghost" data-act="by-edit" data-y="'+year+'">编辑</button>' +
-            '<button class="btn btn-xs btn-ghost" data-act="board-year" data-y="'+year+'">收起</button>') +
-       '</div>';
-  if(editing){
-    /* 编辑态：可重做题号 + 试卷评价 均可改 */
-    h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号 <em style="font-style:normal">逗号 / 空格分隔</em></div>' +
-         '<input id="byRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" ' +
-         'style="width:100%;margin-top:5px" value="'+((p.redo||[]).join(','))+'">';
-    h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">试卷评价</div>' +
-         '<textarea id="byEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟…" ' +
-         'style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
-         'font-size:14px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit;margin-top:5px">'+esc(p.eval||'')+'</textarea>';
-  } else {
-    /* 展示态 */
-    if(p.redo && p.redo.length){
-      h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">可再做的题号</div>' +
-           '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">';
-      h += p.redo.map(function(n){ return '<span class="qchip on" style="cursor:default;pointer-events:none">'+n+'</span>'; }).join('');
-      h += '</div>';
-    } else {
-      h += '<div style="margin-top:9px;font-size:12px;color:var(--muted)">还没标可再做的题</div>';
-    }
-    if(p.eval){
-      h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">试卷评价</div>' +
-           '<div style="margin-top:5px;font-size:13px;color:var(--ink2);line-height:1.65;background:var(--bg2);' +
-           'border-radius:10px;padding:9px 11px;white-space:pre-wrap">'+esc(p.eval)+'</div>';
-    } else {
-      h += '<div style="margin-top:10px;font-size:12px;color:var(--muted)">还没写试卷评价</div>';
-    }
-  }
-  h += '</div>';
-  return h;
-}
 /* (近14天打卡趋势板块已移除) */
 function niceTick(max){
   const raw = max/4;
@@ -2382,8 +2273,7 @@ function paperCard(p, first){
     const v = p.secs[d.k]; if(!v) return;
     const a = secAcc(p.subj, d.k, v), c = accColor(a);
     const right = d.mode==='sub' ? (nfm(v.score)+'/'+d.pt+' 分')
-                 : d.mode==='subq' ? (nfm(subqSum(v.scores,d.maxPer))+'/'+d.pt+' 分')
-                 : ((v.total-v.wrong.length)+'/'+v.total+' 题');
+                                 : ((v.total-v.wrong.length)+'/'+v.total+' 题');
     h += '<div class="pbar"><span class="pn">'+esc(d.n)+'</span>' +
       '<span class="pt"><i style="width:'+(a*100).toFixed(1)+'%;background:'+c.f+'"></i></span>' +
       '<span class="pv" style="color:'+c.f+'">'+Math.round(a*100)+'% <span style="color:var(--faint);font-weight:600">'+right+'</span></span></div>';
@@ -2399,7 +2289,6 @@ function paperCard(p, first){
         esc(d.s)+(has ? (m.r?' <em>'+REASONS[m.r]+'</em>':' <em>已备注</em>') : ' <em>加备注</em>')+'</button>');
       return;
     }
-    if(d.mode==='subq'){ return; }   /* 解答题按得分计，不逐题标错，跳过错题 chip */
     v.wrong.forEach(function(no){
       const key = d.k+'#'+no, m = p.marks[key] || {r:'',t:'',redo:0};
       chips.push('<button class="wchip '+(m.redo?'done':(m.r?'r-'+m.r:''))+'" data-act="mark" data-id="'+p.id+'" data-key="'+key+'">' +
@@ -2875,8 +2764,6 @@ function pfLoad(srcObj){
   if(!src && PF.editId) src = S.papers.filter(function(x){ return x.id===PF.editId; })[0];
   if(!src && PF.roundSrc) src = S.papers.filter(function(x){ return x.id===PF.roundSrc; })[0];
   PF.rows = {};
-  PF.eval = src && src.eval ? src.eval : '';
-  PF.redo = src && Array.isArray(src.redo) ? src.redo.slice() : [];
   secsOf(PF.subj, PF.year).forEach(function(d){
     const v = src && src.secs[d.k];
     if(d.mode==='sub') PF.rows[d.k] = { on: !!v, score: v ? v.score : '' };
@@ -2904,15 +2791,6 @@ function qgridHTML(k){
   }
   return s + '</div>';
 }
-function pfMetaHTML(){
-  if(PF.subj!=='math2') return '';   /* 卷后评价 + 可重做题号：仅数学二录入时显示 */
-  return '<div class="fld" style="margin-top:12px"><label>试卷评价 <em>选填，写给自己以后复习看</em></label>' +
-    '<textarea id="pfEval" rows="3" placeholder="比如：这套卷计算量偏大、大题第三题套路还没熟、选择题陷阱多…"' +
-    ' style="width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#fbfcff;' +
-    'font-size:15px;line-height:1.6;resize:vertical;font-family:inherit;color:inherit">'+esc(PF.eval||'')+'</textarea></div>' +
-    '<div class="fld"><label>可再做的题号 <em>选填，填题号，逗号或空格分隔</em></label>' +
-    '<input id="pfRedo" class="in-s" type="text" inputmode="text" placeholder="如 17,19,21" value="'+((PF.redo||[]).join(','))+'"></div>';
-}
 function pfRowsHTML(){
   const secs = secsOf(PF.subj, PF.year);
   let h = '<div class="card" style="padding:4px 13px;margin-bottom:10px">';
@@ -2921,7 +2799,7 @@ function pfRowsHTML(){
     h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>';
     if(d.mode==='sub') h += '第 '+d.no+' 题 · 满分 '+d.pt+' 分';
     else if(d.mode==='subq') h += '第 '+d.from+'-'+d.to+' 题 · 每题 ≤ '+d.maxPer+' 分（共 '+d.pt+' 分）';
-    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+(d.per!=null?d.per:Math.round(d.pt/d.q*10)/10)+' 分（共 '+d.pt+' 分）';
+    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分（共 '+d.pt+' 分）';
     h += '</span></div>';
     if(d.mode==='sub'){
       h += '<div class="pr"><input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.pt+'" step="0.5" ' +
@@ -2937,7 +2815,7 @@ function pfRowsHTML(){
       }
       h += '</div>';
     } else {
-      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+(d.per!=null?d.per:Math.round(d.pt/d.q*10)/10)+' 分</span>' +
+      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分</span>' +
         '<button class="btn btn-xs '+(r.on&&!r.wrong.length?'btn-pri':'btn-ghost')+'" data-act="pfull" data-k="'+d.k+'">全对</button></div>' +
         qgridHTML(d.k);
     }
@@ -3028,7 +2906,7 @@ function paperForm(pid, opts){
     subj = src.subj; year = src.year; lock = true; roundSrc = src.id;
     round = maxRound(subj, year) + 1; editId = null;
   } else {                         /* 记一份真题：自由新建，科目/年份始终可选，不自动转编辑、不锁死 */
-    subj = 'eng2'; year = (S.lastYear[subj]||0) || (new Date().getFullYear()-1); lock = false; round = 1;
+    subj = 'eng2'; year = S.lastYear || (new Date().getFullYear()-1); lock = false; round = 1;
     editId = null; roundSrc = null;
   }
   PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId:editId, lock:lock, roundSrc:roundSrc };
@@ -3055,7 +2933,6 @@ function paperForm(pid, opts){
     '<div id="pfTip">'+pfTip()+'</div>' +
     '<div class="fld"><label>各题型 <em>只填做过的，没做的留空</em></label></div>' +
     '<div id="pfBody">'+pfRowsHTML()+'</div>' +
-    '<div id="pfMeta">'+pfMetaHTML()+'</div>' +
     (PF.subj==='eng2' ? vocabBoxHTML() : '');
   openModal(title, body,
     '<button class="btn btn-ghost" data-act="closem">取消</button>' +
@@ -3081,7 +2958,7 @@ function savePaper(){
     } else if(d.mode==='subq'){
       const arr = (r.scores||[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
       const sum = arr.reduce(function(a,b){return a+b;},0);
-      /* 不在 sum<=0 时丢弃：数学解答题即使全 0 分/未填，也要保留记录，否则刷新后整条被丢 */
+      if(sum<=0) return;
       secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
     } else {
       const t = Math.max(1, Math.round(r.total)||d.q);
@@ -3122,12 +2999,7 @@ function savePaper(){
     rec.eng2done = done.length>0; rec.eng2allright = allright;
     S.vocab[todayStr()] = rec;
   }
-  /* 卷后评价 + 可重做题号（选填） */
-  const elEval = el('pfEval'), elRedo = el('pfRedo');
-  const evalTxt = elEval ? elEval.value.trim().slice(0,500) : '';
-  const redoArr = parseNums(elRedo ? elRedo.value : '');
-  p.eval = evalTxt; p.redo = redoArr;
-  S.lastYear[PF.subj] = PF.year;
+  S.lastYear = PF.year;
   const sc = paperScore(p);
   save(); closeModal(); PSUBJ = 'all'; go('papers');
   toast('已记下 '+PAPERS[p.subj].s+' '+p.year+(p.round>1?(' · '+roundLabel(p.round)):'')+' · 估分 '+nfm(sc.got)+'/'+sc.full +
@@ -3360,13 +3232,12 @@ function confetti(color){
 }
 
 /* ===== 政治知识库（马哲填空题 / 毛特知识点 / 史纲知识点+文稿）===== */
-const KB = {"my":[{"ch":"第一章 世界的物质性及发展规律","kps":[{"kp":5,"t":"哲学基本问题及其内容","star":1,"fills":[{"q":"哲学的基本问题是____的关系问题。","a":"思维和存在","tip":"也叫意识和物质的关系问题"},{"q":"哲学基本问题的第一方面是思维和存在何者为本原的问题，这是划分____和____的唯一标准。","a":"唯物主义 唯心主义","tip":""},{"q":"哲学基本问题的第二方面是思维和存在有无同一性的问题，这是划分____和____的标准。","a":"可知论 不可知论","tip":""},{"q":"哲学的两大基本派别是____和____。","a":"唯物主义 唯心主义","tip":""}]},{"kp":6,"t":"哲学的物质范畴","star":3,"fills":[{"q":"物质的唯一特性是____。","a":"客观实在性","tip":"高频考点"},{"q":"物质是标志____的哲学范畴，这种客观实在是人通过感觉感知的，它不依赖于我们的感觉而存在，为我们的感觉所复写、摄影、反映。","a":"客观实在","tip":"列宁的物质定义"},{"q":"物质的根本属性和存在方式是____。","a":"运动","tip":"注意与「唯一特性」区分"},{"q":"物质和意识的关系是：物质____意识，意识是物质的____。","a":"决定 反映","tip":""},{"q":"人类社会的物质性表现在：人类社会是物质世界长期发展的产物，是____的产物。","a":"劳动","tip":""}]},{"kp":7,"t":"物质的存在方式","star":1,"fills":[{"q":"运动是物质的存在方式和____属性。","a":"根本","tip":""},{"q":"物质和运动的关系：物质是运动的____，运动是物质的____。","a":"主体 根本属性","tip":"二者不可分割"},{"q":"设想不运动的物质会导致____；设想无物质的运动会导致____。","a":"形而上学 唯心主义","tip":""},{"q":"静止是物质运动在一定条件下的____状态，是一种不显著的运动，是运动的特殊状态。","a":"稳定","tip":""},{"q":"运动和静止的关系是：动中有静、静中有动，任何事物都是____和____的统一。","a":"绝对运动 相对静止","tip":""},{"q":"时间和空间是运动着的物质的____。","a":"存在形式","tip":""},{"q":"时间的特性是____，空间的特性是____。","a":"一维性 三维性","tip":""}]},{"kp":8,"t":"物质世界的二重化","star":3,"fills":[{"q":"物质世界的二重化，是指世界分化为____世界与____世界、客观世界与主观世界。","a":"自然界 人类社会","tip":""},{"q":"人的实践活动是自然界与人类社会、客观世界与主观世界相分化的关键，也是它们相____的关键。","a":"统一","tip":""},{"q":"客观世界与主观世界的关系：客观世界是主观世界的____，主观世界是对客观世界的____。","a":"基础 反映","tip":""}]},{"kp":9,"t":"物质和意识的辩证关系","star":1,"fills":[{"q":"物质决定意识：意识是____的产物，意识是人脑的____。","a":"物质世界长期发展 机能和属性","tip":""},{"q":"意识是客观世界的主观映象，是客观内容和____形式的统一。","a":"主观","tip":""},{"q":"意识的能动作用（主观能动性）表现在：第一，意识活动具有____；第二，意识活动具有____；第三，意识具有____的作用。","a":"目的性和计划性 创造性 指导实践改造客观世界","tip":""},{"q":"正确发挥主观能动性的前提是尊重____。","a":"客观规律","tip":""}]},{"kp":10,"t":"主观能动性与客观规律性的统一","star":1,"fills":[{"q":"规律是事物运动发展中固有的、本质的、必然的、稳定的____。","a":"联系","tip":""},{"q":"客观规律性与主观能动性的关系：尊重客观规律是正确发挥主观能动性的____；发挥主观能动性是认识和利用客观规律的____。","a":"前提 必要条件","tip":""},{"q":"主观能动性与客观规律性相统一的基础是____。","a":"实践","tip":""}]},{"kp":11,"t":"意识与人工智能","star":1,"fills":[{"q":"人工智能是人的____能动性的一种特殊表现，是对人的意识和思维的信息过程的模拟。","a":"意识","tip":""},{"q":"人工智能不能取代或超越人类智能，因为它不具备人类特有的____、____、____等意识形式。","a":"情感 信念 意志","tip":""},{"q":"人工智能与人类智能的本质区别在于，人工智能不具备人类意识的社会性和____。","a":"创造性","tip":""}]},{"kp":12,"t":"世界的物质统一性原理及其意义","star":1,"fills":[{"q":"世界的真正统一性在于它的____。","a":"物质性","tip":""},{"q":"世界的物质统一性原理是马克思主义哲学的____，是我们从事一切实际工作的____。","a":"基石 根本立足点","tip":""},{"q":"世界物质统一性原理要求我们坚持____，一切从实际出发。","a":"实事求是","tip":""}]},{"kp":13,"t":"事物的普遍联系","star":1,"fills":[{"q":"联系是指事物内部各要素之间和事物之间相互影响、相互制约和相互作用的____。","a":"关系","tip":""},{"q":"联系的特点：____、____、____、____。","a":"客观性 普遍性 多样性 条件性","tip":""},{"q":"联系的客观性要求我们用联系的观点看问题，反对____。","a":"形而上学的孤立观点","tip":""},{"q":"唯物辩证法是关于自然、社会和思维发展的____的科学。","a":"一般规律","tip":""}]},{"kp":14,"t":"事物的变化发展","star":1,"fills":[{"q":"发展是前进上升的____，发展的实质是新事物的产生和旧事物的灭亡。","a":"运动","tip":""},{"q":"新事物是指合乎历史前进方向的、具有____的事物。","a":"远大前途","tip":""},{"q":"判断新旧事物的标准是看其是否符合事物发展的____。","a":"必然趋势","tip":""},{"q":"发展的过程性表明一切事物都有其产生、发展和灭亡的____。","a":"过程","tip":""}]},{"kp":15,"t":"对立统一规律是唯物辩证法的实质和核心","star":3,"fills":[{"q":"唯物辩证法的实质和核心是____。","a":"对立统一规律","tip":"超高频"},{"q":"矛盾是指事物内部以及事物之间既____又____的关系。","a":"对立 统一","tip":""},{"q":"矛盾的两种基本属性是____和____。","a":"同一性 斗争性","tip":""},{"q":"矛盾的同一性是指矛盾双方相互____、相互____的性质和趋势。","a":"吸引 联结","tip":""},{"q":"矛盾的斗争性是指矛盾双方相互____、相互____的性质和趋势。","a":"排斥 分离","tip":""},{"q":"矛盾是事物发展的____。","a":"根本动力","tip":""}]},{"kp":16,"t":"矛盾的普遍性和特殊性及相互关系","star":1,"fills":[{"q":"矛盾的普遍性是指矛盾存在于一切事物中，即____；矛盾贯穿于每一事物发展过程的始终，即____。","a":"事事有矛盾 时时有矛盾","tip":""},{"q":"矛盾的特殊性是指具体事物的矛盾及矛盾的每一方面各有其____。","a":"特点","tip":""},{"q":"矛盾的普遍性与特殊性的关系是____与____的关系。","a":"共性 个性","tip":""},{"q":"矛盾的特殊性原理要求我们坚持____的原则。","a":"具体问题具体分析","tip":""},{"q":"主要矛盾与次要矛盾、矛盾的主要方面与次要方面，要求我们坚持____和____的统一。","a":"两点论 重点论","tip":""}]},{"kp":17,"t":"量变质变规律和否定之否定规律","star":1,"fills":[{"q":"量变是事物数量的增减和场所的变更，质变是事物____的变化。","a":"根本性质","tip":""},{"q":"量变和质变的辩证关系：量变是质变的____，质变是量变的____。","a":"必要准备 必然结果","tip":""},{"q":"质量互变规律要求我们坚持____和____的统一。","a":"连续性与间断性","tip":""},{"q":"辩证否定的实质是____，即否定中包含肯定，是发展的环节和联系的环节。","a":"扬弃","tip":""},{"q":"否定之否定规律表明事物发展是____和____的统一。","a":"前进性 曲折性","tip":""}]},{"kp":18,"t":"联系和发展的基本环节","star":1,"fills":[{"q":"联系和发展的基本环节包括五对范畴：原因与结果、必然性与偶然性、可能性与现实性、现象与本质、____。","a":"内容与形式","tip":""},{"q":"内容决定形式，形式反作用于内容，形式适合内容时起____作用。","a":"促进","tip":""},{"q":"假象是从____表现本质，假象是客观的，错觉是主观的。","a":"反面歪曲地","tip":""},{"q":"可能性与现实性的区别在于现实中有无____。","a":"根据和条件","tip":""}]},{"kp":19,"t":"唯物辩证法的本质与批判的革命精神","star":2,"fills":[{"q":"唯物辩证法本质上是____的和革命的。","a":"批判","tip":""},{"q":"唯物辩证法是____与____的统一。","a":"客观辩证法 主观辩证法","tip":""},{"q":"辩证思维的方法是建立在____基础上的科学方法论。","a":"唯物辩证法","tip":""}]},{"kp":20,"t":"学习唯物辩证法，不断增强思维能力","star":1,"fills":[{"q":"辩证思维能力、历史思维能力、____、底线思维能力、创新思维能力等是重要的思维能力。","a":"战略思维能力","tip":""},{"q":"底线思维要求从最坏处着眼，做最充分的准备，努力争取____。","a":"最好的结果","tip":""}]}]},{"ch":"第二章 实践与认识及其发展规律","kps":[{"kp":21,"t":"科学的实践观及其意义","star":1,"fills":[{"q":"实践是人类____地改造世界的物质活动。","a":"能动","tip":""},{"q":"实践是认识的____，是认识发展的动力，是检验认识真理性的____，是认识的最终目的。","a":"来源 唯一标准","tip":""},{"q":"马克思主义认识论的首要的和基本的观点是____的观点。","a":"实践","tip":""}]},{"kp":22,"t":"实践的本质、基本结构与形式的多样性","star":2,"fills":[{"q":"实践具有____、____和____三个基本特征。","a":"直接现实性 自觉能动性 社会历史性","tip":""},{"q":"实践的主体是指具有一定主体能力、从事现实社会实践活动的人；实践的客体是指____所指向的对象。","a":"主体活动","tip":"注意：人工智能不能与使用者共同构成实践主体"},{"q":"实践的三种基本形式是：物质生产实践、社会政治实践、科学文化实践。其中最基本的实践形式是____。","a":"物质生产实践","tip":""}]},{"kp":23,"t":"实践对认识的决定作用","star":1,"fills":[{"q":"实践是认识的____，是认识发展的____，是检验认识真理性的____，是认识的____。","a":"来源 动力 唯一标准 目的","tip":""},{"q":"实践对认识的决定作用是____的，但认识对实践也具有相对独立性并能____实践。","a":"根本 反作用于","tip":""}]},{"kp":24,"t":"认识的本质","star":1,"fills":[{"q":"认识的本质是主体在实践基础上对客体的____反映。","a":"能动","tip":""},{"q":"认识是实践基础上主体对客体的能动反映，具有____和____的特点。","a":"反映性 能动性","tip":""},{"q":"唯心主义先验论和旧唯物主义____都是错误的。","a":"直观反映论","tip":""}]},{"kp":25,"t":"从实践到认识、从认识到实践与实践认识的辩证运动","star":2,"fills":[{"q":"认识运动的基本规律：从感性认识上升到理性认识，再从理性认识回到____。","a":"实践","tip":""},{"q":"感性认识包括感觉、知觉、表象三种形式，是认识的____阶段；理性认识包括概念、判断、推理三种形式，是认识的____阶段。","a":"初级 高级","tip":""},{"q":"感性认识与理性认识的关系是：理性认识依赖于感性认识，感性认识有待于发展为____。","a":"理性认识","tip":""},{"q":"从理性认识回到实践，是认识过程的____飞跃，是认识的目的和归宿。","a":"第二次","tip":""}]},{"kp":26,"t":"真理的客观性","star":1,"fills":[{"q":"真理是人们对客观事物及其规律的正确反映。真理具有____性。","a":"客观","tip":""},{"q":"真理的客观性表现在：真理的____是客观的，检验真理的____是客观的。","a":"内容 唯一标准","tip":""},{"q":"承认真理的客观性，就是坚持____；否认真理的客观性，就会导致____。","a":"唯物主义 唯心主义","tip":""}]},{"kp":27,"t":"真理的绝对性和相对性","star":1,"fills":[{"q":"真理的绝对性是指真理的____性，任何真理都包含着不依赖于人的客观内容。","a":"无条件","tip":""},{"q":"真理的相对性是指真理的____性，任何真理都是对客观世界一定范围的正确认识。","a":"有条件","tip":""},{"q":"真理是绝对性和相对性的统一，表现为真理是一个____的过程。","a":"由相对走向绝对","tip":""},{"q":"割裂真理绝对性和相对性的统一，会导致____和____。","a":"绝对主义 相对主义","tip":""}]},{"kp":28,"t":"真理与谬误","star":1,"fills":[{"q":"真理与谬误是相比较而存在、相斗争而发展的，二者是____的关系。","a":"对立统一","tip":""},{"q":"真理与谬误在一定条件下可以____。","a":"相互转化","tip":""}]},{"kp":29,"t":"实践是检验真理的唯一标准","star":3,"fills":[{"q":"实践是检验真理的____标准。","a":"唯一","tip":"超高频"},{"q":"实践之所以能成为检验真理的唯一标准，是由真理的____和实践的____决定的。","a":"本性 特点","tip":""},{"q":"实践标准的确定性与不确定性（绝对性与相对性）：实践标准的确定性指实践是检验真理的唯一标准；不确定性指实践对真理的检验是一个____。","a":"过程","tip":""}]},{"kp":30,"t":"价值及其基本特征、价值评价及其特点","star":1,"fills":[{"q":"价值是指客体能够满足主体需要的____关系。","a":"效益","tip":""},{"q":"价值的基本特性包括主体性、客观性、多维性和____。","a":"社会历史性","tip":""},{"q":"价值评价是一种关于价值现象的____活动。","a":"认识","tip":""}]},{"kp":31,"t":"真理和价值在实践中的辩证统一","star":1,"fills":[{"q":"真理原则是指人类按客观世界的本来面目去认识和改造世界的原则；价值原则是指人类按自己的____去认识和改造世界的原则。","a":"需要","tip":""},{"q":"真理和价值在实践中是____的。","a":"辩证统一","tip":""},{"q":"坚持真理尺度和价值尺度的统一，要求我们树立正确的____。","a":"价值观","tip":""}]},{"kp":32,"t":"认识世界和改造世界及其辩证关系","star":2,"fills":[{"q":"认识世界和改造世界是相互依赖、相互制约的，改造____是认识世界的目的。","a":"客观世界","tip":""},{"q":"自由是对必然的认识和对客观世界的改造，自由是____的统一。","a":"历史发展","tip":""},{"q":"认识世界和改造世界的根本目标是实现____的解放。","a":"人","tip":""}]},{"kp":33,"t":"一切从实际出发，实事求是","star":2,"fills":[{"q":"实事求是是马克思主义中国化的精髓，是党的____。","a":"思想路线","tip":""},{"q":"一切从实际出发，要求我们从客观事物存在和发展的规律出发，做到____。","a":"实事求是","tip":""},{"q":"坚持守正创新，实现理论创新和____的良性互动。","a":"实践创新","tip":""}]}]},{"ch":"第三章 人类社会及其发展规律","kps":[{"kp":34,"t":"社会存在与社会意识","star":2,"fills":[{"q":"社会存在是指社会生活的____方面，主要包括物质生产方式、地理环境和人口因素。","a":"物质","tip":""},{"q":"社会意识是指社会生活的____方面，包括社会意识形式、社会心理和社会意识形态。","a":"精神","tip":""},{"q":"社会存在决定社会意识，社会意识是社会存在的____，社会意识具有相对____。","a":"反映 独立性","tip":""},{"q":"两种根本对立的历史观是____史观和____史观。","a":"唯物 唯心","tip":""},{"q":"唯心史观的根本缺陷是：只看到人们的思想动机，而不了解思想动机背后的____原因。","a":"物质","tip":""}]},{"kp":35,"t":"生产力与生产关系的矛盾运动及其规律","star":1,"fills":[{"q":"生产力是人类改造自然、获得物质生活资料的____。","a":"实际能力","tip":""},{"q":"生产力包括劳动者、劳动资料、劳动对象三个要素。其中____是生产力中最活跃的因素。","a":"劳动者","tip":""},{"q":"生产关系是人们在物质生产过程中形成的____的关系。","a":"不以人的意志为转移","tip":""},{"q":"生产关系包括生产资料所有制关系、生产中人与人的关系和产品分配关系。其中____是生产关系的基础。","a":"生产资料所有制","tip":""},{"q":"生产关系一定要适合生产力状况的规律，是社会发展的____。","a":"基本规律","tip":""}]},{"kp":36,"t":"经济基础与上层建筑的矛盾运动及其规律","star":1,"fills":[{"q":"经济基础是占统治地位的生产关系的总和；上层建筑是建立在一定经济基础之上的____和____。","a":"意识形态 政治法律制度及设施","tip":""},{"q":"经济基础决定上层建筑，上层建筑对经济基础具有____作用。","a":"反","tip":""},{"q":"上层建筑一定要适合____状况的规律，是社会发展的又一基本规律。","a":"经济基础","tip":""}]},{"kp":37,"t":"人类普遍交往与世界历史的形成发展","star":2,"fills":[{"q":"社会进步与____的发展是相互促进的统一过程。","a":"人","tip":""},{"q":"世界历史的形成以____和世界市场的形成为标志。","a":"普遍交往","tip":""}]},{"kp":38,"t":"社会形态的内涵与更替","star":2,"fills":[{"q":"社会形态是经济基础与上层建筑的统一，也称____。","a":"社会经济形态","tip":""},{"q":"社会形态更替的统一性表现在：五种社会形态依次更替是社会发展的____。","a":"一般规律","tip":""},{"q":"社会形态更替的多样性表现为不同____的发展道路不同。","a":"民族和国家","tip":""},{"q":"社会形态更替的必然性与人们的____是统一的。","a":"历史选择性","tip":""}]},{"kp":39,"t":"社会基本矛盾是历史发展的根本动力","star":3,"fills":[{"q":"社会基本矛盾是____和____的矛盾、____和____的矛盾。","a":"生产力 生产关系 经济基础 上层建筑","tip":"超高频"},{"q":"社会基本矛盾是社会发展的____。","a":"根本动力","tip":""},{"q":"生产力是社会发展的最终决定力量，是社会进步的____。","a":"根本尺度","tip":""},{"q":"社会基本矛盾运动以____为最终决定力量。","a":"生产力","tip":""}]},{"kp":40,"t":"阶级斗争、社会革命在社会发展中的作用","star":1,"fills":[{"q":"阶级斗争是社会基本矛盾在阶级社会中的表现，是阶级社会发展的____。","a":"直接动力","tip":""},{"q":"社会革命的实质是革命阶级推翻反动阶级的统治，用新的社会制度代替旧的社会制度，它是社会形态更替的____。","a":"决定性环节","tip":""},{"q":"改革是同一社会形态发展过程中的____，是社会制度的自我完善和发展。","a":"量变","tip":""}]},{"kp":41,"t":"科学技术、文化在社会发展中的作用","star":3,"fills":[{"q":"科学技术是推动社会发展的____力量，是第一生产力。","a":"重要动力","tip":"高频"},{"q":"科学技术能够推动生产方式变革、生活方式变革和____变革。","a":"思维方式","tip":""},{"q":"文化为社会发展提供思想保证、精神动力、凝聚力量和政治____。","a":"方向","tip":""}]},{"kp":42,"t":"两种历史观在历史创造者问题上的对立","star":1,"fills":[{"q":"在历史创造者问题上，唯心史观坚持____史观，唯物史观坚持____史观。","a":"英雄 群众","tip":""},{"q":"英雄史观的两种基本形式是主观唯心主义的英雄史观和____的英雄史观。","a":"客观唯心主义","tip":""}]},{"kp":43,"t":"人民群众在创造历史过程中的决定作用","star":2,"fills":[{"q":"人民群众是历史的____，是历史的真正创造者。","a":"创造者","tip":""},{"q":"人民群众创造历史的作用表现在：是社会物质财富的创造者、社会精神财富的创造者、社会变革的____。","a":"决定力量","tip":""},{"q":"群众观点和群众路线是马克思主义政党的根本观点和____。","a":"根本工作路线","tip":""}]},{"kp":44,"t":"杰出人物的历史作用与辩证地理解和评价个人","star":2,"fills":[{"q":"杰出人物是指在一定历史阶段对社会发展起重大推动作用的人，特别是____。","a":"杰出政治家","tip":""},{"q":"杰出人物的作用受到____的制约，不能夸大或否认其作用。","a":"社会历史条件","tip":""},{"q":"评价历史人物要坚持历史分析方法和阶级分析方法，坚持____的原则。","a":"两点论","tip":""}]}]}],"mt":[{"ch":"第一章 毛泽东思想及其历史地位","points":[{"kp":1,"t":"毛泽东思想的形成和发展","star":2,"tf":3,"body":"①时代条件：19世纪末20世纪初，世界进入帝国主义和无产阶级革命时代；\n②实践基础：中国共产党领导人民进行革命和建设的成功实践；\n③理论渊源：马克思列宁主义；\n④发展过程：\n· 开始形成（土地革命战争时期）——开辟农村包围城市、武装夺取政权的道路，标志是《反对本本主义》；\n· 走向成熟（遵义会议至抗日战争时期）——新民主主义革命理论系统化，标志是新民主主义革命理论的成熟与党的七大确立为指导思想；\n· 继续发展（解放战争时期和新中国成立后）——提出社会主义改造理论、正确处理人民内部矛盾学说等。"},{"kp":2,"t":"毛泽东思想的主要内容与活的灵魂","star":1,"tf":2,"body":"【主要内容】新民主主义革命理论、社会主义革命和社会主义建设理论、革命军队建设和军事战略理论、政策和策略理论、思想政治工作和文化工作理论、党的建设理论。\n【活的灵魂（三个基本方面）】\n①实事求是——是毛泽东思想的精髓，是党的根本思想路线；\n②群众路线——党的根本工作路线，一切为了群众、一切依靠群众，从群众中来、到群众中去；\n③独立自主——坚持独立思考，走自己的路，把国家和民族发展放在自己力量的基点上。"},{"kp":3,"t":"毛泽东思想的历史地位","star":1,"tf":1,"body":"①马克思主义中国化时代化的第一个重大理论成果；\n②中国革命和建设的科学指南；\n③中国共产党和中国人民宝贵的精神财富。\n★评价毛泽东：功绩是第一位的，错误是第二位的。毛泽东是伟大的马克思主义者、伟大的无产阶级革命家、战略家和理论家。"}]},{"ch":"第二章 新民主主义革命理论","points":[{"kp":4,"t":"近代中国国情、时代特征与新民主主义革命理论的形成","star":1,"tf":1,"body":"【近代中国国情】鸦片战争后，中国逐渐沦为半殖民地半封建社会，这是近代中国最基本的国情。\n【主要矛盾】帝国主义和中华民族的矛盾、封建主义和人民大众的矛盾。\n【革命的根本任务】推翻帝国主义、封建主义和官僚资本主义的统治。\n【时代特征】1917年俄国十月革命改变了世界历史方向，1919年五四运动标志着新民主主义革命的开端。\n【理论形成】在实践中逐步形成，标志是1940年《新民主主义论》等著作的发表。"},{"kp":5,"t":"新民主主义革命的总路线","star":1,"tf":2,"body":"总路线：无产阶级领导的，人民大众的，反对帝国主义、封建主义和官僚资本主义的革命。\n①领导力量——无产阶级（这是新民主主义革命区别于旧民主主义革命的根本标志，也是核心问题）；\n②动力——人民大众（工人阶级、农民阶级、城市小资产阶级和民族资产阶级）；\n③对象——帝国主义、封建主义和官僚资本主义；\n④性质——资产阶级民主主义革命（新式的、特殊的资产阶级民主革命）。\n※注意：民族资产阶级具有两面性，是革命的动力之一但不是领导力量。"},{"kp":6,"t":"新民主主义的基本纲领","star":1,"tf":1,"body":"【政治纲领】推翻帝国主义和封建主义的统治，建立一个无产阶级领导的、以工农联盟为基础的、各革命阶级联合专政的新民主主义的共和国。\n【经济纲领】没收封建地主阶级的土地归农民所有；没收官僚资本归新民主主义国家所有；保护民族工商业。\n【文化纲领】无产阶级领导的、人民大众的、反帝反封建的文化，即民族的、科学的、大众的文化。"},{"kp":7,"t":"新民主主义革命的道路","star":1,"tf":1,"body":"道路：农村包围城市、武装夺取政权（即「工农武装割据」）。\n【必要性】\n①中国是一个半殖民地半封建国家，内无民主、外无独立，无法走议会道路；\n②中国是农业大国，农民占人口绝大多数，是革命的主力军；\n③敌人长期占据中心城市，力量强大。\n【内容】在中国共产党领导下，以武装斗争为主要形式，以土地革命为中心内容，以农村革命根据地为依托，三者密切结合。"},{"kp":8,"t":"新民主主义革命的三大法宝","star":1,"tf":1,"body":"①统一战线——两个联盟：工农联盟（基础）、与民族资产阶级和非劳动人民的联盟；\n②武装斗争——中国革命的主要形式；\n③党的建设——伟大工程，着重从思想上建党。\n三者相互关系：统一战线和武装斗争是战胜敌人的两个基本武器；党的建设是掌握这两个武器的英勇战士。统一战线的巩固和扩大，有赖于党的建设；武装斗争需要党的正确领导。"},{"kp":9,"t":"新民主主义革命理论的意义","star":0,"tf":0,"body":"①是马克思主义中国化时代化的重要理论成果；\n②揭示了近代中国革命发展的客观规律；\n③指导中国革命取得了胜利；\n④对殖民地半殖民地国家人民的革命斗争具有借鉴意义。"}]},{"ch":"第三章 社会主义改造理论","points":[{"kp":10,"t":"新民主主义社会是一个过渡性的社会","star":1,"tf":2,"body":"从中华人民共和国成立到社会主义改造基本完成，是我国从新民主主义到社会主义的过渡时期。\n【经济成分（五种）】社会主义性质的国营经济、半社会主义性质的合作社经济、农民和手工业者的个体经济、私人资本主义经济、国家资本主义经济。\n【阶级构成】工人阶级、农民阶级和其他小资产阶级、民族资产阶级。\n【主要矛盾】随着土地改革完成，主要是工人阶级和资产阶级的矛盾。\n※新民主主义社会不是一个独立的社会形态，而是属于社会主义体系并逐步过渡到社会主义社会的过渡性质的社会。"},{"kp":11,"t":"党在过渡时期的总路线及其依据","star":1,"tf":1,"body":"总路线：从中华人民共和国成立到社会主义改造基本完成，这是一个过渡时期。党在这个过渡时期的总路线和总任务，是要在一个相当长的时期内，逐步实现国家的社会主义工业化，并逐步实现国家对农业、对手工业和对资本主义工商业的社会主义改造。\n简称「一化三改」——「一化」即社会主义工业化（主体），「三改」即对农业、手工业和资本主义工商业的社会主义改造（两翼）。\n①理论依据：马克思列宁主义的过渡时期理论；\n②现实依据：我国经济文化落后的具体国情。"},{"kp":12,"t":"适合中国特点的社会主义改造道路与历史经验","star":2,"tf":4,"body":"【农业的社会主义改造】积极引导农民组织起来，走互助合作道路；遵循自愿互利、典型示范、国家帮助的原则；采取从互助组到初级社再到高级社的逐步过渡形式。\n【手工业的社会主义改造】从供销入手，由小到大、由低到高，逐步过渡。\n【资本主义工商业的社会主义改造】\n· 用和平赎买的方法改造（这是中国的一大创举）；\n· 采取从低级到高级的国家资本主义过渡形式（初级形式→个别企业公私合营→全行业公私合营）；\n· 把对企业的改造和对人的改造相结合，把资本家改造成为自食其力的劳动者。\n【历史经验】\n①坚持社会主义工业化与社会主义改造同时并举；\n②采取逐步过渡的办法；\n③用和平的方法进行改造；\n④把对经济制度的改造与对人的改造相结合。"},{"kp":13,"t":"社会主义基本制度在中国的确立","star":1,"tf":2,"body":"1956年底，三大改造基本完成，标志着社会主义基本制度在中国得以确立，中国进入社会主义初级阶段。\n【经济制度】以生产资料公有制为基础的社会主义经济制度确立。\n【政治制度】人民代表大会制度、中国共产党领导的多党合作和政治协商制度、民族区域自治制度。\n【重大意义】\n①是中国历史上最深刻最伟大的社会变革；\n②为当代中国一切发展进步奠定了根本政治前提和制度基础；\n③使广大劳动人民真正成为国家的主人；\n④是世界社会主义运动史上的一个历史性伟大胜利。"}]},{"ch":"第四章 社会主义建设道路初步探索的理论成果","points":[{"kp":14,"t":"调动一切积极因素为社会主义事业服务","star":1,"tf":1,"body":"1956年4月《论十大关系》发表，标志着党对中国社会主义建设道路的探索开始。\n基本方针：调动一切积极因素为社会主义事业服务。\n「十大关系」前五条主要讨论经济关系（重工业和轻工业、农业的关系等），后五条主要讨论政治关系。\n《论十大关系》确定的基本方针，为社会主义建设指明了方向。"},{"kp":15,"t":"正确认识和处理社会主义社会矛盾的思想","star":2,"tf":3,"body":"1957年2月《关于正确处理人民内部矛盾的问题》发表。\n【基本矛盾】社会主义社会的基本矛盾仍然是生产关系和生产力、上层建筑和经济基础之间的矛盾，但这是非对抗性的矛盾，可以经过社会主义制度本身不断得到解决。\n【两类不同性质的矛盾】\n①敌我矛盾——用专政的方法解决；\n②人民内部矛盾——用民主的、说服教育的方法解决。\n【处理人民内部矛盾的方针】「团结—批评—团结」；在经济上实行「统筹兼顾、适当安排」；在民族关系上实行民族平等、民族团结；在党派关系上实行「长期共存、互相监督」。\n【意义】丰富和发展了马克思主义关于社会主义社会矛盾的理论。"},{"kp":16,"t":"走中国工业化道路的思想","star":1,"tf":1,"body":"以农业为基础、以工业为主导，以农轻重为序发展国民经济。\n强调发展工业必须和发展农业同时并举，把重工业作为我国经济建设的重点，同时充分注意发展农业和轻工业。\n后来又提出「两条腿走路」等一系列方针，探索适合中国国情的工业化道路。"},{"kp":17,"t":"初步探索的其他理论成果","star":1,"tf":1,"body":"①关于社会主义发展阶段：提出社会主义分为「不发达」和「比较发达」两个阶段；\n②关于社会主义现代化建设战略目标：提出把我国建设成为一个具有现代农业、现代工业、现代国防和现代科学技术的社会主义强国（四个现代化）；\n③关于科学教育文化工作：提出「百花齐放、百家争鸣」（艺术上）、「古为今用、洋为中用」；\n④关于国防建设、祖国统一、对外关系等方面也提出诸多重要思想。"},{"kp":18,"t":"初步探索的意义和经验教训","star":1,"tf":1,"body":"【意义】\n①巩固和发展了我国的社会主义制度；\n②为开创中国特色社会主义提供了宝贵经验、理论准备、物质基础；\n③丰富了科学社会主义的理论和实践。\n【经验教训】\n①必须把马克思主义与中国实际相结合，探索适合中国国情的社会主义建设道路；\n②必须正确认识社会主义社会的主要矛盾和根本任务，集中力量发展生产力；\n③必须发展社会主义民主、健全社会主义法制；\n④必须坚持党的民主集中制和集体领导制度，加强执政党建设。"}]},{"ch":"第五章 中国特色社会主义理论体系的形成发展","points":[{"kp":19,"t":"中国特色社会主义理论体系形成发展的背景与过程","star":1,"tf":1,"body":"【国际背景】和平与发展成为时代主题，世界多极化和经济全球化深入发展。\n【历史条件】总结国内外社会主义建设正反两方面经验。\n【实践基础】改革开放和社会主义现代化建设的伟大实践。\n【形成过程】\n①党的十一届三中全会（1978）实现伟大转折，开启改革开放；\n②党的十二大提出「建设有中国特色的社会主义」；\n③党的十三大系统阐述社会主义初级阶段理论；\n④党的十四大确立社会主义市场经济体制目标；\n⑤党的十五大确立邓小平理论为党的指导思想；\n⑥党的十六大、「三个代表」重要思想，十七大科学发展观相继写入党章。"},{"kp":20,"t":"中国特色社会主义理论体系的形成与主要内容","star":2,"tf":2,"body":"中国特色社会主义理论体系，是包括邓小平理论、「三个代表」重要思想、科学发展观、习近平新时代中国特色社会主义思想在内的科学理论体系。\n【科学内涵】\n①是马克思主义中国化时代化的重大理论成果；\n②是改革开放和社会主义现代化建设实践经验的科学总结；\n③是中国共产党集体智慧的结晶。\n【精髓】解放思想、实事求是、与时俱进、求真务实。"}]},{"ch":"第六章 邓小平理论","points":[{"kp":21,"t":"邓小平理论首要的基本的理论问题与精髓","star":2,"tf":7,"body":"【首要的基本的理论问题】什么是社会主义、怎样建设社会主义。\n【社会主义的本质】解放生产力，发展生产力，消灭剥削，消除两极分化，最终达到共同富裕。\n【精髓】解放思想、实事求是。\n【社会主义的根本任务】发展生产力。\n【「三个有利于」判断标准】是否有利于发展社会主义社会的生产力，是否有利于增强社会主义国家的综合国力，是否有利于提高人民的生活水平。\n【社会主义初级阶段】指我国在生产力落后、商品经济不发达条件下建设社会主义必然要经历的特定阶段；党的十三大系统阐述了社会主义初级阶段理论，核心是「一个中心、两个基本点」（以经济建设为中心，坚持四项基本原则，坚持改革开放）。"},{"kp":22,"t":"邓小平理论的主要内容与历史地位","star":2,"tf":5,"body":"【主要内容】\n①社会主义初级阶段理论；②党的基本路线；③社会主义根本任务与发展动力；④「分三步走」发展战略；⑤社会主义市场经济理论；⑥「一国两制」构想；⑦两手抓、两手都要硬；⑧党的建设。\n【「一国两制」】在一个中国的前提下，国家的主体坚持社会主义制度，香港、澳门、台湾保持原有的资本主义制度长期不变。\n【社会主义市场经济】计划和市场都是经济手段，社会主义也可以搞市场经济。\n【历史地位】\n①是马克思主义中国化时代化的第二个重大理论成果；\n②是中国特色社会主义理论体系的开篇之作；\n③是改革开放和社会主义现代化建设的科学指南。"}]},{"ch":"第七章 “三个代表”重要思想","points":[{"kp":23,"t":"“三个代表”重要思想的核心观点与主要内容","star":1,"tf":2,"body":"【核心观点】中国共产党必须始终代表中国先进生产力的发展要求，代表中国先进文化的前进方向，代表中国最广大人民的根本利益。\n【主要内容】\n①大力发展先进生产力；②发展社会主义先进文化；③实现好、维护好、发展好最广大人民的根本利益；④坚持党的领导。\n【本质】立党为公、执政为民。\n【历史地位】是加强和改进党的建设、推进我国社会主义自我完善和发展的强大理论武器，是马克思主义中国化时代化的重要理论成果。"}]},{"ch":"第八章 科学发展观","points":[{"kp":24,"t":"科学发展观的科学内涵与主要内容","star":1,"tf":2,"body":"【科学内涵】\n①第一要义是推动经济社会发展；\n②核心立场是以人为本；\n③基本要求是全面协调可持续；\n④根本方法是统筹兼顾。\n【主要内容】加快转变经济发展方式、发展社会主义民主政治、推进社会主义文化强国建设、构建社会主义和谐社会、推进生态文明建设、提高党的建设科学化水平等。\n【历史地位】是马克思主义关于发展的世界观和方法论的集中体现，是中国特色社会主义理论体系的重要组成部分。"}]}],"sg":[{"ch":"第一章 进入近代后中华民族的磨难与抗争","points":[{"kp":1,"t":"鸦片战争前的中国与世界、鸦片战争","star":1,"tf":1,"body":"【鸦片战争前的中国】处于封建社会晚期，自给自足的自然经济占主导，政治腐败、军备废弛、思想禁锢。\n【鸦片战争前的中外关系】西方资本主义迅速发展，英国率先完成工业革命，对外扩张，向中国大量走私鸦片。\n【鸦片战争（1840—1842）】\n· 导火线：1839年林则徐虎门销烟；\n· 结果：1842年《南京条约》签订，是中国近代史上第一个不平等条约；\n· 影响：中国开始沦为半殖民地半封建社会，是中国近代史的起点。"},{"kp":2,"t":"近代中国社会的半殖民地半封建性质","star":1,"tf":2,"body":"【半殖民地】形式上有独立政府，实际上受到帝国主义列强的控制和支配；国家主权遭到严重破坏。\n【半封建】封建剥削制度依然存在，但资本主义经济已有一定发展；自然经济逐步解体。\n【近代中国社会的主要矛盾】帝国主义和中华民族的矛盾、封建主义和人民大众的矛盾。其中帝国主义和中华民族的矛盾是最主要的矛盾。\n【近代中国的两大历史任务】\n①争取民族独立、人民解放；\n②实现国家富强、人民幸福。前者是后者的前提和基础。"},{"kp":3,"t":"近代中国社会阶级关系的变动与主要矛盾","star":2,"tf":4,"body":"【新兴阶级】\n①无产阶级（工人阶级）——最早出现于19世纪四五十年代的外资企业中，是中国新的生产力的代表，具有坚决的革命性；\n②资产阶级——分为买办资产阶级和民族资产阶级，民族资产阶级具有两面性（革命性与妥协性）。\n【农民阶级】人数众多，是革命的主力军，但不是新的生产力的代表。\n【两大历史任务的关系】争取民族独立、人民解放是实现国家富强、人民幸福的前提；国家富强、人民幸福是民族独立、人民解放的最终目的。\n※注意：近代中国社会的两大历史任务及其关系是高频考点。"},{"kp":4,"t":"西方列强对中国的侵略与抵御外来侵略的斗争","star":1,"tf":2,"body":"【列强侵略的四个手段】军事侵略、政治控制、经济掠夺、文化渗透。\n【主要不平等条约】《南京条约》（1842）、《天津条约》（1858）、《北京条约》（1860）、《马关条约》（1895）、《辛丑条约》（1901）。\n【抵御外来侵略的斗争】\n①人民群众的反抗——1841年广州三元里人民的抗英斗争，是中国近代史上中国人民第一次大规模的反侵略武装斗争；\n②爱国官兵的反抗——冯子材、邓世昌、丁汝昌等。\n【反侵略战争失败的原因】社会制度的腐败（根本原因）、经济技术的落后（重要原因）。"},{"kp":5,"t":"义和团运动与列强瓜分中国图谋的破产","star":1,"tf":3,"body":"【义和团运动】以农民为主体的反帝爱国运动，提出「扶清灭洋」口号；沉重打击了帝国主义瓜分中国的野心，但存在笼统排外等局限。\n【列强瓜分中国图谋破产的原因】\n①帝国主义列强之间的矛盾和互相制约；\n②中华民族进行的不屈不挠的反侵略斗争（根本原因）。\n【民族意识的觉醒】\n①「师夷长技以制夷」与早期维新思想；\n②救亡图存与振兴中华——1895年严复《救亡决论》喊出「救亡」口号；孙中山创立兴中会提出「振兴中华」。"}],"audio":{"title":"天朝的门被撞开了","text":"故事要从1793年说起。那一年，英国派了一个叫马戛尔尼的使团，带着蒸汽机模型、天文仪器、新式火炮，万里迢迢来到北京，想跟大清做生意。可乾隆皇帝对这些洋玩意儿没什么兴趣，他回了一封信给英国国王，大意是：天朝物产丰盈，无所不有，原不籍外夷货物以通有无。这封信今天读起来有点好笑，可它背后是一个残酷的事实——当西方已经跑完工业革命、开着蒸汽轮船满世界找市场的时候，中国还关着门，沉浸在天朝上国的梦里。\n\n这一觉，很快被炮声惊醒。\n\n英国人很快发现，正经做生意赚不到钱，因为中国自给自足，不需要他们的毛织品。于是他们找到了一个缺德但赚钱的东西——鸦片。鸦片这东西很坏，它不光掏空中国老百姓的身体，让吸食者形销骨立，还一年卷走上千万两白银，把中国的银子源源不断地吸走。1839年，道光皇帝派林则徐去广东禁烟。林则徐这个人有骨气，他到广州之后，把收缴来的两万多箱鸦片，在虎门海滩当众销毁，整整烧了二十三天，海水都变了颜色。\n\n英国人不干了，1840年，鸦片战争爆发。这场仗打得很憋屈。清军用的还是大刀长矛和老式火炮，英国人的军舰可以在海上随意轰击沿海城镇。打打停停两年，1842年，清政府被迫签下《南京条约》。这是中国近代史上第一个不平等条约，割香港岛、赔款两千一百万银元、开放广州厦门福州宁波上海五个通商口岸。紧接着，1858年的《天津条约》、1860年的《北京条约》、1895年的《马关条约》、1901年的《辛丑条约》，一个比一个苛刻。从1842年这一刻起，中国开始变成半殖民地半封建社会。\n\n所谓半殖民地，是说形式上还有自己的政府、还有皇帝，可主权已经被列强掐住了喉咙，关税、驻军、领事裁判权，一样样都捏在别人手里；所谓半封建，是说封建剥削还在，地主照样收租，可自给自足的自然经济已经被洋货冲得七零八落。这个社会有一个最要命的矛盾：帝国主义和中华民族的矛盾，封建主义和人民大众的矛盾。这两对矛盾，贯穿了整部近代史。\n\n但中国人不是没有反抗。1841年，广州三元里，一百多个乡的农民拿着锄头、铁锹、鸟枪，把英国兵围在田里打，打得侵略者狼狈逃窜。这是中国近代史上第一次大规模的反侵略武装斗争。后来还有冯子材在镇南关大败法军，邓世昌在黄海开着致远舰撞向敌舰，丁汝昌在威海卫拒绝投降、服毒自尽。这些反抗，每一个都让人动容。可它们大多是零散的、自发的，没有统一的领导和明确的方向。\n\n1900年，义和团运动起来了。一群农民，打着「扶清灭洋」的旗子，用血肉之躯去挡洋枪洋炮。他们烧教堂、拆铁路、围攻使馆。这场运动有它落后的一面，笼统排外，喊着要杀光所有洋人，也伤害了不少无辜。可它同时打出了中国人不甘屈服的骨气。列强本来想把中国像切西瓜一样瓜分掉，最后没有得逞。为什么？一是列强之间互相牵制，谁也不想让别人多拿一块；二是中华民族不屈不挠的反抗，让他们发现，这块土地没那么好啃，四万万人的怒火,是扑不灭的。\n\n一场场失败之后，中国人开始醒了。魏源写《海国图志》，提出「师夷长技以制夷」；严复在《救亡决论》里喊出「救亡」二字，字字泣血；孙中山创立兴中会，提出「振兴中华」这个响亮的口号。\n\n再讲一个细节。当时的通商口岸是怎么运作的？外国人在那里享有领事裁判权——就是说，一个英国人如果在中国犯了罪，中国官府管不了，得由英国领事按英国法律审。这叫「治外法权」，是对一个国家主权的公然践踏。还有协定关税，中国的关税税率不是自己定的，得跟列强商量，税率被压到百分之五左右，便宜了洋货，苦了国货。你想想，一个连自己国家的税都做不了主的地方，还叫什么主权国家？这就是「半殖民地」三个字真正的分量。而「半封建」呢，是另一重枷锁：外国资本主义的入侵，虽然客观上瓦解了中国的自然经济、刺激了资本主义的发展，但列强绝不希望中国真的强起来，它要的是一个永远低价卖原料、高价买工业品的中国。买办阶级由此而生，他们替洋人跑腿、从中渔利，成了帝国主义在中国的代理人。所以近代中国的苦难，是双重压迫——外有帝国主义，内有封建主义，两副枷锁，缺一不可地压在四万万人的身上。\n\n请注意，这里已经埋下了一个贯穿整部近代史的追问：为什么我们一次次反抗，又一次次失败？答案不会一下子出现，它就藏在我们接下来要讲的每一章里——因为光有热血还不够，还得有正确的道路、正确的领导和正确的理论。第一章讲完了苦难，第二章，我们要看看，不同的人，是怎么去找这条出路的。三次尝试，三次碰壁，而每一次碰壁，都把中国往正确的答案上,又推近了一步。"}},{"ch":"第二章 不同社会力量对国家出路的早期探索","points":[{"kp":6,"t":"太平天国农民战争","star":1,"tf":1,"body":"【兴起】1851年洪秀全在广西金田村发动起义，建号太平天国，1853年定都天京（南京）。\n【纲领文件】\n①《天朝田亩制度》——以解决土地问题为中心，是最能体现太平天国社会理想的纲领性文件，但具有空想性；\n②《资政新篇》——洪仁玕提出，具有资本主义色彩的改革方案，但未付诸实施。\n【失败】1864年天京陷落，太平天国失败。"},{"kp":7,"t":"农民斗争的意义和局限","star":2,"tf":2,"body":"【意义】\n①沉重打击了封建统治阶级，动摇了清王朝的统治基础；\n②是中国旧式农民战争的最高峰；\n③冲击了孔子和儒家经典的正统权威；\n④打击了外国侵略势力。\n【失败原因与局限】\n①根本原因：农民阶级不是新的生产力和生产关系的代表，无法克服自身固有的阶级局限性；\n②没有科学理论的指导，无法提出正确的革命纲领；\n③无法长期保持领导集团的团结。\n※结论：农民阶级不能领导中国革命走向胜利。"},{"kp":8,"t":"洋务运动","star":1,"tf":2,"body":"【兴办】19世纪60年代初至90年代，以「自强」「求富」为目标，代表人物有奕䜣、曾国藩、李鸿章、左宗棠、张之洞等。\n【主要内容】\n①兴办近代企业——军用工业（江南机器制造总局、福州船政局）和民用工业（轮船招商局、开平煤矿）；\n②建立新式海陆军——北洋水师；\n③创办新式学堂、派遣留学生。\n【失败标志】1895年甲午战争北洋水师全军覆没。\n【失败原因】\n①洋务运动具有封建性；②对外国具有依赖性；③企业的管理具有腐朽性。\n※洋务运动的指导思想是「中学为体，西学为用」，只学技术不改制度，注定失败。"},{"kp":9,"t":"戊戌维新运动","star":1,"tf":2,"body":"【开展】1898年，以康有为、梁启超为代表的资产阶级维新派发动，主张学习西方、变法图强，得到光绪帝支持，史称「百日维新」。\n【意义】\n①是一次爱国救亡运动；\n②是一场资产阶级性质的政治改良运动；\n③是一次思想启蒙运动。\n【失败】1898年慈禧太后发动戊戌政变，变法失败，谭嗣同等「戊戌六君子」被杀。\n【失败原因与教训】\n①维新派自身力量弱小，依靠没有实权的皇帝；\n②封建守旧势力强大；\n③不敢否定封建主义，对帝国主义抱有幻想。\n※结论：资产阶级改良道路在中国行不通。"}],"audio":{"title":"三次试错","text":"上一章我们说，中国人被打醒了，开始找路。这一章，就是三次试错的故事：农民试了一次，地主阶级里的洋务派试了一次，资产阶级维新派也试了一次。他们都失败了，但正是这三次失败，把中国一步步逼向了正确的答案。\n\n第一次试错，是农民。1851年，一个叫洪秀全的落第书生，说自己在梦里见过上帝，是上帝的次子，他在广西金田村带着两万多人起义，建号太平天国。这支队伍发展得很快，两年后攻下武昌，三年后打下南京，定为天京。这可不是小打小闹，太平军北伐一度打到天津附近，把清王朝吓得够呛。\n\n洪秀全还提出了两个纲领。一个是《天朝田亩制度》，想把土地按人口平均分配，人人有田种、有饭吃、有衣穿，这是中国农民几千年来最朴素的梦想。另一个是《资政新篇》，由洪仁玕提出，主张办工厂、修铁路、设银行、学西方，带有鲜明的资本主义色彩。听起来是不是很理想？\n\n可问题恰恰就出在这儿。第一，《天朝田亩制度》那种绝对平均主义，在现实中根本没法落地，你要把每一家的收成都交上来再平均分下去，谁干？第二，《资政新篇》再好，战火纷飞里，连洪秀全自己都没顾上推行。第三，也是最要命的——太平天国内部很快斗起来了。1856年天京事变，东王杨秀清逼洪秀全封他万岁，北王韦昌辉又杀了杨秀清，翼王石达开被逼出走，几万人头落地。自己人杀自己人，元气大伤。1864年，天京陷落，太平天国失败。\n\n太平天国败在哪里？一句话：它是一场旧式的农民战争。农民阶级不是新的生产力的代表，提不出科学的革命纲领，也克服不了自身的局限性。这个结论非常重要，它说明：农民，扛不起领导中国革命的大旗，哪怕他们有再多的血性和牺牲。\n\n第二次试错，是地主阶级里的洋务派。19世纪60年代，曾国藩、李鸿章、左宗棠、张之洞这些人搞起了洋务运动，口号是「自强」「求富」。他们办了江南机器制造总局、福州船政局，建起了北洋水师，还派幼童出国留学。看起来挺像那么回事。\n\n可他们的指导思想是八个字：「中学为体，西学为用」。什么意思？就是我只学你的技术，不动我的制度。房子漏雨了，我只换窗户，不修房梁。1895年，甲午战争，北洋水师在威海卫全军覆没。洋务运动，彻底破产。别人打你，不是因为你的船不够新，而是因为你的制度烂到了根子上。\n\n第三次试错，是资产阶级维新派。1898年，康有为、梁启超这些人，靠着光绪皇帝搞起了戊戌变法，一百来天里发出一堆新政诏书，办学堂、裁冗员、练新军，史称「百日维新」。他们想学日本明治维新，搞君主立宪。可他们手上没有兵、没有实权，只靠一个被慈禧捏在手心里的皇帝。慈禧一翻脸，戊戌政变，变法失败，谭嗣同等六君子血洒菜市口。\n\n谭嗣同本来能跑，可他偏不跑。他说：各国变法，无不从流血而成，今日中国未闻有因变法而流血者，此国之所以不昌也，有之，请自嗣同始。这句话，是一个读书人用命写下的。\n\n这里还要多说一句太平天国的分量。它不只是推翻清朝那么简单，它是中国旧式农民战争的最高峰——规模最大、持续最久、影响最广。它还第一次提出了系统的革命纲领，第一次把向西方学习的方案摆上台面。可也正因为是「旧式」的，它的失败就成了一个不能重演的教训。你注意看，太平天国栽的三个跟头——没有科学理论、没有先进阶级领导、没有坚强团结的领导核心——这三点，后来在每一支试图救中国的力量身上，几乎都重复了一遍。洋务运动缺的是制度革新，戊戌变法缺的是实力依托，辛亥革命缺的是群众基础和彻底纲领。所以你看，历史不是一次次从头再来，而是在不断地「排除错误答案」。这些失败不是白费的，它们像一块块界碑，把后来者引向唯一正确的那条路。\n\n三次试错，三条路，全断了。农民不行，地主阶级的改良不行，资产阶级的改良也不行。那还有没有路？有的。1895年之后，一个叫孙中山的年轻人开始明白：靠改良不行，得靠革命，得把腐朽的朝廷整个推倒。下一章，我们就来讲这场推翻了两千年帝制的革命——辛亥革命。"}},{"ch":"第三章 辛亥革命与君主专制制度的终结","points":[{"kp":10,"t":"辛亥革命爆发的历史条件与资产阶级革命派的活动","star":2,"tf":2,"body":"【历史条件】\n①民族危机加深，社会矛盾激化；\n②清末「新政」及其破产；\n③资产阶级革命派登上历史舞台；\n④民族资本主义发展，资产阶级力量壮大。\n【革命派活动】\n①孙中山1894年创立兴中会（第一个资产阶级革命团体），提出「振兴中华」；\n②1905年在日本东京成立中国同盟会——第一个全国性的资产阶级革命政党，机关报《民报》；\n③发动多次武装起义（黄花岗起义等）。"},{"kp":11,"t":"三民主义","star":2,"tf":2,"body":"孙中山提出的资产阶级民主革命纲领，由民族主义、民权主义、民生主义三部分组成（旧三民主义）。\n①民族主义——「驱除鞑虏，恢复中华」，即推翻清王朝统治（未明确提出反帝）；\n②民权主义——「创立民国」，即建立资产阶级共和国（是三民主义的核心）；\n③民生主义——「平均地权」，即核定地价、增价归公。\n【评价】是一个比较完整的资产阶级民主革命纲领，但具有局限：没有明确提出反帝主张，没有彻底的土地革命纲领。"},{"kp":12,"t":"辛亥革命的爆发、清王朝覆灭与中华民国的建立","star":1,"tf":2,"body":"【爆发】1911年10月10日武昌起义，各省纷纷响应。\n【高潮】1912年1月1日孙中山在南京就任中华民国临时大总统，中华民国成立；2月12日清帝退位，结束两千多年的封建君主专制制度。\n【成果】1912年3月颁布《中华民国临时约法》——中国历史上第一部具有资产阶级共和国宪法性质的法典。"},{"kp":13,"t":"封建军阀专制统治的形成与旧民主主义革命的失败","star":2,"tf":1,"body":"【结局】袁世凯窃取革命果实，建立北洋军阀统治，辛亥革命失败。\n【失败原因】\n①资产阶级革命派自身的软弱性和妥协性（根本原因）；\n②没有提出彻底的反帝反封建纲领；\n③没有发动和依靠广大人民群众；\n④没有建立坚强的革命政党。\n【教训】资产阶级共和国的方案在中国行不通，中国资产阶级不能领导中国革命走向胜利，中国革命必须由新的阶级和新的政党来领导。\n※注意：辛亥革命推翻了封建君主专制制度，但没有改变中国半殖民地半封建的社会性质。"}],"audio":{"title":"帝制的终结与未完成的革命","text":"上一章我们讲到，改良的路走不通了。一个广东青年孙中山，很早就看明白了这一点。1894年，他在太平洋中间的檀香山创立兴中会，喊出了那句后来响彻中国的口号——振兴中华。那时候他才二十八岁，谁也想不到，这个学医出身的年轻人，会成为终结帝制的人。\n\n1905年，孙中山在日本东京，把兴中会、华兴会、光复会这些革命团体合并成中国同盟会。这是中国第一个全国性的资产阶级革命政党，机关报叫《民报》。同盟会有个纲领，就是后来大名鼎鼎的三民主义：民族、民权、民生。\n\n我用最通俗的话给你拆开。民族主义，八个字「驱除鞑虏，恢复中华」，说白了就是推翻满清统治；民权主义，四个字「创立民国」，这是三民主义的核心，要建立资产阶级共和国，让人民当家作主；民生主义，四个字「平均地权」，想缓和一下尖锐的土地问题。这套纲领，在当时就算是很先进了。可它也有硬伤：民族主义只反满，没明确提出反帝；民生主义也只是核定地价、涨价归公，没敢真正动地主阶级的命根子。这两个硬伤，后来都成了辛亥革命的隐患。\n\n1911年，清政府搞了个「皇族内阁」，十三个阁员里九个是皇族，把主张立宪的人彻底推到了对立面。10月10日，武昌城里的新军起义了，这就是武昌起义。这一枪打出去，全国响应，短短一个多月，十几个省宣布独立，清王朝的统治土崩瓦解。1912年1月1日，孙中山在南京就任中华民国临时大总统。2月12日，隆裕太后代宣统皇帝颁布退位诏书，统治中国两千多年的君主专制制度，就此终结。\n\n这是辛亥革命最大的功劳——它让「皇帝」这两个字，永远退出了中国的历史舞台。从此以后，谁敢再称帝，谁就会被全国人民唾弃，袁世凯称帝八十三天就垮台，张勋复辟十二天就完蛋，就是明证。另外，它还颁布了《中华民国临时约法》，这是中国历史上第一部具有资产阶级共和国宪法性质的法典，民主共和的观念从此深入人心。\n\n可胜利的果实，很快被人端走了。这个人叫袁世凯。他手里有北洋六镇这支最强的军队，一边逼清帝退位，一边逼孙中山让位。孙中山为了实现共和、避免内战，只能选择妥协。1912年3月，袁世凯在北京就任临时大总统，北洋军阀的统治开始了。后来袁世凯刺杀宋教仁、镇压二次革命、解散国会，甚至干脆称帝，把民国的招牌砸了个稀烂。\n\n辛亥革命为什么会失败？一句话：资产阶级革命派太软、太妥协。他们没有提出彻底的反帝反封建纲领，没有发动和依靠最广大的工农群众，也没有建立起一支听党指挥的革命军队。孙中山后来自己也沉痛地说：革命尚未成功，同志仍须努力。\n\n还有一层意义值得说透。辛亥革命不仅推翻了一个王朝，它还第一次把「民主共和」这四个字，种进了中国人的心里。在此之前，中国人脑子里的最高权力，永远是「天子」；在此之后，「主权在民」成了没人敢公开反对的政治正确。这就是为什么后来袁世凯要称帝、张勋要复辟，都迅速失败——民智已开，谁逆潮流而动，谁就粉身碎骨。但辛亥革命也留下了一笔沉重的遗产：它证明了一件事——仅仅换掉一个旧制度，是不够的。如果不触动帝国主义和封建主义的根基，共和国也可以空有其名。辛亥革命之后的中国，军阀混战、民不聊生，恰恰说明了这一点。旧民主主义革命走到了尽头，历史在等待一个新的开端。\n\n辛亥革命给我们留下了两条极其重要的教训：第一，资产阶级共和国的方案，在半殖民地半封建的中国行不通；第二，中国的资产阶级，由于它的软弱性，担负不起领导革命走向胜利的重任。那么问题来了——既然资产阶级不行，那谁来领导？历史很快给出了答案：一个新的阶级——无产阶级，和一支新的力量——中国共产党。下一章，我们就来讲这开天辟地的大事变。"}},{"ch":"第四章 中国共产党成立和中国革命新局面","points":[{"kp":14,"t":"新文化运动与思想解放的潮流","star":1,"tf":1,"body":"【兴起】1915年陈独秀在上海创办《青年杂志》（后改名《新青年》），标志着新文化运动的开始。\n【基本口号】民主与科学（德先生与赛先生）。\n【主要内容】提倡民主、反对独裁专制；提倡科学、反对迷信；提倡新道德、反对旧道德；提倡新文学、反对旧文学。\n【意义】是中国历史上一次空前的思想解放运动，为马克思主义在中国的传播创造了条件。"},{"kp":15,"t":"十月革命与马克思主义在中国的初步传播","star":2,"tf":2,"body":"【十月革命】1917年俄国十月社会主义革命胜利，开辟了人类历史的新纪元，为中国送来了马克思列宁主义。\n【李大钊的贡献】1918年发表《法俄革命之比较观》《庶民的胜利》《布尔什维主义的胜利》等文章，是中国最早的马克思主义者；1919年发表《我的马克思主义观》，系统介绍了马克思主义。\n【意义】马克思主义在中国的传播，为中国共产党的成立作了思想准备。"},{"kp":16,"t":"五四运动与新民主主义革命的开端","star":2,"tf":3,"body":"【五四运动（1919）】\n· 导火线：巴黎和会上中国外交的失败；\n· 口号：「外争主权、内除国贼」；\n· 初期以学生为主，6月后工人阶级以独立的姿态登上政治舞台，成为运动主力；\n· 直接结果：罢免曹汝霖等三人职务、拒绝在和约上签字。\n【历史意义】\n①是一次彻底的不妥协的反帝反封建的爱国运动；\n②是中国新民主主义革命的开端；\n③促进了马克思主义在中国的传播及其与中国工人运动的结合；\n④为中国共产党的成立作了思想上和干部上的准备。\n【五四精神】爱国、进步、民主、科学。"},{"kp":17,"t":"中国早期马克思主义思想运动与马克思主义同中国工人运动的结合","star":2,"tf":3,"body":"【早期马克思主义者】李大钊、陈独秀、毛泽东、周恩来等。\n【早期组织】1920年8月，陈独秀在上海成立第一个共产党早期组织；同年10月，李大钊在北京成立党的早期组织。\n【工人运动】各地共产党早期组织深入工人群众，开办工人夜校，领导工人罢工，推动马克思主义与中国工人运动相结合。\n【意义】为建立中国共产党作了组织准备。"},{"kp":18,"t":"中国共产党第一次全国代表大会的召开与中国共产党成立","star":3,"tf":1,"body":"【中共一大】1921年7月23日在上海召开（最后一天转移到浙江嘉兴南湖游船上）。\n【内容】\n①确定党的名称为「中国共产党」；\n②通过了党的第一个纲领，确定党的奋斗目标是推翻资产阶级政权，建立无产阶级专政，消灭阶级差别，实现共产主义；\n③确定党成立后的中心任务是领导工人运动；\n④选举产生党的领导机构中央局，陈独秀为书记。\n【伟大意义】中国共产党的成立是中国历史上开天辟地的大事变；中国革命从此有了坚强的领导核心、科学的指导思想和崭新的革命方法，中国革命的面貌焕然一新。\n※中共一大是高频考点（★★★）。"},{"kp":19,"t":"民主革命纲领的制定、国共合作与大革命的失败","star":2,"tf":2,"body":"【民主革命纲领】1922年中共二大第一次明确提出反帝反封建的民主革命纲领——打倒军阀、推翻国际帝国主义的压迫、统一中国为真正的民主共和国。\n【国共合作】1924年国民党一大召开，标志着第一次国共合作的正式形成，新三民主义成为合作的政治基础。\n【大革命（1924—1927）】以推翻帝国主义在华势力和北洋军阀为目标，取得了重大胜利。\n【失败】1927年「四一二」「七一五」反革命政变，大革命失败。\n【教训】必须坚持无产阶级对革命的领导权，必须掌握革命的武装。"}],"audio":{"title":"开天辟地的大事变","text":"辛亥革命之后，中国没有变好，反而更乱了。袁世凯死后，北洋军阀分裂成皖系、直系、奉系，你打我、我打你，一年打几仗，老百姓流离失所、苦不堪言。中国到底要往哪里去？一批先进的知识分子感觉到，光换一个政府没用，得从思想上、从根子上找答案。\n\n1915年，陈独秀在上海创办《青年杂志》，第二年改名《新青年》，一场思想解放运动开始了——新文化运动。它的两大口号是民主和科学，就是人们常说的「德先生」和「赛先生」。反对专制独裁、反对封建迷信、反对旧道德、反对旧文学。鲁迅的《狂人日记》，就是这时候写出来的，那句「我翻开历史一查，这历史没有年代，歪歪斜斜的每页上都写着仁义道德几个字……仔细看了半夜，才从字缝里看出字来，满本都写着两个字是吃人」，读来让人背后发凉。这场运动最大的意义，就是把中国人被禁锢了两千年的脑子，给松了绑。\n\n思想的闸门一开，新的东西就涌进来了。1917年，俄国十月革命胜利，列宁领导的布尔什维克党建立了世界上第一个社会主义国家，给中国送来了马克思列宁主义。李大钊是最早接受马克思主义的中国人，他接连写下《庶民的胜利》《布尔什维主义的胜利》，大声宣告：试看将来的环球，必是赤旗的世界！\n\n真正的转折点，是1919年。这一年，第一次世界大战的战胜国在巴黎开会，中国作为战胜国，本以为能把德国在山东的特权收回来，结果列强无视中国的正当要求，转手就把山东的权益送给了日本。这个消息一传回国内，举国哗然。5月4日，北京三千多名学生在天安门前集会抗议，喊出「外争主权、内除国贼」「取消二十一条」「还我青岛」。运动初期是学生在冲，到了6月，上海工人举行大罢工，商人罢市，运动的中心从北京转到上海，主力从学生变成工人。中国的工人阶级，第一次以独立的姿态登上了政治舞台。\n\n五四运动有两层重大意义：第一，它是一次彻底的不妥协的反帝反封建的爱国运动，连帝国主义和封建主义一块儿反，这在以前是没有的；第二，它是中国新民主主义革命的开端。什么叫新民主主义革命？就是由无产阶级领导、而不再是资产阶级领导的民主革命。领导权，从资产阶级手里，转移到了无产阶级手里。这是中国革命史上一次质的飞跃。\n\n五四之后，马克思主义开始和中国工人运动结合起来。1920年，陈独秀在上海建立了第一个共产党早期组织，李大钊在北京也建了一个，各地纷纷响应。1921年7月23日，中国共产党第一次全国代表大会在上海法租界的一栋石库门房子里召开，一共十三名代表，代表着全国五十多名党员。会议开到一半，遭到巡捕搜查，代表们连夜转移到浙江嘉兴，在南湖的一条游船上开完了最后一天的会。就在这条不起眼的小船上，中国共产党诞生了。\n\n中共一大的意义，怎么说都不过分。中国革命从此有了坚强的领导核心、科学的指导思想和崭新的革命方法，面貌焕然一新。第二年，中共二大第一次提出了彻底的反帝反封建民主革命纲领：打倒军阀、推翻帝国主义的压迫、统一中国为真正的民主共和国。1924年，国共第一次合作，反帝反封建的大革命轰轰烈烈地起来了，工农运动风起云涌，北伐战争势如破竹。\n\n这里有个细节值得回味。五四运动为什么说它是「新民主主义革命的开端」？不光是工人阶级登场了，更重要的是领导权变了。你对比一下：辛亥革命是资产阶级政党领导的，五四运动之后的革命，是无产阶级领导的。这个转变，是中国革命史上最根本的一次转弯。还有一点，五四运动让中国先进分子看清了西方的真面目——原来你们标榜的公理、正义，到了瓜分弱国的时候，全都不见了。于是，「走俄国人的路」成了那一代人的共识。马克思主义，就是从这时候起，真正在中国扎下了根。你想想，一个理论的传播，靠的不是口号，而是现实的教育——巴黎和会那一次背叛，比多少本小册子都管用。\n\n可这条路上，还有一道生死关口。1927年，蒋介石发动「四一二」政变，汪精卫发动「七一五」政变，昨天还是盟友，今天就举起屠刀，三十多万共产党员和革命群众倒在血泊里，大革命惨遭失败。血的教训告诉共产党人一个硬道理：革命，必须有自己的枪杆子，不能把命运交到别人的手里。下一章，我们就来讲，中国共产党是怎么在绝境中，找到一条从来没人走过的新路。"}},{"ch":"第五章 中国革命的新道路","points":[{"kp":20,"t":"国民党在全国统治的建立及其性质","star":2,"tf":2,"body":"【建立】1927年蒋介石发动四一二政变后，1928年张学良「东北易帜」，标志国民政府在形式上完成了对全国的统一。\n【性质】代表大地主大资产阶级利益的政权，实行一党专政、军事独裁统治，对外投靠帝国主义，对内镇压人民革命。\n【统治手段】庞大的军队、特务系统、保甲制度、文化专制。"},{"kp":21,"t":"土地革命战争的兴起与农村包围城市道路的开辟","star":2,"tf":3,"body":"【武装起义】1927年8月1日南昌起义——打响武装反抗国民党反动统治的第一枪，是中国共产党独立领导革命战争、创建人民军队的开端。\n【八七会议】1927年8月，确定实行土地革命和武装起义的方针，毛泽东提出「枪杆子里出政权」的著名论断。\n【秋收起义与井冈山】1927年9月毛泽东领导秋收起义，失败后转向农村，创建井冈山革命根据地。\n【道路开辟】1928—1930年，毛泽东写了《中国的红色政权为什么能够存在？》《井冈山的斗争》《星星之火，可以燎原》等文章，阐述了农村包围城市、武装夺取政权的道路。\n【土地革命路线】依靠贫农、雇农，联合中农，限制富农，消灭地主阶级，变封建土地所有制为农民土地所有制。"},{"kp":22,"t":"土地革命战争的发展及其挫折","star":2,"tf":2,"body":"【发展】到1930年，全国建立起十几块农村革命根据地，革命形势发展迅速。\n【挫折】「左」倾教条主义错误：1931年王明「左」倾教条主义在党中央占统治地位，导致第五次反「围剿」失败，红军被迫长征。\n【教训】必须把马克思主义基本原理与中国具体实际相结合，反对教条主义。"},{"kp":23,"t":"遵义会议实现伟大历史转折","star":2,"tf":2,"body":"【召开】1935年1月，红军长征途中在贵州遵义召开。\n【内容】集中全力解决了军事问题和组织问题，结束了王明「左」倾教条主义在党中央的统治，确立了毛泽东在党中央和红军的领导地位。\n【意义】\n①是党的历史上一个生死攸关的转折点；\n②开始形成以毛泽东为核心的第一代中央领导集体；\n③标志着中国共产党在政治上开始走向成熟。\n【长征胜利】1936年10月，红一、二、四方面军在甘肃会宁会师，长征胜利结束。"}],"audio":{"title":"从城市到农村：一条没人走过的路","text":"1927年，是中国共产党历史上最黑暗的一年。四一二、七一五，昨天的盟友，今天的屠夫。大革命失败了，白色恐怖笼罩全国，成千上万的共产党人倒在敌人的枪口下。有人动摇，有人退党，有人叛变。革命还有希望吗？\n\n可真正的共产党人没有被吓倒。他们擦干身上的血，掩埋好同伴的尸体，又继续战斗了。1927年8月1日凌晨，周恩来、贺龙、叶挺、朱德、刘伯承，在南昌城头打响了武装反抗国民党反动统治的第一枪。这一声枪响，后来成了中国人民解放军的诞生礼，八月一日也就成了建军节。紧接着，中共中央召开八七会议，毛泽东在会上说了一句石破天惊的话：须知政权是由枪杆子中取得的。\n\n可问题是，枪杆子该往哪儿使？按照俄国十月革命的经验，是攻打大城市。毛泽东领导的秋收起义，一开始也是奔着长沙去的，结果敌人力量太强，起义军损失惨重。就在这个生死关口，毛泽东做了一个改变中国革命命运的决定：不打大城市了，把队伍拉上井冈山，到农村去，到敌人力量薄弱的地方去！\n\n这一步，看起来是退，实际上是进。井冈山革命根据地建立起来了，朱德带着南昌起义的余部上山会师，「朱毛红军」的名号从此传遍全国。毛泽东还写了几篇文章，把这条路讲透了：《中国的红色政权为什么能够存在？》《井冈山的斗争》《星星之火，可以燎原》。核心思想就一句话：农村包围城市，武装夺取政权。\n\n为什么在中国必须走这条路？因为中国是一个半殖民地半封建国家，内部没有民主，外部没有独立，不可能像西方那样搞合法的议会斗争；敌人长期霸占着中心城市，力量强大；而中国农民占人口的绝大多数，是革命最广大的主力军。所以，只能先在敌人力量薄弱的农村建立根据地，用武装斗争、土地革命和根据地建设这三件事扭在一起，像钻木取火一样，一点点把星星之火，烧成燎原大火。\n\n到了1930年，全国建起了十几块农村革命根据地，红军发展到十万人，革命形势一片大好。可偏偏这时候，党内的「左」倾教条主义又犯了。1931年，王明那套把马克思主义当教条、把共产国际指示当圣旨的做法在党中央占了上风。他们不研究中国实际，硬要红军去跟装备精良的敌人拼消耗，结果第五次反「围剿」失败，红军被迫进行战略转移，这就是长征。\n\n长征路上，1935年1月，红军打下了贵州遵义，在这里开了一次扭转乾坤的会——遵义会议。这次会集中全力解决了最紧迫的军事问题和组织问题，结束了王明「左」倾错误的统治，实际上确立了毛泽东在党中央和红军的领导地位。遵义会议，是党的历史上一个生死攸关的转折点，也是中国共产党第一次独立自主地运用马克思主义解决自己的路线、方针和政策问题，标志着党在政治上开始走向成熟。\n\n之后，四渡赤水、巧渡金沙江、强渡大渡河、飞夺泸定桥、爬雪山、过草地，红军用双脚丈量了两万五千里。1936年10月，红一、二、四方面军在甘肃会宁会师，长征胜利结束。长征的胜利，保存了革命的火种，也铸就了一种精神——把全国人民和中华民族的根本利益看得高于一切，坚定革命的理想和信念，坚信正义事业必然胜利。\n\n这里有个细节要说清楚。为什么说遵义会议是「党在政治上开始走向成熟」的标志？因为在这之前，中国共产党在很大程度上还是听共产国际的，出了重大决策，常常要请示、要等指示。可遵义会议，是在同共产国际失去联系的情况下，党自己独立地开会、独立地分析、独立地做出决定，并且做出了正确的决定。这是破天荒的第一次。一个政党，只有能够独立自主地解决自己的问题，才叫真正成熟。另外，遵义会议只解决了军事和组织问题，没有马上解决政治路线问题，这是很讲究策略的——在当时最紧迫的是保住红军、保住革命，如果一上来就纠缠政治路线，很可能引起分裂。先解决能解决的，这就是实事求是。\n\n可红军刚在陕北站稳脚跟，一个更凶恶的敌人就扑了上来——日本帝国主义。下一章，全民族抗战的烽火，将要燃遍整个中国。"}},{"ch":"第六章 中华民族的抗日战争","points":[{"kp":24,"t":"抗日救亡运动的兴起与抗日民族统一战线的建立","star":2,"tf":3,"body":"【九一八事变】1931年9月18日，日本发动九一八事变，中国人民开始了局部抗战。\n【西安事变】1936年12月，张学良、杨虎城发动西安事变，逼蒋抗日；事变的和平解决成为时局转换的枢纽，十年内战基本结束。\n【统一战线】1937年9月，国民党公布中共中央提交的国共合作宣言，标志着以国共合作为基础的抗日民族统一战线正式建立。\n【全民族抗战开始】1937年7月7日卢沟桥事变（七七事变），标志全民族抗战的开始。"},{"kp":25,"t":"战略防御阶段的正面战场与战略相持阶段","star":2,"tf":2,"body":"【战略防御阶段（1937—1938）】正面战场是抗日的主要战场，国民政府组织了一系列会战（淞沪会战、太原会战、徐州会战、武汉会战等），粉碎了日军「速战速决」的计划。\n【台儿庄战役】1938年，李宗仁指挥，取得抗战以来的重大胜利。\n【战略相持阶段（1938年10月以后）】日本调整政策，对国民党采取政治诱降为主、军事打击为辅的方针；共产党领导的敌后战场成为抗战的重要战场。"},{"kp":26,"t":"全面抗战路线和持久战的战略总方针","star":2,"tf":2,"body":"【全面抗战路线】中国共产党主张实行全面抗战路线，即动员全民族一切力量争取抗战胜利的人民战争路线，与国民党的片面抗战路线相对立。\n【《论持久战》】1938年毛泽东发表，科学预测抗日战争将经历战略防御、战略相持、战略反攻三个阶段，指出「兵民是胜利之本」，阐明了抗日战争的持久战方针，批驳了「亡国论」和「速胜论」。\n※《论持久战》是高频考点。"},{"kp":27,"t":"敌后战场的开辟、游击战争与抗日民主根据地建设","star":2,"tf":3,"body":"【敌后战场】八路军、新四军深入敌后，开辟敌后抗日根据地（晋察冀、晋绥等），开展游击战争。\n【游击战争】在抗日战争中具有重要的战略地位，是抗日战争的主要形式之一。\n【根据地建设】\n①政治：实行「三三制」原则（共产党员、非党的左派进步分子、中间派各占三分之一）；\n②经济：实行减租减息政策；\n③文化：开展抗日文化教育。\n【百团大战】1940年，彭德怀指挥，沉重打击了日军的「囚笼政策」。"},{"kp":28,"t":"坚持抗战、团结、进步的方针","star":1,"tf":2,"body":"针对国民党顽固派制造的反共摩擦，中国共产党提出「坚持抗战、反对投降，坚持团结、反对分裂，坚持进步、反对倒退」的方针。\n【策略总方针】发展进步势力，争取中间势力，孤立顽固势力。\n【对顽固派的斗争原则】有理、有利、有节。"},{"kp":29,"t":"中国共产党的自身建设（延安整风）","star":1,"tf":2,"body":"【延安整风运动（1941—1945）】\n· 意义：是一次深刻的马克思主义思想教育运动，是破除党内把马克思主义教条化、把共产国际决议和苏联经验神圣化错误倾向的伟大思想解放运动；为抗日战争的胜利和新民主主义革命的胜利奠定了思想基础。\n· 内容：反对主观主义以整顿学风（中心）、反对宗派主义以整顿党风、反对党八股以整顿文风。\n【中共七大】1945年在延安召开，确立毛泽东思想为党的指导思想并写入党章，是夺取抗战胜利和新民主主义革命胜利的重要保证。"},{"kp":30,"t":"抗日战争的胜利及其意义","star":2,"tf":5,"body":"【胜利】1945年8月15日日本宣布无条件投降，9月2日正式签署投降书；中国人民抗日战争取得完全胜利。\n【意义】\n①是中国近代以来抗击外敌入侵第一次取得完全胜利的民族解放战争；\n②促进了中华民族的觉醒，为中国共产党带领人民取得新民主主义革命胜利奠定了重要基础；\n③是世界反法西斯战争的重要组成部分，对世界反法西斯战争的胜利作出了重大贡献；\n④使中国国际地位大为提高。\n【抗日战争胜利的原因】\n①中国共产党在全民族抗战中发挥了中流砥柱作用（关键）；\n②中国人民巨大的民族觉醒、空前的民族团结和英勇的民族抗争；\n③世界所有爱好和平与正义的国家和人民的同情和支持。\n※抗日战争的胜利及其意义是超高频考点（★★ TF5）。"}],"audio":{"title":"用血肉筑起长城","text":"就在中国共产党在南方打出一片天地的时候，北方的天空已经乌云密布。1931年9月18日夜里，日本关东军自己炸毁了南满铁路柳条湖段的一段路轨，反诬是中国军队所为，随即向沈阳北大营发起进攻——这就是九一八事变。由于国民党政府采取不抵抗政策，短短四个多月，东北三省全部沦陷，三千万同胞沦为亡国奴。从这一天起，中国人民开始了长达十四年的抗战。\n\n可国民党的态度实在让人心寒。蒋介石还在喊着「攘外必先安内」，把枪口对准自己的同胞，继续「围剿」红军。1936年12月，张学良、杨虎城两位将军忍无可忍，在西安把前来督战的蒋介石扣了下来，逼他停止内战、一致抗日——这就是震惊中外的西安事变。事变怎么处理，关系中国命运。有人主张杀蒋，共产党却从民族大义出发，主张和平解决，逼蒋抗日。西安事变的和平解决，成了时局转换的枢纽，十年内战基本结束，抗日民族统一战线初步形成。\n\n1937年7月7日，日军在卢沟桥挑起事端，炮轰宛平城，中国守军奋起抵抗，卢沟桥事变爆发，全民族抗战开始了。9月，国民党公布中共中央提交的国共合作宣言，以国共合作为基础的抗日民族统一战线正式建立。\n\n战争的前期，正面战场是主战场。淞沪会战，中国军队投入七十多万人，跟日军血战三个月，一天就伤亡几千人，硬是粉碎了日本「三个月灭亡中国」的狂妄计划；台儿庄战役，李宗仁指挥，歼敌一万多人，是抗战以来的重大胜利。可这些会战，代价极其惨烈，忻口、徐州、武汉，一座座城市沦陷，南京更是发生了三十万同胞惨遭屠杀的滔天罪行。\n\n就在一片悲观的情绪里，1938年，毛泽东写了一本小册子，叫《论持久战》。他科学地预测：这场仗不会速胜，也不会亡国，而要经过三个阶段——战略防御、战略相持、战略反攻。他分析，日本虽然强，但它是退步的、寡助的、小国、人力物力不足；中国虽然弱，但是进步的、多助的、大国、地广人多。所以，最后的胜利一定属于中国。更重要的是，毛泽东提出了一个关键判断：兵民是胜利之本。决定战争胜负的，不是一两件新式武器，而是能不能把全民族的力量动员起来。这就是全面抗战路线，跟国民党只靠政府和军队的片面抗战路线，形成鲜明对照。这本小册子，像一盏灯，照亮了迷雾中的中国。\n\n1938年10月武汉失守后，抗战进入相持阶段。日军调整策略，对国民党以政治诱降为主、军事打击为辅，把主要力量转向共产党领导的敌后战场。敌后战场逐渐成为抗战的中流砥柱。共产党在根据地实行「三三制」原则，共产党员、非党的左派进步分子、中间派各占三分之一，把各阶层都团结起来；经济上实行减租减息，既减轻农民负担，又照顾地主利益。1940年，彭德怀指挥百团大战，破坏了日军的铁路、据点，狠狠打击了它的「囚笼政策」，让全世界看到了共产党领导的抗日力量。\n\n抗战最艰难的岁月里，共产党没有停下自我锤炼。1941年到1945年，延安整风运动开展，反对主观主义以整顿学风、反对宗派主义以整顿党风、反对党八股以整顿文风，全党思想空前统一。1945年，中共七大在延安召开，把毛泽东思想写入党章，为抗战胜利和新民主主义革命的胜利奠定了坚实基础。\n\n这里补充一个容易被忽略的点：为什么说中国共产党是全民族抗战的「中流砥柱」？不是因为它打的大仗最多，而是因为它做对了几件根本的事。第一，它最早、最坚决地主张抗日，倡导建立并始终维护抗日民族统一战线；第二，它提出了全面抗战路线和持久战的战略总方针，给迷茫中的中国指明了方向；第三，它开辟了广大的敌后战场，把日军的大量兵力拖在了敌后。到抗战后期，共产党领导的抗日根据地有一亿人口，军队一百多万，民兵两百多万。这支部队，后来就成了人民解放军的骨干。所以抗战不仅打败了日本，也锤炼出了一个真正走向成熟的党，为三年后建立新中国，埋下了伏笔。\n\n1945年8月15日，日本宣布无条件投降。这是中国近代以来抗击外敌入侵第一次取得完全胜利的民族解放战争。它洗刷了近代以来抗击外来侵略屡战屡败的民族耻辱，使中国国际地位大为提高，也为中国共产党带领人民取得新民主主义革命胜利,奠定了重要基础。可抗战胜利的喜悦还没散去，一个新的问题就摆在了所有人面前：中国，将建立一个什么样的国家？下一章，见分晓。"}},{"ch":"第七章 为建立新中国而奋斗","points":[{"kp":31,"t":"中国共产党争取和平民主的斗争","star":1,"tf":1,"body":"【重庆谈判】1945年8月，毛泽东赴重庆同国民党谈判，签署《政府与中共代表会谈纪要》（双十协定），确定了和平建国的基本方针。\n【政治协商会议】1946年1月在重庆召开，通过了和平建国等五项协议，但很快被国民党破坏。\n【意义】中国共产党争取和平民主的努力，教育了人民，孤立了国民党顽固派。"},{"kp":32,"t":"国民党发动全面内战和解放战争的胜利发展","star":1,"tf":3,"body":"【内战爆发】1946年6月，国民党进攻中原解放区，全面内战爆发。\n【战略防御】人民解放军先后粉碎国民党军的全面进攻和重点进攻。\n【战略反攻】1947年6月，刘伯承、邓小平率部挺进大别山，揭开战略反攻序幕。\n【战略决战】1948年9月—1949年1月，辽沈、淮海、平津三大战役，基本消灭国民党军主力。\n【渡江战役】1949年4月，人民解放军渡江作战，解放南京，宣告国民党反动统治覆灭。"},{"kp":33,"t":"解放区的土地改革运动与第二条战线","star":1,"tf":2,"body":"【土地改革】\n· 1947年《中国土地法大纲》——废除封建性及半封建性剥削的土地制度，实行耕者有其田的土地制度；\n· 意义：使解放区农民获得土地，极大地激发了农民的革命热情，为解放战争胜利提供了可靠保证。\n【第二条战线】国统区以学生运动为先导的人民民主运动，配合了人民解放军的军事斗争。"},{"kp":34,"t":"各民主党派的历史发展、中国共产党与民主党派的合作","star":2,"tf":2,"body":"【民主党派】中国国民党革命委员会、中国民主同盟、中国民主建国会、中国民主促进会、中国农工民主党、中国致公党、九三学社、台湾民主自治同盟等。\n【五一口号】1948年4月30日，中共中央发布「五一口号」，号召召开新政治协商会议，得到各民主党派积极响应。\n【意义】标志着各民主党派公开、自觉地接受中国共产党的领导，走上了新民主主义革命道路。"},{"kp":35,"t":"南京国民党政权的覆灭、人民政协与《共同纲领》","star":2,"tf":4,"body":"【南京解放】1949年4月23日南京解放，标志着国民党反动统治的覆灭。\n【中国人民政治协商会议】1949年9月21日在北平召开，通过《中国人民政治协商会议共同纲领》。\n【《共同纲领》】起临时宪法作用，规定了中华人民共和国的国体、政体、经济、文化、外交等基本政策。\n【新中国诞生】1949年10月1日，中华人民共和国成立，中国历史从此进入新纪元。\n※「南京国民党政权的覆灭 & 人民政协与《共同纲领》」是高频考点（★★ TF4）。"},{"kp":36,"t":"中国革命胜利的原因、意义和基本经验","star":2,"tf":3,"body":"【胜利原因】\n①中国共产党的领导（核心）；\n②以马克思列宁主义、毛泽东思想为指导；\n③得到了广大人民群众的支持；\n④有一支中国共产党领导的人民军队；\n⑤有国际无产阶级和人民的支持。\n【基本经验】统一战线、武装斗争、党的建设（三大法宝）——是党在革命中战胜敌人的三个主要法宝。\n【历史意义】结束了帝国主义、封建主义、官僚资本主义在中国的统治，实现了民族独立和人民解放，为实现由新民主主义到社会主义的转变创造了前提。"}],"audio":{"title":"两个中国之命运","text":"1945年8月，抗战刚刚胜利，饱经战乱的中国人，最盼的就是能过上和平安稳的日子。共产党也是这么想的。蒋介石一连发了三封电报，邀请毛泽东去重庆「共商国是」。去，还是不去？蒋介石这个人反复无常，翻脸比翻书还快，毛泽东去重庆，是冒着极大风险的。可为了争取和平，毛泽东毅然去了，他说：我们要在人民面前,表示出我们争取和平的态度。\n\n谈判进行了四十多天，双方签下了《政府与中共代表会谈纪要》，也就是《双十协定》，确定了和平建国的基本方针。1946年1月，政治协商会议在重庆召开，通过了和平建国等五项协议。\n\n可蒋介石的和平，是假的。墨迹未干，他就把政协协议撕了个粉碎。1946年6月，国民党军队大举进攻中原解放区，全面内战爆发。摆在共产党面前的，是一场看上去几乎不可能赢的仗：国民党的军队四百多万，装备的是美式飞机大炮；解放区只有一亿多人口，人民解放军只有一百多万，拿的还是小米加步枪。\n\n然而历史又一次出乎意料。人民解放军先是痛快淋漓地粉碎了国民党军队的全面进攻和重点进攻，1947年6月，刘伯承、邓小平率领晋冀鲁豫野战军主力，千里跃进大别山，像一把尖刀插进敌人的心脏，揭开战略反攻的序幕。到了1948年秋，敌我力量对比发生了根本变化。9月到1949年1月，辽沈、淮海、平津三大战役，一个接一个，环环相扣，基本消灭了国民党军的主力。1949年4月，百万雄师过大江，4月23日，南京解放，统治中国二十二年的国民党反动政权，轰然倒塌。\n\n共产党的力量从哪里来？从土地里来，从人民中来。1947年，解放区颁布《中国土地法大纲》，废除封建剥削的土地制度，实行耕者有其田。千千万万的农民分到了祖祖辈辈梦寐以求的土地，他们打心眼里拥护共产党，把儿子送去参军，推着独轮车往前线送粮食、运伤员。陈毅元帅后来感慨地说：淮海战役的胜利，是人民群众用小车推出来的。与此同时，在国民党统治区，学生的反饥饿、反内战、反迫害运动此起彼伏，形成了反对国民党统治的「第二条战线」，两条战线相互配合，蒋介石陷入了全民的包围。\n\n战场上节节胜利的同时，共产党也在政治上把朋友搞得多多的。1948年4月30日，中共中央发布「五一口号」，号召召开新的政治协商会议，成立民主联合政府。各民主党派纷纷响应，公开自觉地接受中国共产党的领导。1949年9月，中国人民政治协商会议第一届全体会议在北平召开，通过了《中国人民政治协商会议共同纲领》，它起着临时宪法的作用，规定了新中国的国体、政体和各项基本政策。\n\n1949年10月1日，天安门城楼上，毛泽东用他那浓重的湖南口音，向全世界庄严宣告：中华人民共和国中央人民政府今天成立了！广场上三十万人欢声雷动。中国人民从此站起来了。\n\n中国革命为什么能取得胜利？因为有了中国共产党的坚强领导，因为有了马克思列宁主义和毛泽东思想的科学指引，因为紧紧依靠了最广大的人民群众，因为有了统一战线、武装斗争、党的建设这三大法宝。一百多年的屈辱，终于在这一刻画上了句号。\n\n这里有个问题值得想深一层：为什么共产党两年多就能打败装备精良的国民党？除了前面讲的军事和政治，还有一个更深的原因——民心。抗战胜利后，国民党接收大员到了沦陷区，不是去重建，而是去「劫收」，把敌伪产业当成肥肉一样抢，五子登科（金子、房子、车子、女子、位子），闹得天怒人怨；反观共产党，搞土地改革，给农民实实在在的好处。一个是伸手向人民要，一个是把利益交给人民，人心向背，一目了然。还有一点：共产党在国统区领导的学生运动、工人运动，让蒋介石陷入了「第二条战线」，真正成了全民包围中的孤家寡人。所以说，解放战争的胜利，是人民用小车推出来的，也是人民用手投票、用心选择的。\n\n新中国成立，只是万里长征走完了第一步。一个新的问题马上摆到面前：一个一穷二白的落后农业国，怎么走向社会主义？下一章，我们来看这场人类历史上最深刻的社会变革。"}},{"ch":"第八章 中华人民共和国的成立与中国社会主义制度的确立","points":[{"kp":37,"t":"中华人民共和国的成立及其伟大意义","star":2,"tf":3,"body":"【成立】1949年10月1日。\n【伟大意义】\n①结束了中国半殖民地半封建社会的历史，实现了民族独立和人民解放；\n②中国人民从此站起来了，成为国家的主人；\n③改变了世界政治力量对比，壮大了世界和平、民主和社会主义的力量；\n④为实现中华民族伟大复兴创造了根本社会条件。"},{"kp":38,"t":"捍卫巩固新政权的斗争","star":1,"tf":1,"body":"【抗美援朝】1950—1953年，抗美援朝战争的胜利，保卫了新中国的安全，提高了我国的国际威望。\n【土地改革】1950—1952年，废除封建土地制度，使农民获得土地。\n【其他】镇压反革命、「三反」「五反」运动等，巩固了新生的人民政权。\n【国民经济恢复】到1952年底，国民经济全面恢复。"},{"kp":39,"t":"过渡时期总路线的提出与社会主义工业化的起步","star":1,"tf":1,"body":"【过渡时期总路线】1953年正式提出——「一化三改」，即逐步实现国家的社会主义工业化，逐步实现对农业、手工业和资本主义工商业的社会主义改造。\n【一五计划】1953—1957年，优先发展重工业，为社会主义工业化奠定了初步基础。"},{"kp":40,"t":"社会主义改造与社会主义基本制度的确立","star":2,"tf":2,"body":"【改造】对个体农业、手工业和资本主义工商业进行社会主义改造，到1956年底基本完成。\n【确立】标志社会主义基本制度在中国得以确立，中国进入社会主义初级阶段。\n【重大意义】\n①是中国历史上最深刻最伟大的社会变革；\n②为当代中国一切发展进步奠定了根本政治前提和制度基础；\n③使广大劳动人民真正成为国家的主人。"},{"kp":41,"t":"探索适合中国国情的社会主义建设道路与开始全面建设","star":1,"tf":5,"body":"【《论十大关系》】1956年4月发表，标志着党探索中国社会主义建设道路的开始，基本方针是调动一切积极因素为社会主义事业服务。\n【中共八大】1956年9月召开，分析了国内主要矛盾（人民对于经济文化迅速发展的需要同当前经济文化不能满足人民需要的状况之间的矛盾），提出集中力量发展社会生产力，是探索社会主义建设道路的重要成果。\n【《关于正确处理人民内部矛盾的问题》】1957年发表，系统阐述了两类不同性质的矛盾学说。\n【成就】初步建立起独立的比较完整的工业体系和国民经济体系，为社会主义现代化建设奠定了重要基础。"},{"kp":42,"t":"“大跃进”与国民经济调整","star":1,"tf":1,"body":"【曲折】1958年开始的「大跃进」和人民公社化运动，出现严重失误；1959年「反右倾」斗争使「左」倾错误延续。\n【调整】1960年冬起，实行「调整、巩固、充实、提高」八字方针，国民经济逐步恢复和发展。\n【教训】必须实事求是，尊重客观经济规律，不能急于求成。\n※1966—1976年「文化大革命」是一场由领导者错误发动、被反革命集团利用、给党、国家和各族人民带来严重灾难的内乱，必须彻底否定。"}],"audio":{"title":"一穷二白，如何走向社会主义","text":"1949年10月1日，中华人民共和国成立了。这个新生的人民政权，接手的是一个什么样的家底？用毛泽东的话说，是一穷二白——连火柴、铁钉都要进口，老百姓管它们叫「洋火」「洋钉」；全国的钢产量，还比不上西方一个小国；文盲占了人口的绝大多数。这就是起跑线。\n\n国际上，也没人给好脸色。1950年，朝鲜战争爆发，美国军队把战火烧到鸭绿江边，轰炸机直接扔炸弹到中国东北的边境城镇。新生的人民政权面临严峻考验，新中国做出了抗美援朝、保家卫国的决定。中国人民志愿军雄赳赳、气昂昂，跨过鸭绿江。这一仗打得很苦，上甘岭战役，双方在几平方公里的阵地上反复争夺，山头都被削低了两米。但志愿军硬是把敌人从鸭绿江边打回到三八线附近。这一仗打出了国威军威，也让全世界明白：站起来的中国人民，不好惹。\n\n内部呢？1950到1952年，全国开展土地改革，三亿多无地少地的农民分到了土地，压在头顶几千年的封建土地制度被彻底废除。农民捧着土地证，激动得睡不着觉。到1952年底，国民经济全面恢复，主要工农业产品产量甚至超过了历史最高水平。\n\n接下来，就是怎么走向社会主义的问题。1953年，党正式提出了过渡时期总路线，简称「一化三改」——「一化」，就是逐步实现国家的社会主义工业化；「三改」，就是对农业、手工业和资本主义工商业进行社会主义改造。形象地说，工业化是主体，三大改造是两翼，一体两翼，比翼齐飞。\n\n三大改造里，最有中国智慧、也最了不起的，是对资本主义工商业的改造。按照马克思原来的设想，剥夺剥夺者，对资本家的生产资料是可以无偿没收的。可中国共产党没有这么做，而是用了两个字：赎买。就是给资本家支付定息，让他们继续参与企业管理，一步一步地，从加工订货、统购包销，走到单个企业的公私合营，再到全行业的公私合营。这被叫做「和平赎买」，是国际共产主义运动史上的一个伟大创举。同时，党还把对企业的改造和对人的改造结合起来，把资本家一步步改造成自食其力的劳动者。\n\n到1956年底，三大改造基本完成。这意味着什么？意味着社会主义基本制度在中国确立了，中国进入了社会主义初级阶段。这是中国历史上最深刻、最伟大的社会变革，为后来中国的一切发展进步，奠定了根本的政治前提和制度基础，也使广大劳动人民真正成了国家的主人。\n\n制度立起来了，接下来就是怎么建设。1956年，毛泽东发表《论十大关系》，提出一个基本方针：调动一切积极因素为社会主义事业服务。同年召开的党的八大，正确分析了国内主要矛盾，提出集中力量发展社会生产力。1957年，毛泽东又发表《关于正确处理人民内部矛盾的问题》，把社会主义社会的矛盾分成两类：敌我矛盾和人民内部矛盾，前者用专政的办法解决，后者用民主的、说服教育的办法解决。这是对马克思主义的重大发展。\n\n当然，探索的道路从来不是一帆风顺的。1958年的「大跃进」和人民公社化运动，犯了急于求成、违背经济规律的错误，再加上自然灾害，国民经济一度陷入严重困难。后来更出现了「文化大革命」那样全局性、长时间的严重失误。不过，就在这种艰难曲折中，中国还是建立起了一个独立的、比较完整的工业体系和国民经济体系，「两弹一星」研制成功，为后来的腾飞攒下了宝贵的家底。\n\n这里有个细节能说明问题。土地改革，到底给中国带来了什么？几千年来，中国的土地大部分攥在地主手里，农民租地种，交完租常常连饭都吃不上。土地改革一声令下，三亿多农民第一次有了属于自己的土地。他们捧着土地证，有的在祖坟前磕头，有的把土地证缝在衣服里。这不只是一场经济变革，更是一场人的解放——农民从「佃户」变成了「主人」，这个心理上的转变，是怎么估计都不过分的。也正是有了这样的民心，才有了后来抗美援朝时农民踊跃送子参军，才有了合作化时期农民跟着党走。中国共产党为什么能？很大程度上，就赢在始终和最大多数的农民站在一起。\n\n历史走到1978年，一个决定中国命运的转折点出现了。下一章，我们来讲这场让中国彻底改变面貌的伟大转折——改革开放。"}},{"ch":"第九章 改革开放与中国特色社会主义的开创","points":[{"kp":43,"t":"伟大转折和成功开创中国特色社会主义","star":2,"tf":7,"body":"【十一届三中全会】1978年12月召开，作出把党和国家工作中心转移到经济建设上来、实行改革开放的历史性决策，是新中国成立以来党的历史上具有深远意义的伟大转折。\n【四个经济特区】1980年设立深圳、珠海、汕头、厦门四个经济特区。\n【十二大】1982年，邓小平提出「建设有中国特色的社会主义」的命题。\n【十三大】1987年，系统阐述了社会主义初级阶段理论和党的基本路线（「一个中心、两个基本点」）。\n【意义】开创了中国特色社会主义道路，开启了改革开放和社会主义现代化建设新时期。\n※「十一届三中全会」是超高频考点（★★ TF7）。"},{"kp":44,"t":"改革开放和社会主义现代化建设新局面","star":2,"tf":3,"body":"【南方谈话】1992年邓小平视察南方发表重要谈话，明确回答了姓「资」姓「社」等问题，强调发展才是硬道理，提出「三个有利于」标准，把改革开放和现代化建设推进到新阶段。\n【十四大】1992年，确立社会主义市场经济体制的改革目标，确立邓小平建设有中国特色社会主义理论在全党的指导地位。\n【十五大】1997年，把邓小平理论确立为党的指导思想并写入党章。\n【意义】把中国特色社会主义全面推向21世纪。"}],"audio":{"title":"春天的故事","text":"1978年，对中国来说，是决定命运的一年。这一年的12月，党的十一届三中全会召开了。这次会议作出了一个石破天惊的决定：把党和国家的工作中心，从以阶级斗争为纲，转移到经济建设上来，实行改革开放。\n\n这句话今天听着平常，在当年却需要极大的勇气。要知道，在这之前，「以阶级斗争为纲」已经讲了很多年，很多人脑子里有厚厚的一层冰，怕跟资本主义沾边，怕政策会变，怕再来一次运动。十一届三中全会，就是来砸这层冰的。它重新确立了实事求是的思想路线，是新中国成立以来党的历史上具有深远意义的伟大转折，从此,中国进入了改革开放和社会主义现代化建设的新时期。\n\n转折之后，变化来得很快，快得超出所有人的想象。1978年冬天，安徽凤阳小岗村，十八户农民在一间破屋里，冒着坐牢的风险，偷偷按下了红手印，搞起了包产到户。他们约定，如果谁因此被抓，其他人要帮他把孩子养到十八岁。谁也没想到，这一按，按出了整个农村改革的序幕。第二年，小岗村粮食大丰收，一下子从吃救济粮变成了卖余粮。\n\n1980年，深圳、珠海、汕头、厦门四个经济特区设立。深圳，这个当年的边陲小渔村，短短几年就长出了一座现代化城市，创造出了举世闻名的「深圳速度」。那句「时间就是金钱，效率就是生命」的标语牌，立在了蛇口，也立在了无数中国人心里。\n\n1982年，党的十二大上，邓小平提出了一个崭新的命题——建设有中国特色的社会主义。这句话，成了后来中国发展道路的名字。1987年，党的十三大系统阐述了社会主义初级阶段理论，提出了党的基本路线：一个中心、两个基本点——以经济建设为中心，坚持四项基本原则，坚持改革开放。这条基本路线，管了很多年，后来被称为「党和国家的生命线」。\n\n可这条路走得并不轻松。上世纪80年代末90年代初，国际上东欧剧变、苏联解体，社会主义运动跌入低谷；国内也有人在犹豫、在观望，改革开放还要不要继续？姓「资」还是姓「社」？就在这个关键时刻，1992年，已经退休的邓小平视察南方，发表了一系列重要谈话。他说：发展才是硬道理。他指出，计划多一点还是市场多一点，不是社会主义和资本主义的本质区别，计划和市场都是经济手段，社会主义也可以搞市场经济。他还提出了判断一切工作的「三个有利于」标准：是否有利于发展社会主义社会的生产力，是否有利于增强社会主义国家的综合国力，是否有利于提高人民的生活水平。\n\n南方谈话，像一阵春风吹散了迷雾，让中国改革开放的航船，重新扬起了风帆。1992年，党的十四大明确提出建立社会主义市场经济体制的目标。1997年，党的十五大把邓小平理论确立为党的指导思想，写入党章。中国特色社会主义，大步迈进了二十一世纪。\n\n还有一点特别值得说：小岗村那十八个红手印，为什么意义那么大？因为它证明了一个朴素的道理——生产关系一定要适合生产力的发展。人民公社「一大二公」，看着很先进，可它脱离了当时农村生产力低下的实际，结果农民没有积极性，粮食产量上不去。包产到户一搞，土地还是集体的，但把经营权和收益权给了农户，农民一看多打粮食是自己的，干劲立刻上来了。这就是改革的方法论：不是推倒重来，而是在坚持社会主义方向的前提下，调整那些不适合生产力发展的环节。中国的改革之所以能成功，靠的就是这种「摸着石头过河」的务实和稳妥——先试点、再推广，错了就改，对了就坚持。这条经验，至今仍是中国发展最宝贵的一条。\n\n回望这一章，你会看到一个规律：每到历史的关口，中国共产党总能解放思想、实事求是，敢于打破思想的牢笼，把路重新走对。正是这种勇气和智慧，让中国在短短几十年里，走完了西方国家上百年的路。这个规律，一直延续到今天。下一章，也是最后一章，我们来讲新时代的中国故事。"}},{"ch":"第十章 中国特色社会主义进入新时代","points":[{"kp":45,"t":"开拓中国特色社会主义更为广阔的发展前景","star":1,"tf":1,"body":"【十八大】2012年召开，中国特色社会主义进入新时代。\n【十九大】2017年召开，确立习近平新时代中国特色社会主义思想为党的指导思想；明确新时代我国社会主要矛盾是人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾。\n【意义】中国特色社会主义进入新时代，意味着中华民族迎来了从站起来、富起来到强起来的伟大飞跃。"},{"kp":46,"t":"开启全面建设社会主义现代化国家新征程","star":1,"tf":1,"body":"【两个一百年奋斗目标】\n①第一个百年目标：到中国共产党成立100年时全面建成小康社会（2021年已实现）；\n②第二个百年目标：到新中国成立100年时全面建成社会主义现代化强国。\n【两步走战略安排】\n①2020—2035年，基本实现社会主义现代化；\n②2035年—本世纪中叶，把我国建成富强民主文明和谐美丽的社会主义现代化强国。\n【二十大】2022年召开，明确中国式现代化是中国共产党领导的社会主义现代化，为全面建设社会主义现代化国家、全面推进中华民族伟大复兴指明了方向。"}],"audio":{"title":"走向复兴的新征程","text":"2012年，党的十八大召开，中国特色社会主义进入了新时代。这个「新时代」不是随口说的，它有实实在在的分量——它意味着中华民族迎来了一个伟大的飞跃：从站起来、富起来，到强起来。\n\n2017年，党的十九大召开，确立习近平新时代中国特色社会主义思想为党的指导思想。十九大还明确了一个重要判断：新时代我国社会的主要矛盾，已经转化为人民日益增长的美好生活需要，和不平衡不充分的发展之间的矛盾。这个判断很关键，它说明中国人的需求变了——不再只是吃饱穿暖，而是要有更好的教育、更稳定的工作、更满意的收入、更可靠的社会保障、更高水平的医疗卫生服务、更优美的环境。温饱问题解决了，接下来要解决的，是发展得好不好、公不公平、均不均衡的问题。\n\n那么，新时代的目标是什么？就是要实现中华民族伟大复兴的中国梦。这个梦，被拆解成「两个一百年」的奋斗目标：第一个百年目标，是到中国共产党成立一百年时，全面建成小康社会。这个目标，在2021年如期实现了——中国历史性地解决了绝对贫困问题，近一亿农村贫困人口全部脱贫，这是人类减贫史上的奇迹。第二个百年目标，是到新中国成立一百年时，把中国建成富强民主文明和谐美丽的社会主义现代化强国。\n\n为了实现这个宏伟目标，党把时间表分成了两步走：第一步，从2020年到2035年，基本实现社会主义现代化；第二步，从2035年到本世纪中叶，把中国建成社会主义现代化强国。\n\n2022年，党的二十大召开，进一步明确：中国式现代化，是中国共产党领导的社会主义现代化。它有五个鲜明的中国特色——它是人口规模巨大的现代化，是全体人民共同富裕的现代化，是物质文明和精神文明相协调的现代化，是人与自然和谐共生的现代化，是走和平发展道路的现代化。这五条，既不同于西方的现代化老路，也超越了西方现代化的种种弊端。\n\n到这里，我们这趟穿越一百八十多年的旅程，就要结束了。让我们回头，再看一眼这一整条路：从1840年鸦片战争的炮声，到太平天国、洋务运动、戊戌变法的一次次试错；从辛亥革命推翻两千年帝制，到五四运动的思想觉醒；从嘉兴南湖上那条小小的红船，到井冈山的星星之火；从十四年抗战用血肉筑起的长城，到天安门城楼上那句「中国人民站起来了」；从十一届三中全会的历史转折，到新时代的伟大复兴。\n\n你有没有发现，这整条路上，其实一直在回答第一章提出的那个问题：为什么我们一次次反抗，又一次次失败？答案，到这里已经慢慢清晰了——因为中华民族的伟大复兴，必须有先进阶级的领导，必须有科学理论的指引，必须紧紧依靠最广大的人民群众，必须找到一条适合自己的道路。太平天国没有，洋务运动没有，戊戌变法没有，辛亥革命也没有。只有在中国共产党这里，这些条件第一次全部具备了。所以，历史选择了中国共产党，人民选择了中国共产党。这不是偶然，而是一百八十多年苦难与奋斗，给出的必然答案。\n\n最后一个细节，关于「中国式现代化」。为什么强调是「中国式」而不是照搬西方？因为西方的现代化，是靠着殖民掠夺、对外扩张、两极分化走出来的，走的是「国强必霸」的老路。中国式现代化，走的是另一条路——靠自己的努力、靠和平发展、靠共同富裕。你看这几个词：人口规模巨大，说明难度前所未有；共同富裕，说明不走两极分化；物质精神协调、人与自然和谐，说明不搞单打一；走和平发展道路，说明不称霸、不扩张。这不是抄谁的作业，而是一个有五千年文明、十四亿人口的大国，自己蹚出来的一条新路。理解了这一点，你也就理解了为什么说，中国式现代化拓展了发展中国家走向现代化的途径，给世界提供了新的选择。\n\n故事讲完了，但历史还在继续。这本书的下一段历史，正在由你和我这样的普通人，一起一笔一笔地写下去。"}}]};
+const KB = {"my":[{"ch":"第一章 世界的物质性及发展规律","kps":[{"kp":5,"t":"哲学基本问题及其内容","star":1,"fills":[{"q":"哲学的基本问题是____的关系问题。","a":"思维和存在","tip":"也叫意识和物质的关系问题"},{"q":"哲学基本问题的第一方面是思维和存在何者为本原的问题，这是划分____和____的唯一标准。","a":"唯物主义 唯心主义","tip":""},{"q":"哲学基本问题的第二方面是思维和存在有无同一性的问题，这是划分____和____的标准。","a":"可知论 不可知论","tip":""},{"q":"哲学的两大基本派别是____和____。","a":"唯物主义 唯心主义","tip":""}]},{"kp":6,"t":"哲学的物质范畴","star":3,"fills":[{"q":"物质的唯一特性是____。","a":"客观实在性","tip":"高频考点"},{"q":"物质是标志____的哲学范畴，这种客观实在是人通过感觉感知的，它不依赖于我们的感觉而存在，为我们的感觉所复写、摄影、反映。","a":"客观实在","tip":"列宁的物质定义"},{"q":"物质的根本属性和存在方式是____。","a":"运动","tip":"注意与「唯一特性」区分"},{"q":"物质和意识的关系是：物质____意识，意识是物质的____。","a":"决定 反映","tip":""},{"q":"人类社会的物质性表现在：人类社会是物质世界长期发展的产物，是____的产物。","a":"劳动","tip":""}]},{"kp":7,"t":"物质的存在方式","star":1,"fills":[{"q":"运动是物质的存在方式和____属性。","a":"根本","tip":""},{"q":"物质和运动的关系：物质是运动的____，运动是物质的____。","a":"主体 根本属性","tip":"二者不可分割"},{"q":"设想不运动的物质会导致____；设想无物质的运动会导致____。","a":"形而上学 唯心主义","tip":""},{"q":"静止是物质运动在一定条件下的____状态，是一种不显著的运动，是运动的特殊状态。","a":"稳定","tip":""},{"q":"运动和静止的关系是：动中有静、静中有动，任何事物都是____和____的统一。","a":"绝对运动 相对静止","tip":""},{"q":"时间和空间是运动着的物质的____。","a":"存在形式","tip":""},{"q":"时间的特性是____，空间的特性是____。","a":"一维性 三维性","tip":""}]},{"kp":8,"t":"物质世界的二重化","star":3,"fills":[{"q":"物质世界的二重化，是指世界分化为____世界与____世界、客观世界与主观世界。","a":"自然界 人类社会","tip":""},{"q":"人的实践活动是自然界与人类社会、客观世界与主观世界相分化的关键，也是它们相____的关键。","a":"统一","tip":""},{"q":"客观世界与主观世界的关系：客观世界是主观世界的____，主观世界是对客观世界的____。","a":"基础 反映","tip":""}]},{"kp":9,"t":"物质和意识的辩证关系","star":1,"fills":[{"q":"物质决定意识：意识是____的产物，意识是人脑的____。","a":"物质世界长期发展 机能和属性","tip":""},{"q":"意识是客观世界的主观映象，是客观内容和____形式的统一。","a":"主观","tip":""},{"q":"意识的能动作用（主观能动性）表现在：第一，意识活动具有____；第二，意识活动具有____；第三，意识具有____的作用。","a":"目的性和计划性 创造性 指导实践改造客观世界","tip":""},{"q":"正确发挥主观能动性的前提是尊重____。","a":"客观规律","tip":""}]},{"kp":10,"t":"主观能动性与客观规律性的统一","star":1,"fills":[{"q":"规律是事物运动发展中固有的、本质的、必然的、稳定的____。","a":"联系","tip":""},{"q":"客观规律性与主观能动性的关系：尊重客观规律是正确发挥主观能动性的____；发挥主观能动性是认识和利用客观规律的____。","a":"前提 必要条件","tip":""},{"q":"主观能动性与客观规律性相统一的基础是____。","a":"实践","tip":""}]},{"kp":11,"t":"意识与人工智能","star":1,"fills":[{"q":"人工智能是人的____能动性的一种特殊表现，是对人的意识和思维的信息过程的模拟。","a":"意识","tip":""},{"q":"人工智能不能取代或超越人类智能，因为它不具备人类特有的____、____、____等意识形式。","a":"情感 信念 意志","tip":""},{"q":"人工智能与人类智能的本质区别在于，人工智能不具备人类意识的社会性和____。","a":"创造性","tip":""}]},{"kp":12,"t":"世界的物质统一性原理及其意义","star":1,"fills":[{"q":"世界的真正统一性在于它的____。","a":"物质性","tip":""},{"q":"世界的物质统一性原理是马克思主义哲学的____，是我们从事一切实际工作的____。","a":"基石 根本立足点","tip":""},{"q":"世界物质统一性原理要求我们坚持____，一切从实际出发。","a":"实事求是","tip":""}]},{"kp":13,"t":"事物的普遍联系","star":1,"fills":[{"q":"联系是指事物内部各要素之间和事物之间相互影响、相互制约和相互作用的____。","a":"关系","tip":""},{"q":"联系的特点：____、____、____、____。","a":"客观性 普遍性 多样性 条件性","tip":""},{"q":"联系的客观性要求我们用联系的观点看问题，反对____。","a":"形而上学的孤立观点","tip":""},{"q":"唯物辩证法是关于自然、社会和思维发展的____的科学。","a":"一般规律","tip":""}]},{"kp":14,"t":"事物的变化发展","star":1,"fills":[{"q":"发展是前进上升的____，发展的实质是新事物的产生和旧事物的灭亡。","a":"运动","tip":""},{"q":"新事物是指合乎历史前进方向的、具有____的事物。","a":"远大前途","tip":""},{"q":"判断新旧事物的标准是看其是否符合事物发展的____。","a":"必然趋势","tip":""},{"q":"发展的过程性表明一切事物都有其产生、发展和灭亡的____。","a":"过程","tip":""}]},{"kp":15,"t":"对立统一规律是唯物辩证法的实质和核心","star":3,"fills":[{"q":"唯物辩证法的实质和核心是____。","a":"对立统一规律","tip":"超高频"},{"q":"矛盾是指事物内部以及事物之间既____又____的关系。","a":"对立 统一","tip":""},{"q":"矛盾的两种基本属性是____和____。","a":"同一性 斗争性","tip":""},{"q":"矛盾的同一性是指矛盾双方相互____、相互____的性质和趋势。","a":"吸引 联结","tip":""},{"q":"矛盾的斗争性是指矛盾双方相互____、相互____的性质和趋势。","a":"排斥 分离","tip":""},{"q":"矛盾是事物发展的____。","a":"根本动力","tip":""}]},{"kp":16,"t":"矛盾的普遍性和特殊性及相互关系","star":1,"fills":[{"q":"矛盾的普遍性是指矛盾存在于一切事物中，即____；矛盾贯穿于每一事物发展过程的始终，即____。","a":"事事有矛盾 时时有矛盾","tip":""},{"q":"矛盾的特殊性是指具体事物的矛盾及矛盾的每一方面各有其____。","a":"特点","tip":""},{"q":"矛盾的普遍性与特殊性的关系是____与____的关系。","a":"共性 个性","tip":""},{"q":"矛盾的特殊性原理要求我们坚持____的原则。","a":"具体问题具体分析","tip":""},{"q":"主要矛盾与次要矛盾、矛盾的主要方面与次要方面，要求我们坚持____和____的统一。","a":"两点论 重点论","tip":""}]},{"kp":17,"t":"量变质变规律和否定之否定规律","star":1,"fills":[{"q":"量变是事物数量的增减和场所的变更，质变是事物____的变化。","a":"根本性质","tip":""},{"q":"量变和质变的辩证关系：量变是质变的____，质变是量变的____。","a":"必要准备 必然结果","tip":""},{"q":"质量互变规律要求我们坚持____和____的统一。","a":"连续性 间断性","tip":""},{"q":"辩证否定的实质是____，即否定中包含肯定，是发展的环节和联系的环节。","a":"扬弃","tip":""},{"q":"否定之否定规律表明事物发展是____和____的统一。","a":"前进性 曲折性","tip":""}]},{"kp":18,"t":"联系和发展的基本环节","star":1,"fills":[{"q":"联系和发展的基本环节包括五对范畴：原因与结果、必然性与偶然性、可能性与现实性、现象与本质、____。","a":"内容与形式","tip":""},{"q":"内容决定形式，形式反作用于内容，形式适合内容时起____作用。","a":"促进","tip":""},{"q":"假象是从____表现本质，假象是客观的，错觉是主观的。","a":"反面歪曲地","tip":""},{"q":"可能性与现实性的区别在于现实中有无____。","a":"根据和条件","tip":""}]},{"kp":19,"t":"唯物辩证法的本质与批判的革命精神","star":2,"fills":[{"q":"唯物辩证法本质上是____的和革命的。","a":"批判","tip":""},{"q":"唯物辩证法是____与____的统一。","a":"客观辩证法 主观辩证法","tip":""},{"q":"辩证思维的方法是建立在____基础上的科学方法论。","a":"唯物辩证法","tip":""}]},{"kp":20,"t":"学习唯物辩证法，不断增强思维能力","star":1,"fills":[{"q":"辩证思维能力、历史思维能力、____、底线思维能力、创新思维能力等是重要的思维能力。","a":"战略思维能力","tip":""},{"q":"底线思维要求从最坏处着眼，做最充分的准备，努力争取____。","a":"最好的结果","tip":""}]}]},{"ch":"第二章 实践与认识及其发展规律","kps":[{"kp":21,"t":"科学的实践观及其意义","star":1,"fills":[{"q":"实践是人类____地改造世界的物质活动。","a":"能动","tip":""},{"q":"实践是认识的____，是认识发展的动力，是检验认识真理性的____，是认识的最终目的。","a":"来源 唯一标准","tip":""},{"q":"马克思主义认识论的首要的和基本的观点是____的观点。","a":"实践","tip":""}]},{"kp":22,"t":"实践的本质、基本结构与形式的多样性","star":2,"fills":[{"q":"实践具有____、____和____三个基本特征。","a":"直接现实性 自觉能动性 社会历史性","tip":""},{"q":"实践的主体是指具有一定主体能力、从事现实社会实践活动的人；实践的客体是指____所指向的对象。","a":"主体活动","tip":"注意：人工智能不能与使用者共同构成实践主体"},{"q":"实践的三种基本形式是：物质生产实践、社会政治实践、科学文化实践。其中最基本的实践形式是____。","a":"物质生产实践","tip":""}]},{"kp":23,"t":"实践对认识的决定作用","star":1,"fills":[{"q":"实践是认识的____，是认识发展的____，是检验认识真理性的____，是认识的____。","a":"来源 动力 唯一标准 目的","tip":""},{"q":"实践对认识的决定作用是____的，但认识对实践也具有相对独立性并能____实践。","a":"根本 反作用于","tip":""}]},{"kp":24,"t":"认识的本质","star":1,"fills":[{"q":"认识的本质是主体在实践基础上对客体的____反映。","a":"能动","tip":""},{"q":"认识是实践基础上主体对客体的能动反映，具有____和____的特点。","a":"反映性 能动性","tip":""},{"q":"唯心主义先验论和旧唯物主义____都是错误的。","a":"直观反映论","tip":""}]},{"kp":25,"t":"从实践到认识、从认识到实践与实践认识的辩证运动","star":2,"fills":[{"q":"认识运动的基本规律：从感性认识上升到理性认识，再从理性认识回到____。","a":"实践","tip":""},{"q":"感性认识包括感觉、知觉、表象三种形式，是认识的____阶段；理性认识包括概念、判断、推理三种形式，是认识的____阶段。","a":"初级 高级","tip":""},{"q":"感性认识与理性认识的关系是：理性认识依赖于感性认识，感性认识有待于发展为____。","a":"理性认识","tip":""},{"q":"从理性认识回到实践，是认识过程的____飞跃，是认识的目的和归宿。","a":"第二次","tip":""}]},{"kp":26,"t":"真理的客观性","star":1,"fills":[{"q":"真理是人们对客观事物及其规律的正确反映。真理具有____性。","a":"客观","tip":""},{"q":"真理的客观性表现在：真理的____是客观的，检验真理的____是客观的。","a":"内容 唯一标准","tip":""},{"q":"承认真理的客观性，就是坚持____；否认真理的客观性，就会导致____。","a":"唯物主义 唯心主义","tip":""}]},{"kp":27,"t":"真理的绝对性和相对性","star":1,"fills":[{"q":"真理的绝对性是指真理的____性，任何真理都包含着不依赖于人的客观内容。","a":"无条件","tip":""},{"q":"真理的相对性是指真理的____性，任何真理都是对客观世界一定范围的正确认识。","a":"有条件","tip":""},{"q":"真理是绝对性和相对性的统一，表现为真理是一个____的过程。","a":"由相对走向绝对","tip":""},{"q":"割裂真理绝对性和相对性的统一，会导致____和____。","a":"绝对主义 相对主义","tip":""}]},{"kp":28,"t":"真理与谬误","star":1,"fills":[{"q":"真理与谬误是相比较而存在、相斗争而发展的，二者是____的关系。","a":"对立统一","tip":""},{"q":"真理与谬误在一定条件下可以____。","a":"相互转化","tip":""}]},{"kp":29,"t":"实践是检验真理的唯一标准","star":3,"fills":[{"q":"实践是检验真理的____标准。","a":"唯一","tip":"超高频"},{"q":"实践之所以能成为检验真理的唯一标准，是由真理的____和实践的____决定的。","a":"本性 特点","tip":""},{"q":"实践标准的确定性与不确定性（绝对性与相对性）：实践标准的确定性指实践是检验真理的唯一标准；不确定性指实践对真理的检验是一个____。","a":"过程","tip":""}]},{"kp":30,"t":"价值及其基本特征、价值评价及其特点","star":1,"fills":[{"q":"价值是指客体能够满足主体需要的____关系。","a":"效益","tip":""},{"q":"价值的基本特性包括主体性、客观性、多维性和____。","a":"社会历史性","tip":""},{"q":"价值评价是一种关于价值现象的____活动。","a":"认识","tip":""}]},{"kp":31,"t":"真理和价值在实践中的辩证统一","star":1,"fills":[{"q":"真理原则是指人类按客观世界的本来面目去认识和改造世界的原则；价值原则是指人类按自己的____去认识和改造世界的原则。","a":"需要","tip":""},{"q":"真理和价值在实践中是____的。","a":"辩证统一","tip":""},{"q":"坚持真理尺度和价值尺度的统一，要求我们树立正确的____。","a":"价值观","tip":""}]},{"kp":32,"t":"认识世界和改造世界及其辩证关系","star":2,"fills":[{"q":"认识世界和改造世界是相互依赖、相互制约的，改造____是认识世界的目的。","a":"客观世界","tip":""},{"q":"自由是对必然的认识和对客观世界的改造，自由是____的统一。","a":"历史发展","tip":""},{"q":"认识世界和改造世界的根本目标是实现____的解放。","a":"人","tip":""}]},{"kp":33,"t":"一切从实际出发，实事求是","star":2,"fills":[{"q":"实事求是是马克思主义中国化的精髓，是党的____。","a":"思想路线","tip":""},{"q":"一切从实际出发，要求我们从客观事物存在和发展的规律出发，做到____。","a":"实事求是","tip":""},{"q":"坚持守正创新，实现理论创新和____的良性互动。","a":"实践创新","tip":""}]}]},{"ch":"第三章 人类社会及其发展规律","kps":[{"kp":34,"t":"社会存在与社会意识","star":2,"fills":[{"q":"社会存在是指社会生活的____方面，主要包括物质生产方式、地理环境和人口因素。","a":"物质","tip":""},{"q":"社会意识是指社会生活的____方面，包括社会意识形式、社会心理和社会意识形态。","a":"精神","tip":""},{"q":"社会存在决定社会意识，社会意识是社会存在的____，社会意识具有相对____。","a":"反映 独立性","tip":""},{"q":"两种根本对立的历史观是____史观和____史观。","a":"唯物 唯心","tip":""},{"q":"唯心史观的根本缺陷是：只看到人们的思想动机，而不了解思想动机背后的____原因。","a":"物质","tip":""}]},{"kp":35,"t":"生产力与生产关系的矛盾运动及其规律","star":1,"fills":[{"q":"生产力是人类改造自然、获得物质生活资料的____。","a":"实际能力","tip":""},{"q":"生产力包括劳动者、劳动资料、劳动对象三个要素。其中____是生产力中最活跃的因素。","a":"劳动者","tip":""},{"q":"生产关系是人们在物质生产过程中形成的____的关系。","a":"不以人的意志为转移","tip":""},{"q":"生产关系包括生产资料所有制关系、生产中人与人的关系和产品分配关系。其中____是生产关系的基础。","a":"生产资料所有制","tip":""},{"q":"生产关系一定要适合生产力状况的规律，是社会发展的____。","a":"基本规律","tip":""}]},{"kp":36,"t":"经济基础与上层建筑的矛盾运动及其规律","star":1,"fills":[{"q":"经济基础是占统治地位的生产关系的总和；上层建筑是建立在一定经济基础之上的____和____。","a":"意识形态 政治法律制度及设施","tip":""},{"q":"经济基础决定上层建筑，上层建筑对经济基础具有____作用。","a":"反","tip":""},{"q":"上层建筑一定要适合____状况的规律，是社会发展的又一基本规律。","a":"经济基础","tip":""}]},{"kp":37,"t":"人类普遍交往与世界历史的形成发展","star":2,"fills":[{"q":"社会进步与____的发展是相互促进的统一过程。","a":"人","tip":""},{"q":"世界历史的形成以____和世界市场的形成为标志。","a":"普遍交往","tip":""}]},{"kp":38,"t":"社会形态的内涵与更替","star":2,"fills":[{"q":"社会形态是经济基础与上层建筑的统一，也称____。","a":"社会经济形态","tip":""},{"q":"社会形态更替的统一性表现在：五种社会形态依次更替是社会发展的____。","a":"一般规律","tip":""},{"q":"社会形态更替的多样性表现为不同____的发展道路不同。","a":"民族和国家","tip":""},{"q":"社会形态更替的必然性与人们的____是统一的。","a":"历史选择性","tip":""}]},{"kp":39,"t":"社会基本矛盾是历史发展的根本动力","star":3,"fills":[{"q":"社会基本矛盾是____和____的矛盾、____和____的矛盾。","a":"生产力 生产关系 经济基础 上层建筑","tip":"超高频"},{"q":"社会基本矛盾是社会发展的____。","a":"根本动力","tip":""},{"q":"生产力是社会发展的最终决定力量，是社会进步的____。","a":"根本尺度","tip":""},{"q":"社会基本矛盾运动以____为最终决定力量。","a":"生产力","tip":""}]},{"kp":40,"t":"阶级斗争、社会革命在社会发展中的作用","star":1,"fills":[{"q":"阶级斗争是社会基本矛盾在阶级社会中的表现，是阶级社会发展的____。","a":"直接动力","tip":""},{"q":"社会革命的实质是革命阶级推翻反动阶级的统治，用新的社会制度代替旧的社会制度，它是社会形态更替的____。","a":"决定性环节","tip":""},{"q":"改革是同一社会形态发展过程中的____，是社会制度的自我完善和发展。","a":"量变","tip":""}]},{"kp":41,"t":"科学技术、文化在社会发展中的作用","star":3,"fills":[{"q":"科学技术是推动社会发展的____力量，是第一生产力。","a":"重要动力","tip":"高频"},{"q":"科学技术能够推动生产方式变革、生活方式变革和____变革。","a":"思维方式","tip":""},{"q":"文化为社会发展提供思想保证、精神动力、凝聚力量和政治____。","a":"方向","tip":""}]},{"kp":42,"t":"两种历史观在历史创造者问题上的对立","star":1,"fills":[{"q":"在历史创造者问题上，唯心史观坚持____史观，唯物史观坚持____史观。","a":"英雄 群众","tip":""},{"q":"英雄史观的两种基本形式是主观唯心主义的英雄史观和____的英雄史观。","a":"客观唯心主义","tip":""}]},{"kp":43,"t":"人民群众在创造历史过程中的决定作用","star":2,"fills":[{"q":"人民群众是历史的____，是历史的真正创造者。","a":"创造者","tip":""},{"q":"人民群众创造历史的作用表现在：是社会物质财富的创造者、社会精神财富的创造者、社会变革的____。","a":"决定力量","tip":""},{"q":"群众观点和群众路线是马克思主义政党的根本观点和____。","a":"根本工作路线","tip":""}]},{"kp":44,"t":"杰出人物的历史作用与辩证地理解和评价个人","star":2,"fills":[{"q":"杰出人物是指在一定历史阶段对社会发展起重大推动作用的人，特别是____。","a":"杰出政治家","tip":""},{"q":"杰出人物的作用受到____的制约，不能夸大或否认其作用。","a":"社会历史条件","tip":""},{"q":"评价历史人物要坚持历史分析方法和阶级分析方法，坚持____的原则。","a":"两点论","tip":""}]}]}],"mt":[{"ch":"第一章 毛泽东思想及其历史地位","points":[{"kp":1,"t":"毛泽东思想的形成和发展","star":2,"tf":3,"body":"①时代条件：19世纪末20世纪初，世界进入帝国主义和无产阶级革命时代；\n②实践基础：中国共产党领导人民进行革命和建设的成功实践；\n③理论渊源：马克思列宁主义；\n④发展过程：\n· 开始形成（土地革命战争时期）——开辟农村包围城市、武装夺取政权的道路，标志是《反对本本主义》；\n· 走向成熟（遵义会议至抗日战争时期）——新民主主义革命理论系统化，标志是新民主主义革命理论的成熟与党的七大确立为指导思想；\n· 继续发展（解放战争时期和新中国成立后）——提出社会主义改造理论、正确处理人民内部矛盾学说等。"},{"kp":2,"t":"毛泽东思想的主要内容与活的灵魂","star":1,"tf":2,"body":"【主要内容】新民主主义革命理论、社会主义革命和社会主义建设理论、革命军队建设和军事战略理论、政策和策略理论、思想政治工作和文化工作理论、党的建设理论。\n【活的灵魂（三个基本方面）】\n①实事求是——是毛泽东思想的精髓，是党的根本思想路线；\n②群众路线——党的根本工作路线，一切为了群众、一切依靠群众，从群众中来、到群众中去；\n③独立自主——坚持独立思考，走自己的路，把国家和民族发展放在自己力量的基点上。"},{"kp":3,"t":"毛泽东思想的历史地位","star":1,"tf":1,"body":"①马克思主义中国化时代化的第一个重大理论成果；\n②中国革命和建设的科学指南；\n③中国共产党和中国人民宝贵的精神财富。\n★评价毛泽东：功绩是第一位的，错误是第二位的。毛泽东是伟大的马克思主义者、伟大的无产阶级革命家、战略家和理论家。"}]},{"ch":"第二章 新民主主义革命理论","points":[{"kp":4,"t":"近代中国国情、时代特征与新民主主义革命理论的形成","star":1,"tf":1,"body":"【近代中国国情】鸦片战争后，中国逐渐沦为半殖民地半封建社会，这是近代中国最基本的国情。\n【主要矛盾】帝国主义和中华民族的矛盾、封建主义和人民大众的矛盾。\n【革命的根本任务】推翻帝国主义、封建主义和官僚资本主义的统治。\n【时代特征】1917年俄国十月革命改变了世界历史方向，1919年五四运动标志着新民主主义革命的开端。\n【理论形成】在实践中逐步形成，标志是1940年《新民主主义论》等著作的发表。"},{"kp":5,"t":"新民主主义革命的总路线","star":1,"tf":2,"body":"总路线：无产阶级领导的，人民大众的，反对帝国主义、封建主义和官僚资本主义的革命。\n①领导力量——无产阶级（这是新民主主义革命区别于旧民主主义革命的根本标志，也是核心问题）；\n②动力——人民大众（工人阶级、农民阶级、城市小资产阶级和民族资产阶级）；\n③对象——帝国主义、封建主义和官僚资本主义；\n④性质——资产阶级民主主义革命（新式的、特殊的资产阶级民主革命）。\n※注意：民族资产阶级具有两面性，是革命的动力之一但不是领导力量。"},{"kp":6,"t":"新民主主义的基本纲领","star":1,"tf":1,"body":"【政治纲领】推翻帝国主义和封建主义的统治，建立一个无产阶级领导的、以工农联盟为基础的、各革命阶级联合专政的新民主主义的共和国。\n【经济纲领】没收封建地主阶级的土地归农民所有；没收官僚资本归新民主主义国家所有；保护民族工商业。\n【文化纲领】无产阶级领导的、人民大众的、反帝反封建的文化，即民族的、科学的、大众的文化。"},{"kp":7,"t":"新民主主义革命的道路","star":1,"tf":1,"body":"道路：农村包围城市、武装夺取政权（即「工农武装割据」）。\n【必要性】\n①中国是一个半殖民地半封建国家，内无民主、外无独立，无法走议会道路；\n②中国是农业大国，农民占人口绝大多数，是革命的主力军；\n③敌人长期占据中心城市，力量强大。\n【内容】在中国共产党领导下，以武装斗争为主要形式，以土地革命为中心内容，以农村革命根据地为依托，三者密切结合。"},{"kp":8,"t":"新民主主义革命的三大法宝","star":1,"tf":1,"body":"①统一战线——两个联盟：工农联盟（基础）、与民族资产阶级和非劳动人民的联盟；\n②武装斗争——中国革命的主要形式；\n③党的建设——伟大工程，着重从思想上建党。\n三者相互关系：统一战线和武装斗争是战胜敌人的两个基本武器；党的建设是掌握这两个武器的英勇战士。统一战线的巩固和扩大，有赖于党的建设；武装斗争需要党的正确领导。"},{"kp":9,"t":"新民主主义革命理论的意义","star":0,"tf":0,"body":"①是马克思主义中国化时代化的重要理论成果；\n②揭示了近代中国革命发展的客观规律；\n③指导中国革命取得了胜利；\n④对殖民地半殖民地国家人民的革命斗争具有借鉴意义。"}]},{"ch":"第三章 社会主义改造理论","points":[{"kp":10,"t":"新民主主义社会是一个过渡性的社会","star":1,"tf":2,"body":"从中华人民共和国成立到社会主义改造基本完成，是我国从新民主主义到社会主义的过渡时期。\n【经济成分（五种）】社会主义性质的国营经济、半社会主义性质的合作社经济、农民和手工业者的个体经济、私人资本主义经济、国家资本主义经济。\n【阶级构成】工人阶级、农民阶级和其他小资产阶级、民族资产阶级。\n【主要矛盾】随着土地改革完成，主要是工人阶级和资产阶级的矛盾。\n※新民主主义社会不是一个独立的社会形态，而是属于社会主义体系并逐步过渡到社会主义社会的过渡性质的社会。"},{"kp":11,"t":"党在过渡时期的总路线及其依据","star":1,"tf":1,"body":"总路线：从中华人民共和国成立到社会主义改造基本完成，这是一个过渡时期。党在这个过渡时期的总路线和总任务，是要在一个相当长的时期内，逐步实现国家的社会主义工业化，并逐步实现国家对农业、对手工业和对资本主义工商业的社会主义改造。\n简称「一化三改」——「一化」即社会主义工业化（主体），「三改」即对农业、手工业和资本主义工商业的社会主义改造（两翼）。\n①理论依据：马克思列宁主义的过渡时期理论；\n②现实依据：我国经济文化落后的具体国情。"},{"kp":12,"t":"适合中国特点的社会主义改造道路与历史经验","star":2,"tf":4,"body":"【农业的社会主义改造】积极引导农民组织起来，走互助合作道路；遵循自愿互利、典型示范、国家帮助的原则；采取从互助组到初级社再到高级社的逐步过渡形式。\n【手工业的社会主义改造】从供销入手，由小到大、由低到高，逐步过渡。\n【资本主义工商业的社会主义改造】\n· 用和平赎买的方法改造（这是中国的一大创举）；\n· 采取从低级到高级的国家资本主义过渡形式（初级形式→个别企业公私合营→全行业公私合营）；\n· 把对企业的改造和对人的改造相结合，把资本家改造成为自食其力的劳动者。\n【历史经验】\n①坚持社会主义工业化与社会主义改造同时并举；\n②采取逐步过渡的办法；\n③用和平的方法进行改造；\n④把对经济制度的改造与对人的改造相结合。"},{"kp":13,"t":"社会主义基本制度在中国的确立","star":1,"tf":2,"body":"1956年底，三大改造基本完成，标志着社会主义基本制度在中国得以确立，中国进入社会主义初级阶段。\n【经济制度】以生产资料公有制为基础的社会主义经济制度确立。\n【政治制度】人民代表大会制度、中国共产党领导的多党合作和政治协商制度、民族区域自治制度。\n【重大意义】\n①是中国历史上最深刻最伟大的社会变革；\n②为当代中国一切发展进步奠定了根本政治前提和制度基础；\n③使广大劳动人民真正成为国家的主人；\n④是世界社会主义运动史上的一个历史性伟大胜利。"}]},{"ch":"第四章 社会主义建设道路初步探索的理论成果","points":[{"kp":14,"t":"调动一切积极因素为社会主义事业服务","star":1,"tf":1,"body":"1956年4月《论十大关系》发表，标志着党对中国社会主义建设道路的探索开始。\n基本方针：调动一切积极因素为社会主义事业服务。\n「十大关系」前五条主要讨论经济关系（重工业和轻工业、农业的关系等），后五条主要讨论政治关系。\n《论十大关系》确定的基本方针，为社会主义建设指明了方向。"},{"kp":15,"t":"正确认识和处理社会主义社会矛盾的思想","star":2,"tf":3,"body":"1957年2月《关于正确处理人民内部矛盾的问题》发表。\n【基本矛盾】社会主义社会的基本矛盾仍然是生产关系和生产力、上层建筑和经济基础之间的矛盾，但这是非对抗性的矛盾，可以经过社会主义制度本身不断得到解决。\n【两类不同性质的矛盾】\n①敌我矛盾——用专政的方法解决；\n②人民内部矛盾——用民主的、说服教育的方法解决。\n【处理人民内部矛盾的方针】「团结—批评—团结」；在经济上实行「统筹兼顾、适当安排」；在民族关系上实行民族平等、民族团结；在党派关系上实行「长期共存、互相监督」。\n【意义】丰富和发展了马克思主义关于社会主义社会矛盾的理论。"},{"kp":16,"t":"走中国工业化道路的思想","star":1,"tf":1,"body":"以农业为基础、以工业为主导，以农轻重为序发展国民经济。\n强调发展工业必须和发展农业同时并举，把重工业作为我国经济建设的重点，同时充分注意发展农业和轻工业。\n后来又提出「两条腿走路」等一系列方针，探索适合中国国情的工业化道路。"},{"kp":17,"t":"初步探索的其他理论成果","star":1,"tf":1,"body":"①关于社会主义发展阶段：提出社会主义分为「不发达」和「比较发达」两个阶段；\n②关于社会主义现代化建设战略目标：提出把我国建设成为一个具有现代农业、现代工业、现代国防和现代科学技术的社会主义强国（四个现代化）；\n③关于科学教育文化工作：提出「百花齐放、百家争鸣」（艺术上）、「古为今用、洋为中用」；\n④关于国防建设、祖国统一、对外关系等方面也提出诸多重要思想。"},{"kp":18,"t":"初步探索的意义和经验教训","star":1,"tf":1,"body":"【意义】\n①巩固和发展了我国的社会主义制度；\n②为开创中国特色社会主义提供了宝贵经验、理论准备、物质基础；\n③丰富了科学社会主义的理论和实践。\n【经验教训】\n①必须把马克思主义与中国实际相结合，探索适合中国国情的社会主义建设道路；\n②必须正确认识社会主义社会的主要矛盾和根本任务，集中力量发展生产力；\n③必须发展社会主义民主、健全社会主义法制；\n④必须坚持党的民主集中制和集体领导制度，加强执政党建设。"}]},{"ch":"第五章 中国特色社会主义理论体系的形成发展","points":[{"kp":19,"t":"中国特色社会主义理论体系形成发展的背景与过程","star":1,"tf":1,"body":"【国际背景】和平与发展成为时代主题，世界多极化和经济全球化深入发展。\n【历史条件】总结国内外社会主义建设正反两方面经验。\n【实践基础】改革开放和社会主义现代化建设的伟大实践。\n【形成过程】\n①党的十一届三中全会（1978）实现伟大转折，开启改革开放；\n②党的十二大提出「建设有中国特色的社会主义」；\n③党的十三大系统阐述社会主义初级阶段理论；\n④党的十四大确立社会主义市场经济体制目标；\n⑤党的十五大确立邓小平理论为党的指导思想；\n⑥党的十六大、「三个代表」重要思想，十七大科学发展观相继写入党章。"},{"kp":20,"t":"中国特色社会主义理论体系的形成与主要内容","star":2,"tf":2,"body":"中国特色社会主义理论体系，是包括邓小平理论、「三个代表」重要思想、科学发展观、习近平新时代中国特色社会主义思想在内的科学理论体系。\n【科学内涵】\n①是马克思主义中国化时代化的重大理论成果；\n②是改革开放和社会主义现代化建设实践经验的科学总结；\n③是中国共产党集体智慧的结晶。\n【精髓】解放思想、实事求是、与时俱进、求真务实。"}]},{"ch":"第六章 邓小平理论","points":[{"kp":21,"t":"邓小平理论首要的基本的理论问题与精髓","star":2,"tf":7,"body":"【首要的基本的理论问题】什么是社会主义、怎样建设社会主义。\n【社会主义的本质】解放生产力，发展生产力，消灭剥削，消除两极分化，最终达到共同富裕。\n【精髓】解放思想、实事求是。\n【社会主义的根本任务】发展生产力。\n【「三个有利于」判断标准】是否有利于发展社会主义社会的生产力，是否有利于增强社会主义国家的综合国力，是否有利于提高人民的生活水平。\n【社会主义初级阶段】指我国在生产力落后、商品经济不发达条件下建设社会主义必然要经历的特定阶段；党的十三大系统阐述了社会主义初级阶段理论，核心是「一个中心、两个基本点」（以经济建设为中心，坚持四项基本原则，坚持改革开放）。"},{"kp":22,"t":"邓小平理论的主要内容与历史地位","star":2,"tf":5,"body":"【主要内容】\n①社会主义初级阶段理论；②党的基本路线；③社会主义根本任务与发展动力；④「分三步走」发展战略；⑤社会主义市场经济理论；⑥「一国两制」构想；⑦两手抓、两手都要硬；⑧党的建设。\n【「一国两制」】在一个中国的前提下，国家的主体坚持社会主义制度，香港、澳门、台湾保持原有的资本主义制度长期不变。\n【社会主义市场经济】计划和市场都是经济手段，社会主义也可以搞市场经济。\n【历史地位】\n①是马克思主义中国化时代化的第二个重大理论成果；\n②是中国特色社会主义理论体系的开篇之作；\n③是改革开放和社会主义现代化建设的科学指南。"}]},{"ch":"第七章 “三个代表”重要思想","points":[{"kp":23,"t":"“三个代表”重要思想的核心观点与主要内容","star":1,"tf":2,"body":"【核心观点】中国共产党必须始终代表中国先进生产力的发展要求，代表中国先进文化的前进方向，代表中国最广大人民的根本利益。\n【主要内容】\n①大力发展先进生产力；②发展社会主义先进文化；③实现好、维护好、发展好最广大人民的根本利益；④坚持党的领导。\n【本质】立党为公、执政为民。\n【历史地位】是加强和改进党的建设、推进我国社会主义自我完善和发展的强大理论武器，是马克思主义中国化时代化的重要理论成果。"}]},{"ch":"第八章 科学发展观","points":[{"kp":24,"t":"科学发展观的科学内涵与主要内容","star":1,"tf":2,"body":"【科学内涵】\n①第一要义是推动经济社会发展；\n②核心立场是以人为本；\n③基本要求是全面协调可持续；\n④根本方法是统筹兼顾。\n【主要内容】加快转变经济发展方式、发展社会主义民主政治、推进社会主义文化强国建设、构建社会主义和谐社会、推进生态文明建设、提高党的建设科学化水平等。\n【历史地位】是马克思主义关于发展的世界观和方法论的集中体现，是中国特色社会主义理论体系的重要组成部分。"}]}],"sg":[{"ch":"第一章 进入近代后中华民族的磨难与抗争","points":[{"kp":1,"t":"鸦片战争前的中国与世界、鸦片战争","star":1,"tf":1,"body":"【鸦片战争前的中国】处于封建社会晚期，自给自足的自然经济占主导，政治腐败、军备废弛、思想禁锢。\n【鸦片战争前的中外关系】西方资本主义迅速发展，英国率先完成工业革命，对外扩张，向中国大量走私鸦片。\n【鸦片战争（1840—1842）】\n· 导火线：1839年林则徐虎门销烟；\n· 结果：1842年《南京条约》签订，是中国近代史上第一个不平等条约；\n· 影响：中国开始沦为半殖民地半封建社会，是中国近代史的起点。"},{"kp":2,"t":"近代中国社会的半殖民地半封建性质","star":1,"tf":2,"body":"【半殖民地】形式上有独立政府，实际上受到帝国主义列强的控制和支配；国家主权遭到严重破坏。\n【半封建】封建剥削制度依然存在，但资本主义经济已有一定发展；自然经济逐步解体。\n【近代中国社会的主要矛盾】帝国主义和中华民族的矛盾、封建主义和人民大众的矛盾。其中帝国主义和中华民族的矛盾是最主要的矛盾。\n【近代中国的两大历史任务】\n①争取民族独立、人民解放；\n②实现国家富强、人民幸福。前者是后者的前提和基础。"},{"kp":3,"t":"近代中国社会阶级关系的变动与主要矛盾","star":2,"tf":4,"body":"【新兴阶级】\n①无产阶级（工人阶级）——最早出现于19世纪四五十年代的外资企业中，是中国新的生产力的代表，具有坚决的革命性；\n②资产阶级——分为买办资产阶级和民族资产阶级，民族资产阶级具有两面性（革命性与妥协性）。\n【农民阶级】人数众多，是革命的主力军，但不是新的生产力的代表。\n【两大历史任务的关系】争取民族独立、人民解放是实现国家富强、人民幸福的前提；国家富强、人民幸福是民族独立、人民解放的最终目的。\n※注意：近代中国社会的两大历史任务及其关系是高频考点。"},{"kp":4,"t":"西方列强对中国的侵略与抵御外来侵略的斗争","star":1,"tf":2,"body":"【列强侵略的四个手段】军事侵略、政治控制、经济掠夺、文化渗透。\n【主要不平等条约】《南京条约》（1842）、《天津条约》（1858）、《北京条约》（1860）、《马关条约》（1895）、《辛丑条约》（1901）。\n【抵御外来侵略的斗争】\n①人民群众的反抗——1841年广州三元里人民的抗英斗争，是中国近代史上中国人民第一次大规模的反侵略武装斗争；\n②爱国官兵的反抗——冯子材、邓世昌、丁汝昌等。\n【反侵略战争失败的原因】社会制度的腐败（根本原因）、经济技术的落后（重要原因）。"},{"kp":5,"t":"义和团运动与列强瓜分中国图谋的破产","star":1,"tf":3,"body":"【义和团运动】以农民为主体的反帝爱国运动，提出「扶清灭洋」口号；沉重打击了帝国主义瓜分中国的野心，但存在笼统排外等局限。\n【列强瓜分中国图谋破产的原因】\n①帝国主义列强之间的矛盾和互相制约；\n②中华民族进行的不屈不挠的反侵略斗争（根本原因）。\n【民族意识的觉醒】\n①「师夷长技以制夷」与早期维新思想；\n②救亡图存与振兴中华——1895年严复《救亡决论》喊出「救亡」口号；孙中山创立兴中会提出「振兴中华」。"}],"audio":{"title":"天朝的门被撞开了","text":"故事要从1793年说起。那一年，英国派了一个叫马戛尔尼的使团，带着蒸汽机模型、天文仪器、新式火炮，万里迢迢来到北京，想跟大清做生意。可乾隆皇帝对这些洋玩意儿没什么兴趣，他回了一封信给英国国王，大意是：天朝物产丰盈，无所不有，原不籍外夷货物以通有无。这封信今天读起来有点好笑，可它背后是一个残酷的事实——当西方已经跑完工业革命、开着蒸汽轮船满世界找市场的时候，中国还关着门，沉浸在天朝上国的梦里。\n\n这一觉，很快被炮声惊醒。\n\n英国人很快发现，正经做生意赚不到钱，因为中国自给自足，不需要他们的毛织品。于是他们找到了一个缺德但赚钱的东西——鸦片。鸦片这东西很坏，它不光掏空中国老百姓的身体，让吸食者形销骨立，还一年卷走上千万两白银，把中国的银子源源不断地吸走。1839年，道光皇帝派林则徐去广东禁烟。林则徐这个人有骨气，他到广州之后，把收缴来的两万多箱鸦片，在虎门海滩当众销毁，整整烧了二十三天，海水都变了颜色。\n\n英国人不干了，1840年，鸦片战争爆发。这场仗打得很憋屈。清军用的还是大刀长矛和老式火炮，英国人的军舰可以在海上随意轰击沿海城镇。打打停停两年，1842年，清政府被迫签下《南京条约》。这是中国近代史上第一个不平等条约，割香港岛、赔款两千一百万银元、开放广州厦门福州宁波上海五个通商口岸。紧接着，1858年的《天津条约》、1860年的《北京条约》、1895年的《马关条约》、1901年的《辛丑条约》，一个比一个苛刻。从1842年这一刻起，中国开始变成半殖民地半封建社会。\n\n所谓半殖民地，是说形式上还有自己的政府、还有皇帝，可主权已经被列强掐住了喉咙，关税、驻军、领事裁判权，一样样都捏在别人手里；所谓半封建，是说封建剥削还在，地主照样收租，可自给自足的自然经济已经被洋货冲得七零八落。这个社会有一个最要命的矛盾：帝国主义和中华民族的矛盾，封建主义和人民大众的矛盾。这两对矛盾，贯穿了整部近代史。\n\n但中国人不是没有反抗。1841年，广州三元里，一百多个乡的农民拿着锄头、铁锹、鸟枪，把英国兵围在田里打，打得侵略者狼狈逃窜。这是中国近代史上第一次大规模的反侵略武装斗争。后来还有冯子材在镇南关大败法军，邓世昌在黄海开着致远舰撞向敌舰，丁汝昌在威海卫拒绝投降、服毒自尽。这些反抗，每一个都让人动容。可它们大多是零散的、自发的，没有统一的领导和明确的方向。\n\n1900年，义和团运动起来了。一群农民，打着「扶清灭洋」的旗子，用血肉之躯去挡洋枪洋炮。他们烧教堂、拆铁路、围攻使馆。这场运动有它落后的一面，笼统排外，喊着要杀光所有洋人，也伤害了不少无辜。可它同时打出了中国人不甘屈服的骨气。列强本来想把中国像切西瓜一样瓜分掉，最后没有得逞。为什么？一是列强之间互相牵制，谁也不想让别人多拿一块；二是中华民族不屈不挠的反抗，让他们发现，这块土地没那么好啃，四万万人的怒火,是扑不灭的。\n\n一场场失败之后，中国人开始醒了。魏源写《海国图志》，提出「师夷长技以制夷」；严复在《救亡决论》里喊出「救亡」二字，字字泣血；孙中山创立兴中会，提出「振兴中华」这个响亮的口号。\n\n再讲一个细节。当时的通商口岸是怎么运作的？外国人在那里享有领事裁判权——就是说，一个英国人如果在中国犯了罪，中国官府管不了，得由英国领事按英国法律审。这叫「治外法权」，是对一个国家主权的公然践踏。还有协定关税，中国的关税税率不是自己定的，得跟列强商量，税率被压到百分之五左右，便宜了洋货，苦了国货。你想想，一个连自己国家的税都做不了主的地方，还叫什么主权国家？这就是「半殖民地」三个字真正的分量。而「半封建」呢，是另一重枷锁：外国资本主义的入侵，虽然客观上瓦解了中国的自然经济、刺激了资本主义的发展，但列强绝不希望中国真的强起来，它要的是一个永远低价卖原料、高价买工业品的中国。买办阶级由此而生，他们替洋人跑腿、从中渔利，成了帝国主义在中国的代理人。所以近代中国的苦难，是双重压迫——外有帝国主义，内有封建主义，两副枷锁，缺一不可地压在四万万人的身上。\n\n请注意，这里已经埋下了一个贯穿整部近代史的追问：为什么我们一次次反抗，又一次次失败？答案不会一下子出现，它就藏在我们接下来要讲的每一章里——因为光有热血还不够，还得有正确的道路、正确的领导和正确的理论。第一章讲完了苦难，第二章，我们要看看，不同的人，是怎么去找这条出路的。三次尝试，三次碰壁，而每一次碰壁，都把中国往正确的答案上,又推近了一步。"}},{"ch":"第二章 不同社会力量对国家出路的早期探索","points":[{"kp":6,"t":"太平天国农民战争","star":1,"tf":1,"body":"【兴起】1851年洪秀全在广西金田村发动起义，建号太平天国，1853年定都天京（南京）。\n【纲领文件】\n①《天朝田亩制度》——以解决土地问题为中心，是最能体现太平天国社会理想的纲领性文件，但具有空想性；\n②《资政新篇》——洪仁玕提出，具有资本主义色彩的改革方案，但未付诸实施。\n【失败】1864年天京陷落，太平天国失败。"},{"kp":7,"t":"农民斗争的意义和局限","star":2,"tf":2,"body":"【意义】\n①沉重打击了封建统治阶级，动摇了清王朝的统治基础；\n②是中国旧式农民战争的最高峰；\n③冲击了孔子和儒家经典的正统权威；\n④打击了外国侵略势力。\n【失败原因与局限】\n①根本原因：农民阶级不是新的生产力和生产关系的代表，无法克服自身固有的阶级局限性；\n②没有科学理论的指导，无法提出正确的革命纲领；\n③无法长期保持领导集团的团结。\n※结论：农民阶级不能领导中国革命走向胜利。"},{"kp":8,"t":"洋务运动","star":1,"tf":2,"body":"【兴办】19世纪60年代初至90年代，以「自强」「求富」为目标，代表人物有奕䜣、曾国藩、李鸿章、左宗棠、张之洞等。\n【主要内容】\n①兴办近代企业——军用工业（江南机器制造总局、福州船政局）和民用工业（轮船招商局、开平煤矿）；\n②建立新式海陆军——北洋水师；\n③创办新式学堂、派遣留学生。\n【失败标志】1895年甲午战争北洋水师全军覆没。\n【失败原因】\n①洋务运动具有封建性；②对外国具有依赖性；③企业的管理具有腐朽性。\n※洋务运动的指导思想是「中学为体，西学为用」，只学技术不改制度，注定失败。"},{"kp":9,"t":"戊戌维新运动","star":1,"tf":2,"body":"【开展】1898年，以康有为、梁启超为代表的资产阶级维新派发动，主张学习西方、变法图强，得到光绪帝支持，史称「百日维新」。\n【意义】\n①是一次爱国救亡运动；\n②是一场资产阶级性质的政治改良运动；\n③是一次思想启蒙运动。\n【失败】1898年慈禧太后发动戊戌政变，变法失败，谭嗣同等「戊戌六君子」被杀。\n【失败原因与教训】\n①维新派自身力量弱小，依靠没有实权的皇帝；\n②封建守旧势力强大；\n③不敢否定封建主义，对帝国主义抱有幻想。\n※结论：资产阶级改良道路在中国行不通。"}],"audio":{"title":"三次试错","text":"上一章我们说，中国人被打醒了，开始找路。这一章，就是三次试错的故事：农民试了一次，地主阶级里的洋务派试了一次，资产阶级维新派也试了一次。他们都失败了，但正是这三次失败，把中国一步步逼向了正确的答案。\n\n第一次试错，是农民。1851年，一个叫洪秀全的落第书生，说自己在梦里见过上帝，是上帝的次子，他在广西金田村带着两万多人起义，建号太平天国。这支队伍发展得很快，两年后攻下武昌，三年后打下南京，定为天京。这可不是小打小闹，太平军北伐一度打到天津附近，把清王朝吓得够呛。\n\n洪秀全还提出了两个纲领。一个是《天朝田亩制度》，想把土地按人口平均分配，人人有田种、有饭吃、有衣穿，这是中国农民几千年来最朴素的梦想。另一个是《资政新篇》，由洪仁玕提出，主张办工厂、修铁路、设银行、学西方，带有鲜明的资本主义色彩。听起来是不是很理想？\n\n可问题恰恰就出在这儿。第一，《天朝田亩制度》那种绝对平均主义，在现实中根本没法落地，你要把每一家的收成都交上来再平均分下去，谁干？第二，《资政新篇》再好，战火纷飞里，连洪秀全自己都没顾上推行。第三，也是最要命的——太平天国内部很快斗起来了。1856年天京事变，东王杨秀清逼洪秀全封他万岁，北王韦昌辉又杀了杨秀清，翼王石达开被逼出走，几万人头落地。自己人杀自己人，元气大伤。1864年，天京陷落，太平天国失败。\n\n太平天国败在哪里？一句话：它是一场旧式的农民战争。农民阶级不是新的生产力的代表，提不出科学的革命纲领，也克服不了自身的局限性。这个结论非常重要，它说明：农民，扛不起领导中国革命的大旗，哪怕他们有再多的血性和牺牲。\n\n第二次试错，是地主阶级里的洋务派。19世纪60年代，曾国藩、李鸿章、左宗棠、张之洞这些人搞起了洋务运动，口号是「自强」「求富」。他们办了江南机器制造总局、福州船政局，建起了北洋水师，还派幼童出国留学。看起来挺像那么回事。\n\n可他们的指导思想是八个字：「中学为体，西学为用」。什么意思？就是我只学你的技术，不动我的制度。房子漏雨了，我只换窗户，不修房梁。1895年，甲午战争，北洋水师在威海卫全军覆没。洋务运动，彻底破产。别人打你，不是因为你的船不够新，而是因为你的制度烂到了根子上。\n\n第三次试错，是资产阶级维新派。1898年，康有为、梁启超这些人，靠着光绪皇帝搞起了戊戌变法，一百来天里发出一堆新政诏书，办学堂、裁冗员、练新军，史称「百日维新」。他们想学日本明治维新，搞君主立宪。可他们手上没有兵、没有实权，只靠一个被慈禧捏在手心里的皇帝。慈禧一翻脸，戊戌政变，变法失败，谭嗣同等六君子血洒菜市口。\n\n谭嗣同本来能跑，可他偏不跑。他说：各国变法，无不从流血而成，今日中国未闻有因变法而流血者，此国之所以不昌也，有之，请自嗣同始。这句话，是一个读书人用命写下的。\n\n这里还要多说一句太平天国的分量。它不只是推翻清朝那么简单，它是中国旧式农民战争的最高峰——规模最大、持续最久、影响最广。它还第一次提出了系统的革命纲领，第一次把向西方学习的方案摆上台面。可也正因为是「旧式」的，它的失败就成了一个不能重演的教训。你注意看，太平天国栽的三个跟头——没有科学理论、没有先进阶级领导、没有坚强团结的领导核心——这三点，后来在每一支试图救中国的力量身上，几乎都重复了一遍。洋务运动缺的是制度革新，戊戌变法缺的是实力依托，辛亥革命缺的是群众基础和彻底纲领。所以你看，历史不是一次次从头再来，而是在不断地「排除错误答案」。这些失败不是白费的，它们像一块块界碑，把后来者引向唯一正确的那条路。\n\n三次试错，三条路，全断了。农民不行，地主阶级的改良不行，资产阶级的改良也不行。那还有没有路？有的。1895年之后，一个叫孙中山的年轻人开始明白：靠改良不行，得靠革命，得把腐朽的朝廷整个推倒。下一章，我们就来讲这场推翻了两千年帝制的革命——辛亥革命。"}},{"ch":"第三章 辛亥革命与君主专制制度的终结","points":[{"kp":10,"t":"辛亥革命爆发的历史条件与资产阶级革命派的活动","star":2,"tf":2,"body":"【历史条件】\n①民族危机加深，社会矛盾激化；\n②清末「新政」及其破产；\n③资产阶级革命派登上历史舞台；\n④民族资本主义发展，资产阶级力量壮大。\n【革命派活动】\n①孙中山1894年创立兴中会（第一个资产阶级革命团体），提出「振兴中华」；\n②1905年在日本东京成立中国同盟会——第一个全国性的资产阶级革命政党，机关报《民报》；\n③发动多次武装起义（黄花岗起义等）。"},{"kp":11,"t":"三民主义","star":2,"tf":2,"body":"孙中山提出的资产阶级民主革命纲领，由民族主义、民权主义、民生主义三部分组成（旧三民主义）。\n①民族主义——「驱除鞑虏，恢复中华」，即推翻清王朝统治（未明确提出反帝）；\n②民权主义——「创立民国」，即建立资产阶级共和国（是三民主义的核心）；\n③民生主义——「平均地权」，即核定地价、增价归公。\n【评价】是一个比较完整的资产阶级民主革命纲领，但具有局限：没有明确提出反帝主张，没有彻底的土地革命纲领。"},{"kp":12,"t":"辛亥革命的爆发、清王朝覆灭与中华民国的建立","star":1,"tf":2,"body":"【爆发】1911年10月10日武昌起义，各省纷纷响应。\n【高潮】1912年1月1日孙中山在南京就任中华民国临时大总统，中华民国成立；2月12日清帝退位，结束两千多年的封建君主专制制度。\n【成果】1912年3月颁布《中华民国临时约法》——中国历史上第一部具有资产阶级共和国宪法性质的法典。"},{"kp":13,"t":"封建军阀专制统治的形成与旧民主主义革命的失败","star":2,"tf":1,"body":"【结局】袁世凯窃取革命果实，建立北洋军阀统治，辛亥革命失败。\n【失败原因】\n①资产阶级革命派自身的软弱性和妥协性（根本原因）；\n②没有提出彻底的反帝反封建纲领；\n③没有发动和依靠广大人民群众；\n④没有建立坚强的革命政党。\n【教训】资产阶级共和国的方案在中国行不通，中国资产阶级不能领导中国革命走向胜利，中国革命必须由新的阶级和新的政党来领导。\n※注意：辛亥革命推翻了封建君主专制制度，但没有改变中国半殖民地半封建的社会性质。"}],"audio":{"title":"帝制的终结与未完成的革命","text":"上一章我们讲到，改良的路走不通了。一个广东青年孙中山，很早就看明白了这一点。1894年，他在太平洋中间的檀香山创立兴中会，喊出了那句后来响彻中国的口号——振兴中华。那时候他才二十八岁，谁也想不到，这个学医出身的年轻人，会成为终结帝制的人。\n\n1905年，孙中山在日本东京，把兴中会、华兴会、光复会这些革命团体合并成中国同盟会。这是中国第一个全国性的资产阶级革命政党，机关报叫《民报》。同盟会有个纲领，就是后来大名鼎鼎的三民主义：民族、民权、民生。\n\n我用最通俗的话给你拆开。民族主义，八个字「驱除鞑虏，恢复中华」，说白了就是推翻满清统治；民权主义，四个字「创立民国」，这是三民主义的核心，要建立资产阶级共和国，让人民当家作主；民生主义，四个字「平均地权」，想缓和一下尖锐的土地问题。这套纲领，在当时就算是很先进了。可它也有硬伤：民族主义只反满，没明确提出反帝；民生主义也只是核定地价、涨价归公，没敢真正动地主阶级的命根子。这两个硬伤，后来都成了辛亥革命的隐患。\n\n1911年，清政府搞了个「皇族内阁」，十三个阁员里九个是皇族，把主张立宪的人彻底推到了对立面。10月10日，武昌城里的新军起义了，这就是武昌起义。这一枪打出去，全国响应，短短一个多月，十几个省宣布独立，清王朝的统治土崩瓦解。1912年1月1日，孙中山在南京就任中华民国临时大总统。2月12日，隆裕太后代宣统皇帝颁布退位诏书，统治中国两千多年的君主专制制度，就此终结。\n\n这是辛亥革命最大的功劳——它让「皇帝」这两个字，永远退出了中国的历史舞台。从此以后，谁敢再称帝，谁就会被全国人民唾弃，袁世凯称帝八十三天就垮台，张勋复辟十二天就完蛋，就是明证。另外，它还颁布了《中华民国临时约法》，这是中国历史上第一部具有资产阶级共和国宪法性质的法典，民主共和的观念从此深入人心。\n\n可胜利的果实，很快被人端走了。这个人叫袁世凯。他手里有北洋六镇这支最强的军队，一边逼清帝退位，一边逼孙中山让位。孙中山为了实现共和、避免内战，只能选择妥协。1912年3月，袁世凯在北京就任临时大总统，北洋军阀的统治开始了。后来袁世凯刺杀宋教仁、镇压二次革命、解散国会，甚至干脆称帝，把民国的招牌砸了个稀烂。\n\n辛亥革命为什么会失败？一句话：资产阶级革命派太软、太妥协。他们没有提出彻底的反帝反封建纲领，没有发动和依靠最广大的工农群众，也没有建立起一支听党指挥的革命军队。孙中山后来自己也沉痛地说：革命尚未成功，同志仍须努力。\n\n还有一层意义值得说透。辛亥革命不仅推翻了一个王朝，它还第一次把「民主共和」这四个字，种进了中国人的心里。在此之前，中国人脑子里的最高权力，永远是「天子」；在此之后，「主权在民」成了没人敢公开反对的政治正确。这就是为什么后来袁世凯要称帝、张勋要复辟，都迅速失败——民智已开，谁逆潮流而动，谁就粉身碎骨。但辛亥革命也留下了一笔沉重的遗产：它证明了一件事——仅仅换掉一个旧制度，是不够的。如果不触动帝国主义和封建主义的根基，共和国也可以空有其名。辛亥革命之后的中国，军阀混战、民不聊生，恰恰说明了这一点。旧民主主义革命走到了尽头，历史在等待一个新的开端。\n\n辛亥革命给我们留下了两条极其重要的教训：第一，资产阶级共和国的方案，在半殖民地半封建的中国行不通；第二，中国的资产阶级，由于它的软弱性，担负不起领导革命走向胜利的重任。那么问题来了——既然资产阶级不行，那谁来领导？历史很快给出了答案：一个新的阶级——无产阶级，和一支新的力量——中国共产党。下一章，我们就来讲这开天辟地的大事变。"}},{"ch":"第四章 中国共产党成立和中国革命新局面","points":[{"kp":14,"t":"新文化运动与思想解放的潮流","star":1,"tf":1,"body":"【兴起】1915年陈独秀在上海创办《青年杂志》（后改名《新青年》），标志着新文化运动的开始。\n【基本口号】民主与科学（德先生与赛先生）。\n【主要内容】提倡民主、反对独裁专制；提倡科学、反对迷信；提倡新道德、反对旧道德；提倡新文学、反对旧文学。\n【意义】是中国历史上一次空前的思想解放运动，为马克思主义在中国的传播创造了条件。"},{"kp":15,"t":"十月革命与马克思主义在中国的初步传播","star":2,"tf":2,"body":"【十月革命】1917年俄国十月社会主义革命胜利，开辟了人类历史的新纪元，为中国送来了马克思列宁主义。\n【李大钊的贡献】1918年发表《法俄革命之比较观》《庶民的胜利》《布尔什维主义的胜利》等文章，是中国最早的马克思主义者；1919年发表《我的马克思主义观》，系统介绍了马克思主义。\n【意义】马克思主义在中国的传播，为中国共产党的成立作了思想准备。"},{"kp":16,"t":"五四运动与新民主主义革命的开端","star":2,"tf":3,"body":"【五四运动（1919）】\n· 导火线：巴黎和会上中国外交的失败；\n· 口号：「外争主权、内除国贼」；\n· 初期以学生为主，6月后工人阶级以独立的姿态登上政治舞台，成为运动主力；\n· 直接结果：罢免曹汝霖等三人职务、拒绝在和约上签字。\n【历史意义】\n①是一次彻底的不妥协的反帝反封建的爱国运动；\n②是中国新民主主义革命的开端；\n③促进了马克思主义在中国的传播及其与中国工人运动的结合；\n④为中国共产党的成立作了思想上和干部上的准备。\n【五四精神】爱国、进步、民主、科学。"},{"kp":17,"t":"中国早期马克思主义思想运动与马克思主义同中国工人运动的结合","star":2,"tf":3,"body":"【早期马克思主义者】李大钊、陈独秀、毛泽东、周恩来等。\n【早期组织】1920年8月，陈独秀在上海成立第一个共产党早期组织；同年10月，李大钊在北京成立党的早期组织。\n【工人运动】各地共产党早期组织深入工人群众，开办工人夜校，领导工人罢工，推动马克思主义与中国工人运动相结合。\n【意义】为建立中国共产党作了组织准备。"},{"kp":18,"t":"中国共产党第一次全国代表大会的召开与中国共产党成立","star":3,"tf":1,"body":"【中共一大】1921年7月23日在上海召开（最后一天转移到浙江嘉兴南湖游船上）。\n【内容】\n①确定党的名称为「中国共产党」；\n②通过了党的第一个纲领，确定党的奋斗目标是推翻资产阶级政权，建立无产阶级专政，消灭阶级差别，实现共产主义；\n③确定党成立后的中心任务是领导工人运动；\n④选举产生党的领导机构中央局，陈独秀为书记。\n【伟大意义】中国共产党的成立是中国历史上开天辟地的大事变；中国革命从此有了坚强的领导核心、科学的指导思想和崭新的革命方法，中国革命的面貌焕然一新。\n※中共一大是高频考点（★★★）。"},{"kp":19,"t":"民主革命纲领的制定、国共合作与大革命的失败","star":2,"tf":2,"body":"【民主革命纲领】1922年中共二大第一次明确提出反帝反封建的民主革命纲领——打倒军阀、推翻国际帝国主义的压迫、统一中国为真正的民主共和国。\n【国共合作】1924年国民党一大召开，标志着第一次国共合作的正式形成，新三民主义成为合作的政治基础。\n【大革命（1924—1927）】以推翻帝国主义在华势力和北洋军阀为目标，取得了重大胜利。\n【失败】1927年「四一二」「七一五」反革命政变，大革命失败。\n【教训】必须坚持无产阶级对革命的领导权，必须掌握革命的武装。"}],"audio":{"title":"开天辟地的大事变","text":"辛亥革命之后，中国没有变好，反而更乱了。袁世凯死后，北洋军阀分裂成皖系、直系、奉系，你打我、我打你，一年打几仗，老百姓流离失所、苦不堪言。中国到底要往哪里去？一批先进的知识分子感觉到，光换一个政府没用，得从思想上、从根子上找答案。\n\n1915年，陈独秀在上海创办《青年杂志》，第二年改名《新青年》，一场思想解放运动开始了——新文化运动。它的两大口号是民主和科学，就是人们常说的「德先生」和「赛先生」。反对专制独裁、反对封建迷信、反对旧道德、反对旧文学。鲁迅的《狂人日记》，就是这时候写出来的，那句「我翻开历史一查，这历史没有年代，歪歪斜斜的每页上都写着仁义道德几个字……仔细看了半夜，才从字缝里看出字来，满本都写着两个字是吃人」，读来让人背后发凉。这场运动最大的意义，就是把中国人被禁锢了两千年的脑子，给松了绑。\n\n思想的闸门一开，新的东西就涌进来了。1917年，俄国十月革命胜利，列宁领导的布尔什维克党建立了世界上第一个社会主义国家，给中国送来了马克思列宁主义。李大钊是最早接受马克思主义的中国人，他接连写下《庶民的胜利》《布尔什维主义的胜利》，大声宣告：试看将来的环球，必是赤旗的世界！\n\n真正的转折点，是1919年。这一年，第一次世界大战的战胜国在巴黎开会，中国作为战胜国，本以为能把德国在山东的特权收回来，结果列强无视中国的正当要求，转手就把山东的权益送给了日本。这个消息一传回国内，举国哗然。5月4日，北京三千多名学生在天安门前集会抗议，喊出「外争主权、内除国贼」「取消二十一条」「还我青岛」。运动初期是学生在冲，到了6月，上海工人举行大罢工，商人罢市，运动的中心从北京转到上海，主力从学生变成工人。中国的工人阶级，第一次以独立的姿态登上了政治舞台。\n\n五四运动有两层重大意义：第一，它是一次彻底的不妥协的反帝反封建的爱国运动，连帝国主义和封建主义一块儿反，这在以前是没有的；第二，它是中国新民主主义革命的开端。什么叫新民主主义革命？就是由无产阶级领导、而不再是资产阶级领导的民主革命。领导权，从资产阶级手里，转移到了无产阶级手里。这是中国革命史上一次质的飞跃。\n\n五四之后，马克思主义开始和中国工人运动结合起来。1920年，陈独秀在上海建立了第一个共产党早期组织，李大钊在北京也建了一个，各地纷纷响应。1921年7月23日，中国共产党第一次全国代表大会在上海法租界的一栋石库门房子里召开，一共十三名代表，代表着全国五十多名党员。会议开到一半，遭到巡捕搜查，代表们连夜转移到浙江嘉兴，在南湖的一条游船上开完了最后一天的会。就在这条不起眼的小船上，中国共产党诞生了。\n\n中共一大的意义，怎么说都不过分。中国革命从此有了坚强的领导核心、科学的指导思想和崭新的革命方法，面貌焕然一新。第二年，中共二大第一次提出了彻底的反帝反封建民主革命纲领：打倒军阀、推翻帝国主义的压迫、统一中国为真正的民主共和国。1924年，国共第一次合作，反帝反封建的大革命轰轰烈烈地起来了，工农运动风起云涌，北伐战争势如破竹。\n\n这里有个细节值得回味。五四运动为什么说它是「新民主主义革命的开端」？不光是工人阶级登场了，更重要的是领导权变了。你对比一下：辛亥革命是资产阶级政党领导的，五四运动之后的革命，是无产阶级领导的。这个转变，是中国革命史上最根本的一次转弯。还有一点，五四运动让中国先进分子看清了西方的真面目——原来你们标榜的公理、正义，到了瓜分弱国的时候，全都不见了。于是，「走俄国人的路」成了那一代人的共识。马克思主义，就是从这时候起，真正在中国扎下了根。你想想，一个理论的传播，靠的不是口号，而是现实的教育——巴黎和会那一次背叛，比多少本小册子都管用。\n\n可这条路上，还有一道生死关口。1927年，蒋介石发动「四一二」政变，汪精卫发动「七一五」政变，昨天还是盟友，今天就举起屠刀，三十多万共产党员和革命群众倒在血泊里，大革命惨遭失败。血的教训告诉共产党人一个硬道理：革命，必须有自己的枪杆子，不能把命运交到别人的手里。下一章，我们就来讲，中国共产党是怎么在绝境中，找到一条从来没人走过的新路。"}},{"ch":"第五章 中国革命的新道路","points":[{"kp":20,"t":"国民党在全国统治的建立及其性质","star":2,"tf":2,"body":"【建立】1927年蒋介石发动四一二政变后，1928年张学良「东北易帜」，标志国民政府在形式上完成了对全国的统一。\n【性质】代表大地主大资产阶级利益的政权，实行一党专政、军事独裁统治，对外投靠帝国主义，对内镇压人民革命。\n【统治手段】庞大的军队、特务系统、保甲制度、文化专制。"},{"kp":21,"t":"土地革命战争的兴起与农村包围城市道路的开辟","star":2,"tf":3,"body":"【武装起义】1927年8月1日南昌起义——打响武装反抗国民党反动统治的第一枪，是中国共产党独立领导革命战争、创建人民军队的开端。\n【八七会议】1927年8月，确定实行土地革命和武装起义的方针，毛泽东提出「枪杆子里出政权」的著名论断。\n【秋收起义与井冈山】1927年9月毛泽东领导秋收起义，失败后转向农村，创建井冈山革命根据地。\n【道路开辟】1928—1930年，毛泽东写了《中国的红色政权为什么能够存在？》《井冈山的斗争》《星星之火，可以燎原》等文章，阐述了农村包围城市、武装夺取政权的道路。\n【土地革命路线】依靠贫农、雇农，联合中农，限制富农，消灭地主阶级，变封建土地所有制为农民土地所有制。"},{"kp":22,"t":"土地革命战争的发展及其挫折","star":2,"tf":2,"body":"【发展】到1930年，全国建立起十几块农村革命根据地，革命形势发展迅速。\n【挫折】「左」倾教条主义错误：1931年王明「左」倾教条主义在党中央占统治地位，导致第五次反「围剿」失败，红军被迫长征。\n【教训】必须把马克思主义基本原理与中国具体实际相结合，反对教条主义。"},{"kp":23,"t":"遵义会议实现伟大历史转折","star":2,"tf":2,"body":"【召开】1935年1月，红军长征途中在贵州遵义召开。\n【内容】集中全力解决了军事问题和组织问题，结束了王明「左」倾教条主义在党中央的统治，确立了毛泽东在党中央和红军的领导地位。\n【意义】\n①是党的历史上一个生死攸关的转折点；\n②开始形成以毛泽东为核心的第一代中央领导集体；\n③标志着中国共产党在政治上开始走向成熟。\n【长征胜利】1936年10月，红一、二、四方面军在甘肃会宁会师，长征胜利结束。"}],"audio":{"title":"从城市到农村：一条没人走过的路","text":"1927年，是中国共产党历史上最黑暗的一年。四一二、七一五，昨天的盟友，今天的屠夫。大革命失败了，白色恐怖笼罩全国，成千上万的共产党人倒在敌人的枪口下。有人动摇，有人退党，有人叛变。革命还有希望吗？\n\n可真正的共产党人没有被吓倒。他们擦干身上的血，掩埋好同伴的尸体，又继续战斗了。1927年8月1日凌晨，周恩来、贺龙、叶挺、朱德、刘伯承，在南昌城头打响了武装反抗国民党反动统治的第一枪。这一声枪响，后来成了中国人民解放军的诞生礼，八月一日也就成了建军节。紧接着，中共中央召开八七会议，毛泽东在会上说了一句石破天惊的话：须知政权是由枪杆子中取得的。\n\n可问题是，枪杆子该往哪儿使？按照俄国十月革命的经验，是攻打大城市。毛泽东领导的秋收起义，一开始也是奔着长沙去的，结果敌人力量太强，起义军损失惨重。就在这个生死关口，毛泽东做了一个改变中国革命命运的决定：不打大城市了，把队伍拉上井冈山，到农村去，到敌人力量薄弱的地方去！\n\n这一步，看起来是退，实际上是进。井冈山革命根据地建立起来了，朱德带着南昌起义的余部上山会师，「朱毛红军」的名号从此传遍全国。毛泽东还写了几篇文章，把这条路讲透了：《中国的红色政权为什么能够存在？》《井冈山的斗争》《星星之火，可以燎原》。核心思想就一句话：农村包围城市，武装夺取政权。\n\n为什么在中国必须走这条路？因为中国是一个半殖民地半封建国家，内部没有民主，外部没有独立，不可能像西方那样搞合法的议会斗争；敌人长期霸占着中心城市，力量强大；而中国农民占人口的绝大多数，是革命最广大的主力军。所以，只能先在敌人力量薄弱的农村建立根据地，用武装斗争、土地革命和根据地建设这三件事扭在一起，像钻木取火一样，一点点把星星之火，烧成燎原大火。\n\n到了1930年，全国建起了十几块农村革命根据地，红军发展到十万人，革命形势一片大好。可偏偏这时候，党内的「左」倾教条主义又犯了。1931年，王明那套把马克思主义当教条、把共产国际指示当圣旨的做法在党中央占了上风。他们不研究中国实际，硬要红军去跟装备精良的敌人拼消耗，结果第五次反「围剿」失败，红军被迫进行战略转移，这就是长征。\n\n长征路上，1935年1月，红军打下了贵州遵义，在这里开了一次扭转乾坤的会——遵义会议。这次会集中全力解决了最紧迫的军事问题和组织问题，结束了王明「左」倾错误的统治，实际上确立了毛泽东在党中央和红军的领导地位。遵义会议，是党的历史上一个生死攸关的转折点，也是中国共产党第一次独立自主地运用马克思主义解决自己的路线、方针和政策问题，标志着党在政治上开始走向成熟。\n\n之后，四渡赤水、巧渡金沙江、强渡大渡河、飞夺泸定桥、爬雪山、过草地，红军用双脚丈量了两万五千里。1936年10月，红一、二、四方面军在甘肃会宁会师，长征胜利结束。长征的胜利，保存了革命的火种，也铸就了一种精神——把全国人民和中华民族的根本利益看得高于一切，坚定革命的理想和信念，坚信正义事业必然胜利。\n\n这里有个细节要说清楚。为什么说遵义会议是「党在政治上开始走向成熟」的标志？因为在这之前，中国共产党在很大程度上还是听共产国际的，出了重大决策，常常要请示、要等指示。可遵义会议，是在同共产国际失去联系的情况下，党自己独立地开会、独立地分析、独立地做出决定，并且做出了正确的决定。这是破天荒的第一次。一个政党，只有能够独立自主地解决自己的问题，才叫真正成熟。另外，遵义会议只解决了军事和组织问题，没有马上解决政治路线问题，这是很讲究策略的——在当时最紧迫的是保住红军、保住革命，如果一上来就纠缠政治路线，很可能引起分裂。先解决能解决的，这就是实事求是。\n\n可红军刚在陕北站稳脚跟，一个更凶恶的敌人就扑了上来——日本帝国主义。下一章，全民族抗战的烽火，将要燃遍整个中国。"}},{"ch":"第六章 中华民族的抗日战争","points":[{"kp":24,"t":"抗日救亡运动的兴起与抗日民族统一战线的建立","star":2,"tf":3,"body":"【九一八事变】1931年9月18日，日本发动九一八事变，中国人民开始了局部抗战。\n【西安事变】1936年12月，张学良、杨虎城发动西安事变，逼蒋抗日；事变的和平解决成为时局转换的枢纽，十年内战基本结束。\n【统一战线】1937年9月，国民党公布中共中央提交的国共合作宣言，标志着以国共合作为基础的抗日民族统一战线正式建立。\n【全民族抗战开始】1937年7月7日卢沟桥事变（七七事变），标志全民族抗战的开始。"},{"kp":25,"t":"战略防御阶段的正面战场与战略相持阶段","star":2,"tf":2,"body":"【战略防御阶段（1937—1938）】正面战场是抗日的主要战场，国民政府组织了一系列会战（淞沪会战、太原会战、徐州会战、武汉会战等），粉碎了日军「速战速决」的计划。\n【台儿庄战役】1938年，李宗仁指挥，取得抗战以来的重大胜利。\n【战略相持阶段（1938年10月以后）】日本调整政策，对国民党采取政治诱降为主、军事打击为辅的方针；共产党领导的敌后战场成为抗战的重要战场。"},{"kp":26,"t":"全面抗战路线和持久战的战略总方针","star":2,"tf":2,"body":"【全面抗战路线】中国共产党主张实行全面抗战路线，即动员全民族一切力量争取抗战胜利的人民战争路线，与国民党的片面抗战路线相对立。\n【《论持久战》】1938年毛泽东发表，科学预测抗日战争将经历战略防御、战略相持、战略反攻三个阶段，指出「兵民是胜利之本」，阐明了抗日战争的持久战方针，批驳了「亡国论」和「速胜论」。\n※《论持久战》是高频考点。"},{"kp":27,"t":"敌后战场的开辟、游击战争与抗日民主根据地建设","star":2,"tf":3,"body":"【敌后战场】八路军、新四军深入敌后，开辟敌后抗日根据地（晋察冀、晋绥等），开展游击战争。\n【游击战争】在抗日战争中具有重要的战略地位，是抗日战争的主要形式之一。\n【根据地建设】\n①政治：实行「三三制」原则（共产党员、非党的左派进步分子、中间派各占三分之一）；\n②经济：实行减租减息政策；\n③文化：开展抗日文化教育。\n【百团大战】1940年，彭德怀指挥，沉重打击了日军的「囚笼政策」。"},{"kp":28,"t":"坚持抗战、团结、进步的方针","star":1,"tf":2,"body":"针对国民党顽固派制造的反共摩擦，中国共产党提出「坚持抗战、反对投降，坚持团结、反对分裂，坚持进步、反对倒退」的方针。\n【策略总方针】发展进步势力，争取中间势力，孤立顽固势力。\n【对顽固派的斗争原则】有理、有利、有节。"},{"kp":29,"t":"中国共产党的自身建设（延安整风）","star":1,"tf":2,"body":"【延安整风运动（1941—1945）】\n· 意义：是一次深刻的马克思主义思想教育运动，是破除党内把马克思主义教条化、把共产国际决议和苏联经验神圣化错误倾向的伟大思想解放运动；为抗日战争的胜利和新民主主义革命的胜利奠定了思想基础。\n· 内容：反对主观主义以整顿学风（中心）、反对宗派主义以整顿党风、反对党八股以整顿文风。\n【中共七大】1945年在延安召开，确立毛泽东思想为党的指导思想并写入党章，是夺取抗战胜利和新民主主义革命胜利的重要保证。"},{"kp":30,"t":"抗日战争的胜利及其意义","star":2,"tf":5,"body":"【胜利】1945年8月15日日本宣布无条件投降，9月2日正式签署投降书；中国人民抗日战争取得完全胜利。\n【意义】\n①是中国近代以来抗击外敌入侵第一次取得完全胜利的民族解放战争；\n②促进了中华民族的觉醒，为中国共产党带领人民取得新民主主义革命胜利奠定了重要基础；\n③是世界反法西斯战争的重要组成部分，对世界反法西斯战争的胜利作出了重大贡献；\n④使中国国际地位大为提高。\n【抗日战争胜利的原因】\n①中国共产党在全民族抗战中发挥了中流砥柱作用（关键）；\n②中国人民巨大的民族觉醒、空前的民族团结和英勇的民族抗争；\n③世界所有爱好和平与正义的国家和人民的同情和支持。\n※抗日战争的胜利及其意义是超高频考点（★★ TF5）。"}],"audio":{"title":"用血肉筑起长城","text":"就在中国共产党在南方打出一片天地的时候，北方的天空已经乌云密布。1931年9月18日夜里，日本关东军自己炸毁了南满铁路柳条湖段的一段路轨，反诬是中国军队所为，随即向沈阳北大营发起进攻——这就是九一八事变。由于国民党政府采取不抵抗政策，短短四个多月，东北三省全部沦陷，三千万同胞沦为亡国奴。从这一天起，中国人民开始了长达十四年的抗战。\n\n可国民党的态度实在让人心寒。蒋介石还在喊着「攘外必先安内」，把枪口对准自己的同胞，继续「围剿」红军。1936年12月，张学良、杨虎城两位将军忍无可忍，在西安把前来督战的蒋介石扣了下来，逼他停止内战、一致抗日——这就是震惊中外的西安事变。事变怎么处理，关系中国命运。有人主张杀蒋，共产党却从民族大义出发，主张和平解决，逼蒋抗日。西安事变的和平解决，成了时局转换的枢纽，十年内战基本结束，抗日民族统一战线初步形成。\n\n1937年7月7日，日军在卢沟桥挑起事端，炮轰宛平城，中国守军奋起抵抗，卢沟桥事变爆发，全民族抗战开始了。9月，国民党公布中共中央提交的国共合作宣言，以国共合作为基础的抗日民族统一战线正式建立。\n\n战争的前期，正面战场是主战场。淞沪会战，中国军队投入七十多万人，跟日军血战三个月，一天就伤亡几千人，硬是粉碎了日本「三个月灭亡中国」的狂妄计划；台儿庄战役，李宗仁指挥，歼敌一万多人，是抗战以来的重大胜利。可这些会战，代价极其惨烈，忻口、徐州、武汉，一座座城市沦陷，南京更是发生了三十万同胞惨遭屠杀的滔天罪行。\n\n就在一片悲观的情绪里，1938年，毛泽东写了一本小册子，叫《论持久战》。他科学地预测：这场仗不会速胜，也不会亡国，而要经过三个阶段——战略防御、战略相持、战略反攻。他分析，日本虽然强，但它是退步的、寡助的、小国、人力物力不足；中国虽然弱，但是进步的、多助的、大国、地广人多。所以，最后的胜利一定属于中国。更重要的是，毛泽东提出了一个关键判断：兵民是胜利之本。决定战争胜负的，不是一两件新式武器，而是能不能把全民族的力量动员起来。这就是全面抗战路线，跟国民党只靠政府和军队的片面抗战路线，形成鲜明对照。这本小册子，像一盏灯，照亮了迷雾中的中国。\n\n1938年10月武汉失守后，抗战进入相持阶段。日军调整策略，对国民党以政治诱降为主、军事打击为辅，把主要力量转向共产党领导的敌后战场。敌后战场逐渐成为抗战的中流砥柱。共产党在根据地实行「三三制」原则，共产党员、非党的左派进步分子、中间派各占三分之一，把各阶层都团结起来；经济上实行减租减息，既减轻农民负担，又照顾地主利益。1940年，彭德怀指挥百团大战，破坏了日军的铁路、据点，狠狠打击了它的「囚笼政策」，让全世界看到了共产党领导的抗日力量。\n\n抗战最艰难的岁月里，共产党没有停下自我锤炼。1941年到1945年，延安整风运动开展，反对主观主义以整顿学风、反对宗派主义以整顿党风、反对党八股以整顿文风，全党思想空前统一。1945年，中共七大在延安召开，把毛泽东思想写入党章，为抗战胜利和新民主主义革命的胜利奠定了坚实基础。\n\n这里补充一个容易被忽略的点：为什么说中国共产党是全民族抗战的「中流砥柱」？不是因为它打的大仗最多，而是因为它做对了几件根本的事。第一，它最早、最坚决地主张抗日，倡导建立并始终维护抗日民族统一战线；第二，它提出了全面抗战路线和持久战的战略总方针，给迷茫中的中国指明了方向；第三，它开辟了广大的敌后战场，把日军的大量兵力拖在了敌后。到抗战后期，共产党领导的抗日根据地有一亿人口，军队一百多万，民兵两百多万。这支部队，后来就成了人民解放军的骨干。所以抗战不仅打败了日本，也锤炼出了一个真正走向成熟的党，为三年后建立新中国，埋下了伏笔。\n\n1945年8月15日，日本宣布无条件投降。这是中国近代以来抗击外敌入侵第一次取得完全胜利的民族解放战争。它洗刷了近代以来抗击外来侵略屡战屡败的民族耻辱，使中国国际地位大为提高，也为中国共产党带领人民取得新民主主义革命胜利,奠定了重要基础。可抗战胜利的喜悦还没散去，一个新的问题就摆在了所有人面前：中国，将建立一个什么样的国家？下一章，见分晓。"}},{"ch":"第七章 为建立新中国而奋斗","points":[{"kp":31,"t":"中国共产党争取和平民主的斗争","star":1,"tf":1,"body":"【重庆谈判】1945年8月，毛泽东赴重庆同国民党谈判，签署《政府与中共代表会谈纪要》（双十协定），确定了和平建国的基本方针。\n【政治协商会议】1946年1月在重庆召开，通过了和平建国等五项协议，但很快被国民党破坏。\n【意义】中国共产党争取和平民主的努力，教育了人民，孤立了国民党顽固派。"},{"kp":32,"t":"国民党发动全面内战和解放战争的胜利发展","star":1,"tf":3,"body":"【内战爆发】1946年6月，国民党进攻中原解放区，全面内战爆发。\n【战略防御】人民解放军先后粉碎国民党军的全面进攻和重点进攻。\n【战略反攻】1947年6月，刘伯承、邓小平率部挺进大别山，揭开战略反攻序幕。\n【战略决战】1948年9月—1949年1月，辽沈、淮海、平津三大战役，基本消灭国民党军主力。\n【渡江战役】1949年4月，人民解放军渡江作战，解放南京，宣告国民党反动统治覆灭。"},{"kp":33,"t":"解放区的土地改革运动与第二条战线","star":1,"tf":2,"body":"【土地改革】\n· 1947年《中国土地法大纲》——废除封建性及半封建性剥削的土地制度，实行耕者有其田的土地制度；\n· 意义：使解放区农民获得土地，极大地激发了农民的革命热情，为解放战争胜利提供了可靠保证。\n【第二条战线】国统区以学生运动为先导的人民民主运动，配合了人民解放军的军事斗争。"},{"kp":34,"t":"各民主党派的历史发展、中国共产党与民主党派的合作","star":2,"tf":2,"body":"【民主党派】中国国民党革命委员会、中国民主同盟、中国民主建国会、中国民主促进会、中国农工民主党、中国致公党、九三学社、台湾民主自治同盟等。\n【五一口号】1948年4月30日，中共中央发布「五一口号」，号召召开新政治协商会议，得到各民主党派积极响应。\n【意义】标志着各民主党派公开、自觉地接受中国共产党的领导，走上了新民主主义革命道路。"},{"kp":35,"t":"南京国民党政权的覆灭、人民政协与《共同纲领》","star":2,"tf":4,"body":"【南京解放】1949年4月23日南京解放，标志着国民党反动统治的覆灭。\n【中国人民政治协商会议】1949年9月21日在北平召开，通过《中国人民政治协商会议共同纲领》。\n【《共同纲领》】起临时宪法作用，规定了中华人民共和国的国体、政体、经济、文化、外交等基本政策。\n【新中国诞生】1949年10月1日，中华人民共和国成立，中国历史从此进入新纪元。\n※「南京国民党政权的覆灭 & 人民政协与《共同纲领》」是高频考点（★★ TF4）。"},{"kp":36,"t":"中国革命胜利的原因、意义和基本经验","star":2,"tf":3,"body":"【胜利原因】\n①中国共产党的领导（核心）；\n②以马克思列宁主义、毛泽东思想为指导；\n③得到了广大人民群众的支持；\n④有一支中国共产党领导的人民军队；\n⑤有国际无产阶级和人民的支持。\n【基本经验】统一战线、武装斗争、党的建设（三大法宝）——是党在革命中战胜敌人的三个主要法宝。\n【历史意义】结束了帝国主义、封建主义、官僚资本主义在中国的统治，实现了民族独立和人民解放，为实现由新民主主义到社会主义的转变创造了前提。"}],"audio":{"title":"两个中国之命运","text":"1945年8月，抗战刚刚胜利，饱经战乱的中国人，最盼的就是能过上和平安稳的日子。共产党也是这么想的。蒋介石一连发了三封电报，邀请毛泽东去重庆「共商国是」。去，还是不去？蒋介石这个人反复无常，翻脸比翻书还快，毛泽东去重庆，是冒着极大风险的。可为了争取和平，毛泽东毅然去了，他说：我们要在人民面前,表示出我们争取和平的态度。\n\n谈判进行了四十多天，双方签下了《政府与中共代表会谈纪要》，也就是《双十协定》，确定了和平建国的基本方针。1946年1月，政治协商会议在重庆召开，通过了和平建国等五项协议。\n\n可蒋介石的和平，是假的。墨迹未干，他就把政协协议撕了个粉碎。1946年6月，国民党军队大举进攻中原解放区，全面内战爆发。摆在共产党面前的，是一场看上去几乎不可能赢的仗：国民党的军队四百多万，装备的是美式飞机大炮；解放区只有一亿多人口，人民解放军只有一百多万，拿的还是小米加步枪。\n\n然而历史又一次出乎意料。人民解放军先是痛快淋漓地粉碎了国民党军队的全面进攻和重点进攻，1947年6月，刘伯承、邓小平率领晋冀鲁豫野战军主力，千里跃进大别山，像一把尖刀插进敌人的心脏，揭开战略反攻的序幕。到了1948年秋，敌我力量对比发生了根本变化。9月到1949年1月，辽沈、淮海、平津三大战役，一个接一个，环环相扣，基本消灭了国民党军的主力。1949年4月，百万雄师过大江，4月23日，南京解放，统治中国二十二年的国民党反动政权，轰然倒塌。\n\n共产党的力量从哪里来？从土地里来，从人民中来。1947年，解放区颁布《中国土地法大纲》，废除封建剥削的土地制度，实行耕者有其田。千千万万的农民分到了祖祖辈辈梦寐以求的土地，他们打心眼里拥护共产党，把儿子送去参军，推着独轮车往前线送粮食、运伤员。陈毅元帅后来感慨地说：淮海战役的胜利，是人民群众用小车推出来的。与此同时，在国民党统治区，学生的反饥饿、反内战、反迫害运动此起彼伏，形成了反对国民党统治的「第二条战线」，两条战线相互配合，蒋介石陷入了全民的包围。\n\n战场上节节胜利的同时，共产党也在政治上把朋友搞得多多的。1948年4月30日，中共中央发布「五一口号」，号召召开新的政治协商会议，成立民主联合政府。各民主党派纷纷响应，公开自觉地接受中国共产党的领导。1949年9月，中国人民政治协商会议第一届全体会议在北平召开，通过了《中国人民政治协商会议共同纲领》，它起着临时宪法的作用，规定了新中国的国体、政体和各项基本政策。\n\n1949年10月1日，天安门城楼上，毛泽东用他那浓重的湖南口音，向全世界庄严宣告：中华人民共和国中央人民政府今天成立了！广场上三十万人欢声雷动。中国人民从此站起来了。\n\n中国革命为什么能取得胜利？因为有了中国共产党的坚强领导，因为有了马克思列宁主义和毛泽东思想的科学指引，因为紧紧依靠了最广大的人民群众，因为有了统一战线、武装斗争、党的建设这三大法宝。一百多年的屈辱，终于在这一刻画上了句号。\n\n这里有个问题值得想深一层：为什么共产党两年多就能打败装备精良的国民党？除了前面讲的军事和政治，还有一个更深的原因——民心。抗战胜利后，国民党接收大员到了沦陷区，不是去重建，而是去「劫收」，把敌伪产业当成肥肉一样抢，五子登科（金子、房子、车子、女子、位子），闹得天怒人怨；反观共产党，搞土地改革，给农民实实在在的好处。一个是伸手向人民要，一个是把利益交给人民，人心向背，一目了然。还有一点：共产党在国统区领导的学生运动、工人运动，让蒋介石陷入了「第二条战线」，真正成了全民包围中的孤家寡人。所以说，解放战争的胜利，是人民用小车推出来的，也是人民用手投票、用心选择的。\n\n新中国成立，只是万里长征走完了第一步。一个新的问题马上摆到面前：一个一穷二白的落后农业国，怎么走向社会主义？下一章，我们来看这场人类历史上最深刻的社会变革。"}},{"ch":"第八章 中华人民共和国的成立与中国社会主义制度的确立","points":[{"kp":37,"t":"中华人民共和国的成立及其伟大意义","star":2,"tf":3,"body":"【成立】1949年10月1日。\n【伟大意义】\n①结束了中国半殖民地半封建社会的历史，实现了民族独立和人民解放；\n②中国人民从此站起来了，成为国家的主人；\n③改变了世界政治力量对比，壮大了世界和平、民主和社会主义的力量；\n④为实现中华民族伟大复兴创造了根本社会条件。"},{"kp":38,"t":"捍卫巩固新政权的斗争","star":1,"tf":1,"body":"【抗美援朝】1950—1953年，抗美援朝战争的胜利，保卫了新中国的安全，提高了我国的国际威望。\n【土地改革】1950—1952年，废除封建土地制度，使农民获得土地。\n【其他】镇压反革命、「三反」「五反」运动等，巩固了新生的人民政权。\n【国民经济恢复】到1952年底，国民经济全面恢复。"},{"kp":39,"t":"过渡时期总路线的提出与社会主义工业化的起步","star":1,"tf":1,"body":"【过渡时期总路线】1953年正式提出——「一化三改」，即逐步实现国家的社会主义工业化，逐步实现对农业、手工业和资本主义工商业的社会主义改造。\n【一五计划】1953—1957年，优先发展重工业，为社会主义工业化奠定了初步基础。"},{"kp":40,"t":"社会主义改造与社会主义基本制度的确立","star":2,"tf":2,"body":"【改造】对个体农业、手工业和资本主义工商业进行社会主义改造，到1956年底基本完成。\n【确立】标志社会主义基本制度在中国得以确立，中国进入社会主义初级阶段。\n【重大意义】\n①是中国历史上最深刻最伟大的社会变革；\n②为当代中国一切发展进步奠定了根本政治前提和制度基础；\n③使广大劳动人民真正成为国家的主人。"},{"kp":41,"t":"探索适合中国国情的社会主义建设道路与开始全面建设","star":1,"tf":5,"body":"【《论十大关系》】1956年4月发表，标志着党探索中国社会主义建设道路的开始，基本方针是调动一切积极因素为社会主义事业服务。\n【中共八大】1956年9月召开，分析了国内主要矛盾（人民对于经济文化迅速发展的需要同当前经济文化不能满足人民需要的状况之间的矛盾），提出集中力量发展社会生产力，是探索社会主义建设道路的重要成果。\n【《关于正确处理人民内部矛盾的问题》】1957年发表，系统阐述了两类不同性质的矛盾学说。\n【成就】初步建立起独立的比较完整的工业体系和国民经济体系，为社会主义现代化建设奠定了重要基础。"},{"kp":42,"t":"“大跃进”与国民经济调整","star":1,"tf":1,"body":"【曲折】1958年开始的「大跃进」和人民公社化运动，出现严重失误；1959年「反右倾」斗争使「左」倾错误延续。\n【调整】1960年冬起，实行「调整、巩固、充实、提高」八字方针，国民经济逐步恢复和发展。\n【教训】必须实事求是，尊重客观经济规律，不能急于求成。\n※1966—1976年「文化大革命」是一场由领导者错误发动、被反革命集团利用、给党、国家和各族人民带来严重灾难的内乱，必须彻底否定。"}],"audio":{"title":"一穷二白，如何走向社会主义","text":"1949年10月1日，中华人民共和国成立了。这个新生的人民政权，接手的是一个什么样的家底？用毛泽东的话说，是一穷二白——连火柴、铁钉都要进口，老百姓管它们叫「洋火」「洋钉」；全国的钢产量，还比不上西方一个小国；文盲占了人口的绝大多数。这就是起跑线。\n\n国际上，也没人给好脸色。1950年，朝鲜战争爆发，美国军队把战火烧到鸭绿江边，轰炸机直接扔炸弹到中国东北的边境城镇。新生的人民政权面临严峻考验，新中国做出了抗美援朝、保家卫国的决定。中国人民志愿军雄赳赳、气昂昂，跨过鸭绿江。这一仗打得很苦，上甘岭战役，双方在几平方公里的阵地上反复争夺，山头都被削低了两米。但志愿军硬是把敌人从鸭绿江边打回到三八线附近。这一仗打出了国威军威，也让全世界明白：站起来的中国人民，不好惹。\n\n内部呢？1950到1952年，全国开展土地改革，三亿多无地少地的农民分到了土地，压在头顶几千年的封建土地制度被彻底废除。农民捧着土地证，激动得睡不着觉。到1952年底，国民经济全面恢复，主要工农业产品产量甚至超过了历史最高水平。\n\n接下来，就是怎么走向社会主义的问题。1953年，党正式提出了过渡时期总路线，简称「一化三改」——「一化」，就是逐步实现国家的社会主义工业化；「三改」，就是对农业、手工业和资本主义工商业进行社会主义改造。形象地说，工业化是主体，三大改造是两翼，一体两翼，比翼齐飞。\n\n三大改造里，最有中国智慧、也最了不起的，是对资本主义工商业的改造。按照马克思原来的设想，剥夺剥夺者，对资本家的生产资料是可以无偿没收的。可中国共产党没有这么做，而是用了两个字：赎买。就是给资本家支付定息，让他们继续参与企业管理，一步一步地，从加工订货、统购包销，走到单个企业的公私合营，再到全行业的公私合营。这被叫做「和平赎买」，是国际共产主义运动史上的一个伟大创举。同时，党还把对企业的改造和对人的改造结合起来，把资本家一步步改造成自食其力的劳动者。\n\n到1956年底，三大改造基本完成。这意味着什么？意味着社会主义基本制度在中国确立了，中国进入了社会主义初级阶段。这是中国历史上最深刻、最伟大的社会变革，为后来中国的一切发展进步，奠定了根本的政治前提和制度基础，也使广大劳动人民真正成了国家的主人。\n\n制度立起来了，接下来就是怎么建设。1956年，毛泽东发表《论十大关系》，提出一个基本方针：调动一切积极因素为社会主义事业服务。同年召开的党的八大，正确分析了国内主要矛盾，提出集中力量发展社会生产力。1957年，毛泽东又发表《关于正确处理人民内部矛盾的问题》，把社会主义社会的矛盾分成两类：敌我矛盾和人民内部矛盾，前者用专政的办法解决，后者用民主的、说服教育的办法解决。这是对马克思主义的重大发展。\n\n当然，探索的道路从来不是一帆风顺的。1958年的「大跃进」和人民公社化运动，犯了急于求成、违背经济规律的错误，再加上自然灾害，国民经济一度陷入严重困难。后来更出现了「文化大革命」那样全局性、长时间的严重失误。不过，就在这种艰难曲折中，中国还是建立起了一个独立的、比较完整的工业体系和国民经济体系，「两弹一星」研制成功，为后来的腾飞攒下了宝贵的家底。\n\n这里有个细节能说明问题。土地改革，到底给中国带来了什么？几千年来，中国的土地大部分攥在地主手里，农民租地种，交完租常常连饭都吃不上。土地改革一声令下，三亿多农民第一次有了属于自己的土地。他们捧着土地证，有的在祖坟前磕头，有的把土地证缝在衣服里。这不只是一场经济变革，更是一场人的解放——农民从「佃户」变成了「主人」，这个心理上的转变，是怎么估计都不过分的。也正是有了这样的民心，才有了后来抗美援朝时农民踊跃送子参军，才有了合作化时期农民跟着党走。中国共产党为什么能？很大程度上，就赢在始终和最大多数的农民站在一起。\n\n历史走到1978年，一个决定中国命运的转折点出现了。下一章，我们来讲这场让中国彻底改变面貌的伟大转折——改革开放。"}},{"ch":"第九章 改革开放与中国特色社会主义的开创","points":[{"kp":43,"t":"伟大转折和成功开创中国特色社会主义","star":2,"tf":7,"body":"【十一届三中全会】1978年12月召开，作出把党和国家工作中心转移到经济建设上来、实行改革开放的历史性决策，是新中国成立以来党的历史上具有深远意义的伟大转折。\n【四个经济特区】1980年设立深圳、珠海、汕头、厦门四个经济特区。\n【十二大】1982年，邓小平提出「建设有中国特色的社会主义」的命题。\n【十三大】1987年，系统阐述了社会主义初级阶段理论和党的基本路线（「一个中心、两个基本点」）。\n【意义】开创了中国特色社会主义道路，开启了改革开放和社会主义现代化建设新时期。\n※「十一届三中全会」是超高频考点（★★ TF7）。"},{"kp":44,"t":"改革开放和社会主义现代化建设新局面","star":2,"tf":3,"body":"【南方谈话】1992年邓小平视察南方发表重要谈话，明确回答了姓「资」姓「社」等问题，强调发展才是硬道理，提出「三个有利于」标准，把改革开放和现代化建设推进到新阶段。\n【十四大】1992年，确立社会主义市场经济体制的改革目标，确立邓小平建设有中国特色社会主义理论在全党的指导地位。\n【十五大】1997年，把邓小平理论确立为党的指导思想并写入党章。\n【意义】把中国特色社会主义全面推向21世纪。"}],"audio":{"title":"春天的故事","text":"1978年，对中国来说，是决定命运的一年。这一年的12月，党的十一届三中全会召开了。这次会议作出了一个石破天惊的决定：把党和国家的工作中心，从以阶级斗争为纲，转移到经济建设上来，实行改革开放。\n\n这句话今天听着平常，在当年却需要极大的勇气。要知道，在这之前，「以阶级斗争为纲」已经讲了很多年，很多人脑子里有厚厚的一层冰，怕跟资本主义沾边，怕政策会变，怕再来一次运动。十一届三中全会，就是来砸这层冰的。它重新确立了实事求是的思想路线，是新中国成立以来党的历史上具有深远意义的伟大转折，从此,中国进入了改革开放和社会主义现代化建设的新时期。\n\n转折之后，变化来得很快，快得超出所有人的想象。1978年冬天，安徽凤阳小岗村，十八户农民在一间破屋里，冒着坐牢的风险，偷偷按下了红手印，搞起了包产到户。他们约定，如果谁因此被抓，其他人要帮他把孩子养到十八岁。谁也没想到，这一按，按出了整个农村改革的序幕。第二年，小岗村粮食大丰收，一下子从吃救济粮变成了卖余粮。\n\n1980年，深圳、珠海、汕头、厦门四个经济特区设立。深圳，这个当年的边陲小渔村，短短几年就长出了一座现代化城市，创造出了举世闻名的「深圳速度」。那句「时间就是金钱，效率就是生命」的标语牌，立在了蛇口，也立在了无数中国人心里。\n\n1982年，党的十二大上，邓小平提出了一个崭新的命题——建设有中国特色的社会主义。这句话，成了后来中国发展道路的名字。1987年，党的十三大系统阐述了社会主义初级阶段理论，提出了党的基本路线：一个中心、两个基本点——以经济建设为中心，坚持四项基本原则，坚持改革开放。这条基本路线，管了很多年，后来被称为「党和国家的生命线」。\n\n可这条路走得并不轻松。上世纪80年代末90年代初，国际上东欧剧变、苏联解体，社会主义运动跌入低谷；国内也有人在犹豫、在观望，改革开放还要不要继续？姓「资」还是姓「社」？就在这个关键时刻，1992年，已经退休的邓小平视察南方，发表了一系列重要谈话。他说：发展才是硬道理。他指出，计划多一点还是市场多一点，不是社会主义和资本主义的本质区别，计划和市场都是经济手段，社会主义也可以搞市场经济。他还提出了判断一切工作的「三个有利于」标准：是否有利于发展社会主义社会的生产力，是否有利于增强社会主义国家的综合国力，是否有利于提高人民的生活水平。\n\n南方谈话，像一阵春风吹散了迷雾，让中国改革开放的航船，重新扬起了风帆。1992年，党的十四大明确提出建立社会主义市场经济体制的目标。1997年，党的十五大把邓小平理论确立为党的指导思想，写入党章。中国特色社会主义，大步迈进了二十一世纪。\n\n还有一点特别值得说：小岗村那十八个红手印，为什么意义那么大？因为它证明了一个朴素的道理——生产关系一定要适合生产力的发展。人民公社「一大二公」，看着很先进，可它脱离了当时农村生产力低下的实际，结果农民没有积极性，粮食产量上不去。包产到户一搞，土地还是集体的，但把经营权和收益权给了农户，农民一看多打粮食是自己的，干劲立刻上来了。这就是改革的方法论：不是推倒重来，而是在坚持社会主义方向的前提下，调整那些不适合生产力发展的环节。中国的改革之所以能成功，靠的就是这种「摸着石头过河」的务实和稳妥——先试点、再推广，错了就改，对了就坚持。这条经验，至今仍是中国发展最宝贵的一条。\n\n回望这一章，你会看到一个规律：每到历史的关口，中国共产党总能解放思想、实事求是，敢于打破思想的牢笼，把路重新走对。正是这种勇气和智慧，让中国在短短几十年里，走完了西方国家上百年的路。这个规律，一直延续到今天。下一章，也是最后一章，我们来讲新时代的中国故事。"}},{"ch":"第十章 中国特色社会主义进入新时代","points":[{"kp":45,"t":"开拓中国特色社会主义更为广阔的发展前景","star":1,"tf":1,"body":"【十八大】2012年召开，中国特色社会主义进入新时代。\n【十九大】2017年召开，确立习近平新时代中国特色社会主义思想为党的指导思想；明确新时代我国社会主要矛盾是人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾。\n【意义】中国特色社会主义进入新时代，意味着中华民族迎来了从站起来、富起来到强起来的伟大飞跃。"},{"kp":46,"t":"开启全面建设社会主义现代化国家新征程","star":1,"tf":1,"body":"【两个一百年奋斗目标】\n①第一个百年目标：到中国共产党成立100年时全面建成小康社会（2021年已实现）；\n②第二个百年目标：到新中国成立100年时全面建成社会主义现代化强国。\n【两步走战略安排】\n①2020—2035年，基本实现社会主义现代化；\n②2035年—本世纪中叶，把我国建成富强民主文明和谐美丽的社会主义现代化强国。\n【二十大】2022年召开，明确中国式现代化是中国共产党领导的社会主义现代化，为全面建设社会主义现代化国家、全面推进中华民族伟大复兴指明了方向。"}],"audio":{"title":"走向复兴的新征程","text":"2012年，党的十八大召开，中国特色社会主义进入了新时代。这个「新时代」不是随口说的，它有实实在在的分量——它意味着中华民族迎来了一个伟大的飞跃：从站起来、富起来，到强起来。\n\n2017年，党的十九大召开，确立习近平新时代中国特色社会主义思想为党的指导思想。十九大还明确了一个重要判断：新时代我国社会的主要矛盾，已经转化为人民日益增长的美好生活需要，和不平衡不充分的发展之间的矛盾。这个判断很关键，它说明中国人的需求变了——不再只是吃饱穿暖，而是要有更好的教育、更稳定的工作、更满意的收入、更可靠的社会保障、更高水平的医疗卫生服务、更优美的环境。温饱问题解决了，接下来要解决的，是发展得好不好、公不公平、均不均衡的问题。\n\n那么，新时代的目标是什么？就是要实现中华民族伟大复兴的中国梦。这个梦，被拆解成「两个一百年」的奋斗目标：第一个百年目标，是到中国共产党成立一百年时，全面建成小康社会。这个目标，在2021年如期实现了——中国历史性地解决了绝对贫困问题，近一亿农村贫困人口全部脱贫，这是人类减贫史上的奇迹。第二个百年目标，是到新中国成立一百年时，把中国建成富强民主文明和谐美丽的社会主义现代化强国。\n\n为了实现这个宏伟目标，党把时间表分成了两步走：第一步，从2020年到2035年，基本实现社会主义现代化；第二步，从2035年到本世纪中叶，把中国建成社会主义现代化强国。\n\n2022年，党的二十大召开，进一步明确：中国式现代化，是中国共产党领导的社会主义现代化。它有五个鲜明的中国特色——它是人口规模巨大的现代化，是全体人民共同富裕的现代化，是物质文明和精神文明相协调的现代化，是人与自然和谐共生的现代化，是走和平发展道路的现代化。这五条，既不同于西方的现代化老路，也超越了西方现代化的种种弊端。\n\n到这里，我们这趟穿越一百八十多年的旅程，就要结束了。让我们回头，再看一眼这一整条路：从1840年鸦片战争的炮声，到太平天国、洋务运动、戊戌变法的一次次试错；从辛亥革命推翻两千年帝制，到五四运动的思想觉醒；从嘉兴南湖上那条小小的红船，到井冈山的星星之火；从十四年抗战用血肉筑起的长城，到天安门城楼上那句「中国人民站起来了」；从十一届三中全会的历史转折，到新时代的伟大复兴。\n\n你有没有发现，这整条路上，其实一直在回答第一章提出的那个问题：为什么我们一次次反抗，又一次次失败？答案，到这里已经慢慢清晰了——因为中华民族的伟大复兴，必须有先进阶级的领导，必须有科学理论的指引，必须紧紧依靠最广大的人民群众，必须找到一条适合自己的道路。太平天国没有，洋务运动没有，戊戌变法没有，辛亥革命也没有。只有在中国共产党这里，这些条件第一次全部具备了。所以，历史选择了中国共产党，人民选择了中国共产党。这不是偶然，而是一百八十多年苦难与奋斗，给出的必然答案。\n\n最后一个细节，关于「中国式现代化」。为什么强调是「中国式」而不是照搬西方？因为西方的现代化，是靠着殖民掠夺、对外扩张、两极分化走出来的，走的是「国强必霸」的老路。中国式现代化，走的是另一条路——靠自己的努力、靠和平发展、靠共同富裕。你看这几个词：人口规模巨大，说明难度前所未有；共同富裕，说明不走两极分化；物质精神协调、人与自然和谐，说明不搞单打一；走和平发展道路，说明不称霸、不扩张。这不是抄谁的作业，而是一个有五千年文明、十四亿人口的大国，自己蹚出来的一条新路。理解了这一点，你也就理解了为什么说，中国式现代化拓展了发展中国家走向现代化的途径，给世界提供了新的选择。\n\n故事讲完了，但历史还在继续。这本书的下一段历史，正在由你和我这样的普通人，一起一笔一笔地写下去。"}}]};
 /* =========================================================
    考研政治时政 · 刷题 + 错题本
    ========================================================= */
 let POL_IDX = 0;            /* 当前卡片在牌组中的下标 */
 let POL_ANS = {};           /* 当前题已选选项 {A:true,...} */
-let POL_RESUMED = false;    /* 进入政治板块后是否已完成「续接上次题号」 */
 let POL_FILTER = 'all';     /* all | s1 | s2 | s3 | none | wrong */
 let POL_MODE = 'order';     /* order | random */
 
@@ -3433,13 +3304,6 @@ function polSzBody(){
 
   if(POL_IDX>=deck.length) POL_IDX=0;
   if(POL_IDX<0) POL_IDX=deck.length-1;
-  /* 续接：进入板块 / 切换筛选·模式时，跳到「当前目录下最新刷过的题」；无记录则从头开始 */
-  if(!POL_RESUMED){
-    const lid = S.pol.last[POL_FILTER];
-    const pos = (lid!=null) ? deck.indexOf(Number(lid)) : -1;
-    POL_IDX = (pos>=0) ? pos : 0;
-  }
-  POL_RESUMED = true;
   const id = deck[POL_IDX];
   const it = polById(id);
   const res = S.pol.res[id];
@@ -3511,10 +3375,16 @@ function renderPol(){
     const n = Math.max(1, Math.min(60, parseInt(this.value,10)||3));
     S.pol.settings.remindDays = n; save(); renderPol();
   };
-  /* 填空题输入框实时回填 */
+  /* 填空题输入框实时回填（每个空独立记录） */
   Array.prototype.forEach.call(document.querySelectorAll('#tab-pol .kb-fill-in'), function(inp){
     const k = inp.dataset.k;
-    inp.addEventListener('input', function(){ KB_FILL[k] = { v:this.value, ok:null }; });
+    if(!k) return;                       /* 抽查里的输入框不带 data-k，跳过 */
+    const i = Number(inp.dataset.i) || 0;
+    inp.addEventListener('input', function(){
+      const cur = KB_FILL[k] || (KB_FILL[k] = { vs: [] });
+      if(!cur.vs) cur.vs = [];
+      cur.vs[i] = this.value;
+    });
     inp.addEventListener('keydown', function(e){
       if(e.key==='Enter'){ e.preventDefault(); kbJudge(k); }
     });
@@ -3534,6 +3404,8 @@ function renderPol(){
       }, 180);
     });
   }
+  /* 恢复朗读高亮（重渲染后） */
+  if(typeof ttsPaint === 'function') ttsPaint();
 }
 
 /* ---------- 知识库渲染 ---------- */
@@ -3623,6 +3495,9 @@ function kbChapterHTML(subj, ci, ch){
   return h;
 }
 
+/* 一个「空」对应答案里的一个词（答案用空格分段，段数 === 空位数） */
+function kbAnsParts(f){ return String(f.a||'').split(' ').filter(function(x){ return x !== ''; }); }
+
 function kbFillCard(ci, ki, k){
   let h = '<div class="kb-kp" id="kb-my-'+ci+'-'+ki+'">';
   h += '<div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
@@ -3631,25 +3506,31 @@ function kbFillCard(ci, ki, k){
   k.fills.forEach(function(f, fi){
     const key = kbFillKey('my',ci,ki,fi);
     const r = (S.pol.kb.fills||{})[key];
-    const draft = (KB_FILL[key]||{});
-    const val = draft.v||'';
-    const parts = f.q.split('____');
+    const d = (KB_FILL[key]||{});
+    const ans = kbAnsParts(f);
+    const segs = f.q.split('____');
+    const multi = segs.length - 1 > 1;
     h += '<div class="kb-fill'+(r?(' '+r):'')+'">';
     h += '<div class="kb-fill-q">';
-    parts.forEach(function(seg, i){
+    segs.forEach(function(seg, i){
       h += esc(seg);
-      if(i < parts.length-1){
-        h += '<input class="kb-fill-in" data-k="'+key+'" value="'+esc(val)+'" '+(r?'disabled':'')+' placeholder="填空">';
+      if(i < segs.length - 1){
+        const v = (d.vs && d.vs[i] != null) ? d.vs[i] : '';
+        const mark = (r && d.oks) ? (d.oks[i] ? ' ok' : ' bad') : '';
+        h += '<input class="kb-fill-in'+mark+'" data-k="'+key+'" data-i="'+i+'" value="'+esc(v)+'"'+
+             (r?' disabled':'')+' placeholder="空'+(i+1)+'">';
       }
     });
     h += '</div>';
     if(r){
-      h += '<div class="kb-fill-fb'+(r==='right'?' ok':'')+'">'+
-           (r==='right'?'✓ 正确':'✗ 答错，正确答案：'+esc(f.a))+'</div>';
+      const allRight = (r === 'right');
+      h += '<div class="kb-fill-fb'+(allRight?' ok':'')+'">'+
+           (allRight ? '✓ 全部正确' : '✗ 正确答案：'+esc(ans.join(' / ')))+'</div>';
       if(f.tip) h += '<div class="kb-tip">提示：'+esc(f.tip)+'</div>';
     } else {
       h += '<div class="kb-fill-btns"><button class="btn btn-pri btn-xs" data-act="kb-judge" data-k="'+key+'">提交</button>'+
-           '<button class="btn btn-line btn-xs" data-act="kb-reveal" data-k="'+key+'">看答案</button></div>';
+           '<button class="btn btn-line btn-xs" data-act="kb-reveal" data-k="'+key+'">看答案</button>'+
+           (multi?'<span class="kb-fill-note">共 '+ans.length+' 个空</span>':'')+'</div>';
     }
     h += '</div>';
   });
@@ -3672,21 +3553,106 @@ function kbPointCard(subj, ci, pi, p){
   return h;
 }
 
+/* ---------- 史纲文稿朗读（浏览器内置语音合成，可调倍速）---------- */
+const TTS_RATES = [0.8, 1.0, 1.25, 1.5, 2.0];
+const TTS = { ci:-1, idx:0, paras:[], rate:1.0, speaking:false, paused:false, gen:0 };
+function ttsOK(){ return !!(window && window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function'); }
+function ttsActive(ci){ return TTS.ci === ci && TTS.speaking; }
+function ttsToggle(ci){
+  if(!ttsOK()){ toast('这个浏览器不支持直接朗读，可以复制文稿去别的工具听'); return; }
+  const ch = KB.sg[ci]; if(!ch || !ch.audio) return;
+  const sy = window.speechSynthesis;
+  if(TTS.ci === ci && TTS.speaking){
+    if(TTS.paused){ sy.resume(); TTS.paused = false; }
+    else { sy.pause(); TTS.paused = true; }
+    renderPol(); return;
+  }
+  TTS.gen++;
+  sy.cancel();
+  TTS.ci = ci; TTS.idx = 0; TTS.rate = S.ui.ttsRate || TTS.rate || 1.0;
+  TTS.paras = String(ch.audio.text).split('\n\n').filter(function(x){ return x.trim(); });
+  TTS.speaking = true; TTS.paused = false;
+  ttsNext(); renderPol();
+}
+function ttsNext(){
+  if(!TTS.speaking) return;
+  if(TTS.idx >= TTS.paras.length){ ttsStop(true); renderPol(); return; }
+  const g = TTS.gen;
+  const u = new window.SpeechSynthesisUtterance(TTS.paras[TTS.idx]);
+  u.lang = 'zh-CN'; u.rate = TTS.rate; u.pitch = 1;
+  u.onend = function(){
+    if(g !== TTS.gen || !TTS.speaking || TTS.paused) return;
+    TTS.idx++; ttsPaint(); ttsNext();
+  };
+  u.onerror = function(){};
+  try { window.speechSynthesis.speak(u); } catch(e){ ttsStop(false); renderPol(); }
+  ttsPaint();
+}
+function ttsStop(finished){
+  TTS.gen++;
+  if(ttsOK()){ try { window.speechSynthesis.cancel(); } catch(e){} }
+  TTS.speaking = false; TTS.paused = false;
+  if(!finished) TTS.idx = 0;
+}
+function ttsRate(r){
+  TTS.rate = r;
+  if(S.ui){ S.ui.ttsRate = r; save(); }
+  if(TTS.speaking){
+    TTS.gen++;
+    if(ttsOK()) { try { window.speechSynthesis.cancel(); } catch(e){} }
+    TTS.paused = false;
+    ttsNext();
+  }
+  renderPol();
+}
+/* 高亮当前正在读的段落，并刷新进度文字 */
+function ttsPaint(){
+  const ps = document.querySelectorAll('#tab-pol .kb-tts-para');
+  Array.prototype.forEach.call(ps, function(el){
+    const cur = TTS.speaking && !TTS.paused && Number(el.dataset.ci) === TTS.ci && Number(el.dataset.para) === TTS.idx;
+    el.classList.toggle('cur', !!cur);
+  });
+  const n = document.getElementById('ttsProg');
+  if(n){
+    n.textContent = TTS.speaking
+      ? ((TTS.paused ? '已暂停' : '朗读中') + ' · 第 ' + Math.min(TTS.idx + 1, TTS.paras.length) + '/' + TTS.paras.length + ' 段')
+      : '';
+  }
+}
+
 function kbAudioCard(ci, ch){
   const key = 'sg-a-'+ci;
   const open = !!KB_OPEN[key];
   const mins = Math.max(1, Math.round(ch.audio.text.length/200));
+  const on = ttsActive(ci);
   let h = '<div class="kb-audio">';
   h += '<button class="kb-audio-hd" data-act="kb-toggle" data-k="'+key+'">'+
        '<span class="kb-audio-ic">▶</span>'+
        '<span class="kb-audio-t">听这一章的故事 ·《'+esc(ch.audio.title)+'》</span>'+
        '<span class="sp"></span><span class="kb-audio-m">约 '+mins+' 分钟</span></button>';
   if(open){
-    h += '<div class="kb-audio-bd">'+
-         '<div class="kb-audio-note">把下面的文稿复制到任意朗读工具（微信读书 / 剪映 / 讯飞等）就能收听。全文约 '+ch.audio.text.length+' 字。</div>'+
-         '<div class="kb-audio-txt">'+ esc(ch.audio.text).replace(/\n/g,'<br>') +'</div>'+
-         '<button class="btn btn-line btn-xs" data-act="kb-copy" data-ci="'+ci+'">复制本讲文稿</button>'+
-         '</div>';
+    h += '<div class="kb-audio-bd">';
+    if(ttsOK()){
+      const label = !on ? '▶ 开始朗读' : (TTS.paused ? '▶ 继续' : '⏸ 暂停');
+      h += '<div class="kb-tts">'+
+             '<button class="kb-tts-play" data-act="tts-toggle" data-ci="'+ci+'">'+label+'</button>'+
+             (on ? '<button class="kb-tts-stop" data-act="tts-stop">停止</button>' : '')+
+             '<span class="kb-tts-spd">'+TTS_RATES.map(function(r){
+                return '<button class="'+(Math.abs(TTS.rate-r)<0.001?'on':'')+'" data-act="tts-rate" data-r="'+r+'">'+r+'×</button>';
+             }).join('')+'</span>'+
+             '<span class="kb-tts-prog" id="ttsProg">'+(on ? ((TTS.paused?'已暂停':'朗读中')+' · 第 '+Math.min(TTS.idx+1,TTS.paras.length)+'/'+TTS.paras.length+' 段') : '')+'</span>'+
+           '</div>'+
+           '<div class="kb-audio-note">点「开始朗读」直接听，可随时切倍速。声音由设备自带语音合成，效果因浏览器而异。</div>';
+    } else {
+      h += '<div class="kb-audio-note">当前浏览器不支持直接朗读，点下面的文稿复制到「微信读书 / 剪映 / 讯飞」等工具也能听。</div>';
+    }
+    const paras = String(ch.audio.text).split('\n\n');
+    h += '<div class="kb-audio-txt">' + paras.map(function(p, i){
+      const cur = (on && !TTS.paused && i === TTS.idx) ? ' cur' : '';
+      return '<span class="kb-tts-para'+cur+'" data-para="'+i+'" data-ci="'+ci+'">'+esc(p)+'</span>';
+    }).join('<br><br>') + '</div>';
+    h += '<button class="btn btn-line btn-xs" data-act="kb-copy" data-ci="'+ci+'">复制本讲文稿</button>';
+    h += '</div>';
   }
   h += '</div>';
   return h;
@@ -3769,9 +3735,15 @@ function kbWrongPanel(){
     const f = k.fills[fi]; if(!f) return;
     const w = S.pol.kb.wrong[key];
     const qp = f.q.split('____');
+    const ap = kbAnsParts(f);
+    let qline = '';
+    qp.forEach(function(seg, i){
+      qline += esc(seg);
+      if(i < qp.length - 1) qline += '<b class="kb-ans">'+esc(ap[i]||'')+'</b>';
+    });
     h += '<div class="kb-kp"><div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
          '<span class="sp"></span>'+(w.due<=todayStr()?'<i class="kb-hot">该复习</i>':'')+'</div>'+
-         '<div class="kb-fill-q">'+esc(qp[0])+'<b class="kb-ans">'+esc(f.a)+'</b>'+esc(qp[1]||'')+'</div></div>';
+         '<div class="kb-fill-q">'+qline+'</div></div>';
   });
   h += '</div>';
   return h;
@@ -3795,12 +3767,19 @@ function kbQuizPanel(subj){
     h += '<div class="kb-fill-q">';
     qp.forEach(function(seg,i){
       h += esc(seg);
-      if(i<qp.length-1 && !item.revealed) h += '<input class="kb-fill-in kb-quiz-in" value="" placeholder="填空">';
-      else if(i<qp.length-1) h += '<b class="kb-ans2">'+esc(item.a)+'</b>';
+      if(i<qp.length-1){
+        if(!item.revealed){
+          const v = (item.vs && item.vs[i] != null) ? item.vs[i] : '';
+          h += '<input class="kb-fill-in kb-quiz-in" data-i="'+i+'" value="'+esc(v)+'" placeholder="空'+(i+1)+'">';
+        } else {
+          const m = (item.oks && item.oks[i] === false) ? ' bad' : '';
+          h += '<b class="kb-ans2'+m+'">'+esc((item.a[i]!=null?item.a[i]:''))+'</b>';
+        }
+      }
     });
     h += '</div>';
     if(item.revealed){
-      h += '<div class="kb-fill-fb'+(item.ok?' ok':'')+'">'+(item.ok?'✓ 答对了':('✗ 正确答案：'+esc(item.a)))+'</div>'+
+      h += '<div class="kb-fill-fb'+(item.ok?' ok':'')+'">'+(item.ok?'✓ 答对了':('✗ 正确答案：'+esc(item.a.join(' / '))))+'</div>'+
            '<button class="btn btn-pri btn-xs" data-act="kb-quiz-next">'+(q.idx+1>=q.total?'看结果':'下一题')+'</button>';
     } else {
       h += '<div class="kb-acts"><button class="btn btn-pri btn-xs" data-act="kb-quiz-submit">提交</button>'+
@@ -3834,23 +3813,30 @@ function kbJudge(key){
   const ch = KB.my[ci]; if(!ch) return;
   const k = ch.kps[ki]; if(!k) return;
   const f = k.fills[fi]; if(!f) return;
-  const draft = String(((KB_FILL[key]||{}).v)||'').trim();
-  if(!draft){ toast('先输入答案'); return; }
-  const ok = kbAnswerOk(draft, f.a);
+  const ans = kbAnsParts(f);
+  const d = KB_FILL[key] || {};
+  const vs = ans.map(function(_, i){ return String((d.vs && d.vs[i]) || '').trim(); });
+  if(!vs.some(function(v){ return v; })){ toast('先填空'); return; }
+  const oks = ans.map(function(a, i){ return kbAnswerOk(vs[i], a); });
+  const allOk = oks.every(function(x){ return x; });
   if(!S.pol.kb.fills) S.pol.kb.fills = {};
   if(!S.pol.kb.wrong) S.pol.kb.wrong = {};
-  S.pol.kb.fills[key] = ok ? 'right' : 'wrong';
-  if(ok){ if(S.pol.kb.wrong[key]) delete S.pol.kb.wrong[key]; }
+  S.pol.kb.fills[key] = allOk ? 'right' : 'wrong';
+  if(allOk){ if(S.pol.kb.wrong[key]) delete S.pol.kb.wrong[key]; }
   else { S.pol.kb.wrong[key] = { added:todayStr(), due:dAdd(todayStr(), S.pol.settings.remindDays) }; }
-  KB_FILL[key] = { v: draft };
+  KB_FILL[key] = { vs: vs, oks: oks };
   save(); renderPol();
-  toast(ok ? '答对了' : '答错了，已加入错题本');
+  if(allOk) toast('全对，漂亮');
+  else {
+    const badN = oks.filter(function(x){ return !x; }).length;
+    toast('答错 '+badN+' 个空，已加入错题本');
+  }
 }
 function kbReveal(key){
   const p = key.split('-'); const ci=+p[1], ki=+p[2], fi=+p[3];
   const ch = KB.my[ci]; if(!ch) return;
   const f = ch.kps[ki] && ch.kps[ki].fills[fi]; if(!f) return;
-  KB_FILL[key] = { v: f.a };
+  KB_FILL[key] = { vs: kbAnsParts(f).slice() };
   renderPol();
 }
 function kbJump(subj, ci, ii){
@@ -3884,7 +3870,7 @@ function kbQuizStart(subj){
   const pool = [];
   if(subj==='my'){
     KB.my.forEach(function(ch,ci){ ch.kps.forEach(function(k,ki){ k.fills.forEach(function(f,fi){
-      pool.push({ q:f.q, a:f.a });
+      pool.push({ q:f.q, a:kbAnsParts(f) });
     }); }); });
   } else {
     KB[subj].forEach(function(ch,ci){ ch.points.forEach(function(p,pi){
@@ -4005,29 +3991,7 @@ document.addEventListener('click', function(ev){
     case 'dodelpaper': doDelPaper(id); break;
     case 'savepaper':  savePaper(); break;
     case 'pfilter':    PSUBJ = b.dataset.subj; renderPapers(); break;
-    case 'bsubj':      BSUBJ = b.dataset.k; BD_YEAR = null; BD_EDIT = null; renderBoard(); break;
-    case 'board-year': {
-      const y = Number(b.dataset.y);
-      BD_YEAR = (BD_YEAR===y) ? null : y;
-      BD_EDIT = null;
-      renderBoard(); break;
-    }
-    case 'by-edit': {
-      BD_EDIT = { subj:BSUBJ, year:Number(b.dataset.y) };
-      renderBoard(); break;
-    }
-    case 'by-cancel': { BD_EDIT = null; renderBoard(); break; }
-    case 'by-save': {
-      const pid = b.dataset.pid;
-      const p = S.papers.filter(function(x){ return x.id===pid; })[0];
-      if(p){
-        const elRedo = el('byRedo'), elEval = el('byEval');
-        p.redo = parseNums(elRedo ? elRedo.value : '');
-        p.eval = elEval ? elEval.value.trim().slice(0,500) : '';
-        save(); toast('已保存卷后记录');
-      }
-      BD_EDIT = null; renderBoard(); break;
-    }
+    case 'bsubj':      BSUBJ = b.dataset.k; renderBoard(); break;
     case 'mark':       markModal(id, b.dataset.key); break;
     case 'savemark':   saveMark(); break;
     case 'clearmark':  clearMark(); break;
@@ -4036,16 +4000,11 @@ document.addEventListener('click', function(ev){
       if(!PF || PF.lock) break;
       PF.subj = b.dataset.k;
       PF.editId = null;  /* 切换科目取消载入态，回到自由新建 */
-      PF.year = (S.lastYear[PF.subj]||0) || (new Date().getFullYear()-1);  /* 切科目同步该科记住的年份 */
       pfLoad();
       Array.prototype.forEach.call(el('pfSubj').querySelectorAll('button'), function(x){
         x.classList.toggle('on', x.dataset.k===PF.subj);
       });
-      const ys = el('pfYear'); if(ys) ys.value = PF.year;
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
-      el('pfMeta').innerHTML = pfMetaHTML();   /* 切科目同步刷新「评价/可重做」显隐 */
-      /* 切科目同步「每日生词」显隐：仅英语二显示，切到其他科目立即收起，避免残留 */
-      if(el('vocabBox')) el('vocabBox').style.display = (PF.subj==='eng2') ? 'block' : 'none';
       break;
     }
     case 'loadex': {
@@ -4055,7 +4014,6 @@ document.addEventListener('click', function(ev){
         PF.editId = null;          /* 仅预填数据，保存仍走合并，不覆盖丢失旧题型 */
         pfLoad(ex);
         el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
-        if(el('pfMeta')) el('pfMeta').innerHTML = pfMetaHTML();   /* 同步「评价 / 可重做题号」到表单，便于修改 */
         if(PF.subj==='eng2' && el('vocabBox')) el('vocabBox').style.display = 'block';
       }
       break;
@@ -4238,8 +4196,8 @@ document.addEventListener('click', function(ev){
       break;
     }
     /* ---- 考研政治时政 ---- */
-    case 'pol-filter': { POL_FILTER = b.dataset.f; S.pol.filter = POL_FILTER; POL_ANS = {}; POL_RESUMED = false; renderPol(); save(); break; }
-    case 'pol-mode':   { POL_MODE = b.dataset.m; POL_ANS = {}; POL_RESUMED = false; renderPol(); save(); break; }
+    case 'pol-filter': { POL_FILTER = b.dataset.f; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
+    case 'pol-mode':   { POL_MODE = b.dataset.m; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
     case 'pol-star': {
       const pid = b.dataset.id;
       const dflt = POL_STAR_DEFAULT[pid] || 0;
@@ -4262,7 +4220,6 @@ document.addEventListener('click', function(ev){
       const ans = it.ans.split('').sort();
       const correct = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
       S.pol.res[pid] = correct ? 'right' : 'wrong';
-      S.pol.last[POL_FILTER] = Number(pid);
       if(correct){
         if(S.pol.wrong[pid]){ delete S.pol.wrong[pid]; toast('答对啦，已移出错题本'); }
         else toast('答对啦');
@@ -4279,10 +4236,9 @@ document.addEventListener('click', function(ev){
       const dk = polDeck();
       if(!dk.length){ POL_IDX = 0; renderPol(); break; }
       POL_IDX = (POL_IDX+1) % dk.length;
-      S.pol.last[POL_FILTER] = dk[POL_IDX];
-      save(); renderPol(); break;
+      renderPol(); break;
     }
-    case 'go-pol-wrong': { POL_FILTER='wrong'; S.pol.filter='wrong'; POL_RESUMED=false; go('pol'); save(); break; }
+    case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
     /* ---- 政治知识库 ---- */
     case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; renderPol(); break; }
     case 'kb-toggle': { const kk=b.dataset.k; KB_OPEN[kk]=!KB_OPEN[kk]; if(KB_OPEN['__all']) KB_OPEN['__all']=false; renderPol(); break; }
@@ -4297,19 +4253,32 @@ document.addEventListener('click', function(ev){
     case 'kb-sres-subj': { KB_SRES_SUBJ=b.dataset.s; renderPol(); break; }
     case 'kb-jump':   { kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
     case 'kb-copy':   { kbCopyAudio(+b.dataset.ci); break; }
+    case 'tts-toggle': { ttsToggle(Number(b.dataset.ci)); break; }
+    case 'tts-stop':   { ttsStop(false); renderPol(); break; }
+    case 'tts-rate':   { ttsRate(Number(b.dataset.r)); break; }
     case 'kb-quiz':        { kbQuizStart(POL_SUB); break; }
     case 'kb-quiz-close':  { KB_QUIZ=null; renderPol(); break; }
     case 'kb-quiz-submit': {
       if(!KB_QUIZ) break;
-      const it=KB_QUIZ.items[KB_QUIZ.idx];
-      const inp=document.querySelector('#tab-pol .kb-quiz-in');
-      const v = inp?inp.value:'';
-      if(!String(v).trim()){ toast('先输入答案'); break; }
-      it.ok = kbAnswerOk(v, it.a); it.revealed=true;
+      const it = KB_QUIZ.items[KB_QUIZ.idx];
+      const inputs = document.querySelectorAll('#tab-pol .kb-quiz-in');
+      const vs = [];
+      for(let i=0;i<inputs.length;i++) vs.push(String(inputs[i].value||'').trim());
+      if(!vs.some(function(v){ return v; })){ toast('先填空'); break; }
+      const ansArr = Array.isArray(it.a) ? it.a : [String(it.a||'')];
+      it.vs = vs;
+      it.oks = ansArr.map(function(a,i){ return kbAnswerOk(vs[i], a); });
+      it.ok = it.oks.every(function(x){ return x; });
+      it.revealed = true;
       if(it.ok) KB_QUIZ.ok++;
       renderPol(); break;
     }
-    case 'kb-quiz-reveal': { if(KB_QUIZ){ KB_QUIZ.items[KB_QUIZ.idx].revealed=true; renderPol(); } break; }
+    case 'kb-quiz-reveal': {
+      if(!KB_QUIZ) break;
+      const it = KB_QUIZ.items[KB_QUIZ.idx];
+      it.revealed = true;
+      renderPol(); break;
+    }
     case 'kb-quiz-next': {
       if(!KB_QUIZ) break;
       if(KB_QUIZ.idx+1>=KB_QUIZ.total){ KB_QUIZ.finished=true; }
@@ -4317,12 +4286,6 @@ document.addEventListener('click', function(ev){
       renderPol(); break;
     }
     /* ---- 生词本看板 ---- */
-    case 'vb-mode': {
-      VB_FUZZY = !VB_FUZZY;
-      var pm = el('vbDatePick');
-      renderVbWords(pm ? pm.value : todayStr());
-      break;
-    }
     case 'vb-toggle': {
       var item = b.closest('.vb-item');
       if(!item) break;
@@ -4550,8 +4513,6 @@ document.addEventListener('visibilitychange', function(){
 (function init(){
   const how = load();
   WEEK_CURSOR = mondayOf(todayStr());
-  /* 恢复政治板块上次停留的目录（刷新也记忆） */
-  if(S.pol && S.pol.filter) POL_FILTER = S.pol.filter;
   go('today');
   if(how==='migrated') setTimeout(function(){ toast('已自动迁移旧版本数据'); }, 500);
   
