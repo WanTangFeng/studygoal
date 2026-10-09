@@ -974,7 +974,12 @@ function secDef(subj, k, year){
 function secAcc(subj, k, v, year){
   const d = secDef(subj,k,year); if(!d||!v) return null;
   if(d.mode==='sub'){ return d.pt>0 ? Math.max(0,Math.min(1, v.score/d.pt)) : null; }
-  if(d.mode==='subq'){ return d.pt>0 ? Math.max(0,Math.min(1, subqSum(v.scores,d.maxPer)/d.pt)) : null; }
+  if(d.mode==='subq'){
+    if(Array.isArray(v.scores) && v.scores.length) return d.pt>0 ? Math.max(0,Math.min(1, subqSum(v.scores,d.maxPer)/d.pt)) : null;
+    const lt = v.total||d.q;
+    if(!(lt>0) || !Array.isArray(v.wrong)) return null;
+    return Math.max(0, Math.min(1, (lt - v.wrong.length)/lt));
+  }
   const t = v.total||d.q; if(!(t>0)) return null;
   return Math.max(0, Math.min(1, (t - v.wrong.length)/t));
 }
@@ -995,7 +1000,10 @@ function paperScore(p){
     const v = p.secs[d.k]; if(!v) return;
     recorded++; full += d.pt;
     if(d.mode==='sub'){ got += v.score; }
-    else if(d.mode==='subq'){ got += Math.min(subqSum(v.scores,d.maxPer), d.pt); }
+    else if(d.mode==='subq'){
+      if(Array.isArray(v.scores) && v.scores.length) got += Math.min(subqSum(v.scores,d.maxPer), d.pt);
+      else { const lt=v.total||d.q; if(lt>0 && Array.isArray(v.wrong)) got += d.pt*(lt-v.wrong.length)/lt; }
+    }
     else { const t=v.total||d.q; wrong += v.wrong.length; got += d.pt*(t-v.wrong.length)/t; }
   });
   return { got:Math.round(got*10)/10, full:full, wrong:wrong, recorded:recorded,
@@ -1023,8 +1031,15 @@ function redoList(){
       const m=p.marks[key]; if(m.redo) return;
       if(!m.r && !m.t) return;             /* 没标注过的不进清单 */
       const parts=key.split('#'); const d=secDef(p.subj,parts[0],p.year); if(!d) return;
-      const v=p.secs[parts[0]]; if(!v || d.mode!=='obj') return;
-      if(v.wrong.indexOf(Number(parts[1]))<0) return;   /* 已改对就不再算 */
+      const v=p.secs[parts[0]]; if(!v) return;
+      const _no = Number(parts[1]);
+      if(d.mode==='obj'){
+        if((v.wrong||[]).indexOf(_no)<0) return;          /* 已改对就不再算 */
+      } else if(d.mode==='subq'){
+        const _idx = _no - (d.from||0);
+        const _sc = Array.isArray(v.scores) ? Number(v.scores[_idx]) : 0;
+        if(isFinite(_sc) && _sc > 0) return;              /* 已拿到分就不再算 */
+      } else { return; }
       out.push({ pid:p.id, key:key, subj:p.subj, year:p.year, sec:d, no:Number(parts[1]), m:m });
     });
   });
@@ -1349,7 +1364,8 @@ function seed(){
       { 'ch#4':{r:'calc',t:'积分上下限写反了，思路是对的',redo:0},
         'bl#13':{r:'careless',t:'抄错题干系数',redo:1} }),
     P('p_math2_2022','math2',2022,11,
-      { ch:{total:10,wrong:[7]}, bl:{total:6,wrong:[12,16]}, sv:{total:6,wrong:[19,21]} },
+      { ch:{total:10,wrong:[7]}, bl:{total:6,wrong:[12,16]},
+        sv:{scores:[15,14,0,12,0,9], total:50} },
       { 'sv#19':{r:'unknown',t:'二重积分没想到换极坐标，卡了十分钟',redo:0} }),
     P('p_cs408_2024','cs408',2024,1,
       { ds_c:{total:11,wrong:[3,9]}, co_c:{total:11,wrong:[13,15,18,20]},
@@ -2248,7 +2264,8 @@ function renderPapers(){
 function paperCard(p, first){
   const def = PAPERS[p.subj], sc = paperScore(p);
   const col = accColor(sc.rate);
-  const undone = def.secs.length - sc.recorded;
+  const sdefs = secsOf(p.subj, p.year);          /* 年份感知：2020 前/后题型不同 */
+  const undone = sdefs.length - sc.recorded;
   let h = '<div class="pcard"><div class="ph">' +
     '<span class="pyr">'+p.year+'</span><span class="psb">'+def.s+'</span>' +
     '<span class="accp '+accCls(sc.rate)+'">'+(sc.rate===null?'—':Math.round(sc.rate*100)+'%')+'</span>' +
@@ -2263,19 +2280,25 @@ function paperCard(p, first){
     (sc.full<sc.total ? '<span style="color:var(--faint)">（全卷 '+sc.total+' 分，还有 '+undone+' 个题型没记）</span>' : '') +
     ' · 错 '+sc.wrong+' 题</div>';
 
-  def.secs.forEach(function(d){
-    const v = p.secs[d.k]; if(!v) return;
-    const a = secAcc(p.subj, d.k, v), c = accColor(a);
-    const right = d.mode==='sub' ? (nfm(v.score)+'/'+d.pt+' 分')
-                                 : ((v.total-v.wrong.length)+'/'+v.total+' 题');
+  sdefs.forEach(function(d0){
+    const v = p.secs[d0.k]; if(!v) return;
+    const d = secDef(p.subj, d0.k, p.year) || d0;
+    const a = secAcc(p.subj, d0.k, v, p.year), c = accColor(a);
+    let right;
+    if(d.mode==='sub')       right = nfm(v.score)+'/'+d.pt+' 分';
+    else if(d.mode==='subq') right = (Array.isArray(v.scores) && v.scores.length)
+                                     ? (nfm(subqSum(v.scores, d.maxPer))+'/'+d.pt+' 分')
+                                     : ((v.total-(v.wrong||[]).length)+'/'+v.total+' 题');
+    else                     right = (v.total-v.wrong.length)+'/'+v.total+' 题';
     h += '<div class="pbar"><span class="pn">'+esc(d.n)+'</span>' +
       '<span class="pt"><i style="width:'+(a*100).toFixed(1)+'%;background:'+c.f+'"></i></span>' +
       '<span class="pv" style="color:'+c.f+'">'+Math.round(a*100)+'% <span style="color:var(--faint);font-weight:600">'+right+'</span></span></div>';
   });
 
   const chips = [];
-  def.secs.forEach(function(d){
-    const v = p.secs[d.k]; if(!v) return;
+  sdefs.forEach(function(d0){
+    const v = p.secs[d0.k]; if(!v) return;
+    const d = secDef(p.subj, d0.k, p.year) || d0;
     if(d.mode==='sub'){
       const key = d.k+'#0', m = p.marks[key];
       const has = m && (m.r||m.t);
@@ -2283,7 +2306,17 @@ function paperCard(p, first){
         esc(d.s)+(has ? (m.r?' <em>'+REASONS[m.r]+'</em>':' <em>已备注</em>') : ' <em>加备注</em>')+'</button>');
       return;
     }
-    v.wrong.forEach(function(no){
+    /* 解答题（subq）：列出「没拿到分」的题号；旧格式回落到 wrong 列表 */
+    let nos;
+    if(d.mode==='subq'){
+      nos = [];
+      if(Array.isArray(v.scores) && v.scores.length){
+        v.scores.forEach(function(x,i){ if(!(Number(x)>0)) nos.push((d.from||0)+i); });
+      } else if(Array.isArray(v.wrong)){ nos = v.wrong.slice(); }
+    } else {
+      nos = Array.isArray(v.wrong) ? v.wrong : [];
+    }
+    nos.forEach(function(no){
       const key = d.k+'#'+no, m = p.marks[key] || {r:'',t:'',redo:0};
       chips.push('<button class="wchip '+(m.redo?'done':(m.r?'r-'+m.r:''))+'" data-act="mark" data-id="'+p.id+'" data-key="'+key+'">' +
         esc(d.s)+' '+no+(m.r?' <em>'+REASONS[m.r]+'</em>':'')+'</button>');
@@ -2976,7 +3009,13 @@ function savePaper(){
       Object.keys(p.marks).forEach(function(key){
         const kp = key.split('#'), v = secs[kp[0]], d = secDef(p.subj, kp[0], p.year);
         if(!v || !d){ delete p.marks[key]; dropped++; return; }
-        if(d.mode!=='sub' && v.wrong.indexOf(Number(kp[1]))<0){ delete p.marks[key]; dropped++; }
+        if(d.mode==='obj'){
+          if((v.wrong||[]).indexOf(Number(kp[1]))<0){ delete p.marks[key]; dropped++; }
+        } else if(d.mode==='subq'){
+          const _idx = Number(kp[1]) - (d.from||0);
+          const _sc = Array.isArray(v.scores) ? Number(v.scores[_idx]) : 0;
+          if(isFinite(_sc) && _sc > 0){ delete p.marks[key]; dropped++; }   /* 已拿到分，备注作废 */
+        }
       });
     }
   } else {
