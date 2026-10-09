@@ -680,28 +680,22 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-chip.on i{background:rgba(255,255,255,.26);color:#fff}
 .kb-sres-tag{font-style:normal;font-size:10.5px;font-weight:800;color:#7355f7;
   background:#f1edff;border-radius:6px;padding:1px 6px;margin-right:6px}
-/* ---- 顶部考研关键节点提醒 ---- */
-.kynote{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:2px 0 14px;
-  padding:13px 15px;border:1px solid var(--amber-line);border-radius:16px;cursor:pointer;font-family:inherit;
-  background:linear-gradient(135deg,#fffaef,#fff6e2);box-shadow:0 6px 18px rgba(217,136,10,.10);
-  transition:transform .16s,box-shadow .2s;position:relative;overflow:hidden}
-.kynote:active{transform:scale(.987)}
-.kynote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:var(--amber);border-radius:0 4px 4px 0}
-.kynote.live::before,.kynote.final::before{background:var(--red)}
-.kynote-ic{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
-  background:#fff;color:var(--amber);box-shadow:var(--sh-sm)}
-.kynote.live .kynote-ic,.kynote.final .kynote-ic{color:var(--red)}
-.kynote-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.kynote-t{display:flex;align-items:center;gap:7px;font-size:14.5px;font-weight:800;color:var(--ink)}
-.kynote-badge{font-style:normal;font-size:10.5px;font-weight:800;color:#fff;background:var(--amber);
-  border-radius:20px;padding:1px 7px;white-space:nowrap}
-.kynote.live .kynote-badge,.kynote.final .kynote-badge{background:var(--red)}
-.kynote-s{font-size:12.5px;font-weight:650;color:var(--amber)}
-.kynote.live .kynote-s,.kynote.final .kynote-s{color:var(--red)}
-.kynote-tip{font-size:11.5px;color:var(--muted);line-height:1.45}
-.kynote-arrow{flex:none;color:var(--faint);display:flex}
-.kynote svg{display:block}
+/* ---- 今日问候条（仅今日页） ---- */
+.gbar{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:2px 0 14px;
+  padding:12px 16px;border:1px solid var(--line);border-radius:16px;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,#f7f5ff,#eef4ff);box-shadow:0 4px 14px rgba(25,27,46,.05);
+  transition:transform .16s,box-shadow .2s}
+.gbar:hover{box-shadow:0 6px 18px rgba(25,27,46,.09)}
+.gbar:active{transform:scale(.988)}
+.gbar-l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.gbar-hi{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.3px;line-height:1.25}
+.gbar-date{font-size:12px;color:var(--muted);font-weight:600}
+.gbar-r{margin-left:auto;flex:none}
+.gbar-streak{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;
+  color:#d9691f;background:#fff2e6;border-radius:20px;padding:5px 11px;white-space:nowrap}
+.gbar-streak b{font-weight:850}
+.gbar-streak.none{color:var(--muted);background:var(--bg2)}
+.gbar svg{display:block}
 /* ---- 填空题每个空的判分状态 ---- */
 .kb-fill-in.ok{border-bottom-color:var(--green);color:var(--green)}
 .kb-fill-in.bad{border-bottom-color:var(--red);color:var(--red);background:var(--red-soft)}
@@ -742,7 +736,7 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .ck-hint{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:11px;
   border-top:1px solid var(--line2);font-size:11.5px;line-height:1.5;color:var(--muted)}
 .ck-hint svg{flex:none;opacity:.75}
-.kynote svg,.ck-hint svg,.kb-tts svg{display:block}
+.gbar svg,.ck-hint svg,.kb-tts svg{display:block}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -1588,39 +1582,38 @@ function go(tab){
    ========================================================= */
 function totalCheckins(){ let n=0; S.cats.forEach(function(c){ n += Object.keys(c.checkins||{}).length; }); return n; }
 /* =========================================================
-   顶部 · 考研关键节点提醒（替代原来的备份横幅/冲刺条）
+   顶部 · 今日问候条（仅今日页显示）
    ========================================================= */
-const KAOYAN_STEPS = [
-  { t:'网上预报名', from:'09-24', to:'09-27', tip:'研招网先填信息占位' },
-  { t:'正式报名',   from:'10-05', to:'10-25', tip:'缴费才算报名成功，别拖到最后一天' },
-  { t:'网上确认',   from:'11-01', to:'11-05', tip:'上传照片和证件，各省时间略有不同' },
-  { t:'打印准考证', from:'12-11', to:'12-20', tip:'多打几份，正反面别乱写' },
-  { t:'初试',       from:'12-19', to:'12-20', tip:'第一天政治+英语，第二天数学+专业课', final:true }
-];
-function kaoyanStep(){
-  const e = examInfo(), Y = e.year, T = todayStr();
-  for(let i=0;i<KAOYAN_STEPS.length;i++){
-    const s = KAOYAN_STEPS[i], a = Y+'-'+s.from, b = Y+'-'+s.to;
-    if(T >= a && T <= b) return { s:s, state:'now', b:b, left:dDiff(T,b) };
-    if(T < a) return { s:s, state:'next', a:a, left:dDiff(T,a) };
-  }
-  const s = KAOYAN_STEPS[0];
-  return { s:s, state:'next', a:(Y+1)+'-09-24', left:dDiff(T,(Y+1)+'-09-24') };
+function greetWord(){
+  const hr = new Date().getHours();
+  if(hr < 5)  return '夜深了';
+  if(hr < 9)  return '早上好';
+  if(hr < 12) return '上午好';
+  if(hr < 14) return '中午好';
+  if(hr < 18) return '下午好';
+  if(hr < 23) return '晚上好';
+  return '夜深了';
+}
+function maxStreak(){
+  let n = 0;
+  (S.cats||[]).forEach(function(c){ const s = catStreak(c); if(s.n > n) n = s.n; });
+  return n;
 }
 function renderTopStrip(){
-  const k = kaoyanStep(), st = k.state, s = k.s;
-  const when = st === 'now'
-    ? (k.left <= 0 ? ('今天（'+mmdd(k.b)+'）最后一天') : (mmdd(k.b)+' 截止 · 还剩 '+k.left+' 天'))
-    : (mmdd(k.a)+' 开始 · 还有 '+k.left+' 天');
+  /* 只在今日页显示；其余板块一律清空，恢复原版版面 */
+  if(TAB !== 'today'){ el('bannerSlot').innerHTML = ''; return; }
+  const T = todayStr(), sk = maxStreak();
   el('bannerSlot').innerHTML =
-    '<button class="kynote'+(st==='now'?' live':'')+(s.final?' final':'')+'" data-act="go-today" aria-label="考研关键节点">' +
-      '<span class="kynote-ic">' + ic('cal',20,1.9) + '</span>' +
-      '<span class="kynote-main">' +
-        '<span class="kynote-t">' + esc(s.t) + '<i class="kynote-badge">' + (st==='now'?'进行中':'待开始') + '</i></span>' +
-        '<span class="kynote-s">' + esc(when) + '</span>' +
-        '<span class="kynote-tip">' + esc(s.tip) + '</span>' +
+    '<button class="gbar" data-act="scroll-todo" aria-label="今日概览">' +
+      '<span class="gbar-l">' +
+        '<span class="gbar-hi">' + greetWord() + '</span>' +
+        '<span class="gbar-date">' + mmdd(T) + ' ' + wdOf(T) + '</span>' +
       '</span>' +
-      '<span class="kynote-arrow">' + ic('right',16,2) + '</span>' +
+      '<span class="gbar-r">' +
+        (sk > 0
+          ? '<span class="gbar-streak">' + ic('flame',14,2.1) + '连续 <b>' + sk + '</b> 天</span>'
+          : '<span class="gbar-streak none">' + ic('spark',14,2) + '今天开始打卡</span>') +
+      '</span>' +
     '</button>';
 }
 
@@ -1833,6 +1826,7 @@ function renderToday(){
        '</div>';
 
   /* 今天要处理 */
+  h += '<div id="todoSec"></div>';
   const cards = [];
   cats.forEach(function(c){
     const sk = catStreak(c), m = missedYesterday(c);
@@ -4239,6 +4233,11 @@ document.addEventListener('click', function(ev){
       renderPol(); break;
     }
     case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
+    case 'scroll-todo': {
+      const an = el('todoSec');
+      if(an && an.scrollIntoView) an.scrollIntoView({behavior:'smooth', block:'start'});
+      break;
+    }
     /* ---- 政治知识库 ---- */
     case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; renderPol(); break; }
     case 'kb-toggle': { const kk=b.dataset.k; KB_OPEN[kk]=!KB_OPEN[kk]; if(KB_OPEN['__all']) KB_OPEN['__all']=false; renderPol(); break; }
