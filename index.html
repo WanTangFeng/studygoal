@@ -1303,8 +1303,20 @@ function normalize(o){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0) return;
-        secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
+        if(sum>0){ secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 }; return; }
+        /* 兼容早期「按题号标错」的解答题记录（只有 total/wrong、没有分数）。
+           直接丢弃会让题号和错因备注一起消失，这里迁移成按题给分：
+           标错的题记 0 分，其余记满分（分值上限 maxPer），数据和备注都保留。 */
+        if(!Array.isArray(v.wrong) && !(Number(v.total) > 0)) return;
+        const lw = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
+                     .filter(function(x){ return isFinite(x) && x>0; });
+        const lu = []; lw.forEach(function(x){ if(lu.indexOf(x)<0) lu.push(x); });
+        lu.sort(function(a,b){ return a-b; });
+        const lq = Math.max(1, Math.round(Number(d.q)||0));
+        const mig = [];
+        for(let li=0; li<lq; li++) mig.push(lu.indexOf((d.from||0)+li)>=0 ? 0 : d.maxPer);
+        const msum = mig.reduce(function(a,b){return a+b;},0);
+        secs[d.k] = { scores: mig, total: Math.round(Math.min(msum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
         const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
@@ -1354,8 +1366,20 @@ function normalizePapers(arr){
       } else if(d.mode==='subq'){
         const arr = (Array.isArray(v.scores)?v.scores:[]).map(function(x){ const n=Number(x); return (isFinite(n)&&n>0)?Math.min(n,d.maxPer):0; });
         const sum = arr.reduce(function(a,b){return a+b;},0);
-        if(sum<=0) return;
-        secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 };
+        if(sum>0){ secs[d.k] = { scores: arr, total: Math.round(Math.min(sum, d.pt)*10)/10 }; return; }
+        /* 兼容早期「按题号标错」的解答题记录（只有 total/wrong、没有分数）。
+           直接丢弃会让题号和错因备注一起消失，这里迁移成按题给分：
+           标错的题记 0 分，其余记满分（分值上限 maxPer），数据和备注都保留。 */
+        if(!Array.isArray(v.wrong) && !(Number(v.total) > 0)) return;
+        const lw = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
+                     .filter(function(x){ return isFinite(x) && x>0; });
+        const lu = []; lw.forEach(function(x){ if(lu.indexOf(x)<0) lu.push(x); });
+        lu.sort(function(a,b){ return a-b; });
+        const lq = Math.max(1, Math.round(Number(d.q)||0));
+        const mig = [];
+        for(let li=0; li<lq; li++) mig.push(lu.indexOf((d.from||0)+li)>=0 ? 0 : d.maxPer);
+        const msum = mig.reduce(function(a,b){return a+b;},0);
+        secs[d.k] = { scores: mig, total: Math.round(Math.min(msum, d.pt)*10)/10 };
       } else {
         const t = Math.max(1, Math.round(Number(v.total)||d.q));
         const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
@@ -2919,6 +2943,13 @@ function qgridHTML(k){
   }
   return s + '</div>';
 }
+function pfPer(d){
+  const p = Number(d.per);
+  if(isFinite(p) && p > 0) return p;
+  const q = Number(d.q);
+  if(!(q > 0)) return d.pt;
+  return Math.round(d.pt / q * 100) / 100;
+}
 function pfRowsHTML(){
   const secs = secsOf(PF.subj, PF.year);
   let h = '<div class="card" style="padding:4px 13px;margin-bottom:10px">';
@@ -2927,7 +2958,7 @@ function pfRowsHTML(){
     h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>';
     if(d.mode==='sub') h += '第 '+d.no+' 题 · 满分 '+d.pt+' 分';
     else if(d.mode==='subq') h += '第 '+d.from+'-'+d.to+' 题 · 每题 ≤ '+d.maxPer+' 分（共 '+d.pt+' 分）';
-    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分（共 '+d.pt+' 分）';
+    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+pfPer(d)+' 分（共 '+d.pt+' 分）';
     h += '</span></div>';
     if(d.mode==='sub'){
       h += '<div class="pr"><input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.pt+'" step="0.5" ' +
@@ -2943,7 +2974,7 @@ function pfRowsHTML(){
       }
       h += '</div>';
     } else {
-      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+d.per+' 分</span>' +
+      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+pfPer(d)+' 分</span>' +
         '<button class="btn btn-xs '+(r.on&&!r.wrong.length?'btn-pri':'btn-ghost')+'" data-act="pfull" data-k="'+d.k+'">全对</button></div>' +
         qgridHTML(d.k);
     }
