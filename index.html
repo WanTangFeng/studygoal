@@ -987,7 +987,7 @@ const PAPERS = {
   math2:{ n:'数学（二）', s:'数二', secs:[
     {k:'ch',s:'选择',n:'选择题',q:10,from:1, to:10,mode:'obj',pt:50,per:5},
     {k:'bl',s:'填空',n:'填空题',q:6, from:11,to:16,mode:'obj',pt:30,per:5},
-    {k:'sv',s:'解答',n:'解答题',q:6, from:17,to:22,mode:'subq',pt:70,maxPer:15}
+    {k:'sv',s:'解答',n:'解答题',q:6, from:17,to:22,mode:'obj',pt:70}
   ]},
   cs408:{ n:'408 计算机综合', s:'408', secs:[
     {k:'ds_c',s:'数构选',n:'数据结构·选择',q:11,from:1, to:11,mode:'obj',pt:22},
@@ -1016,7 +1016,7 @@ function math2Secs(year){
   return [
     {k:'ch',s:'选择',n:'选择题',q:chQ,from:1,to:chQ,mode:'obj',pt:chPt,per:chPer},
     {k:'bl',s:'填空',n:'填空题',q:blQ,from:chQ+1,to:chQ+blQ,mode:'obj',pt:blPt,per:blPer},
-    {k:'sv',s:'解答',n:'解答题',q:svQ,from:chQ+blQ+1,to:chQ+blQ+svQ,mode:'subq',pt:svPt,maxPer:15}
+    {k:'sv',s:'解答',n:'解答题',q:svQ,from:chQ+blQ+1,to:chQ+blQ+svQ,mode:'obj',pt:svPt}
   ];
 }
 function secsOf(subj, year){ return (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs; }
@@ -1318,11 +1318,18 @@ function normalize(o){
         const msum = mig.reduce(function(a,b){return a+b;},0);
         secs[d.k] = { scores: mig, total: Math.round(Math.min(msum, d.pt)*10)/10 };
       } else {
-        const t = Math.max(1, Math.round(Number(v.total)||d.q));
-        const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
-                   .filter(function(x){ return isFinite(x) && x>0; });
-        const u = []; w.forEach(function(x){ if(u.indexOf(x)<0) u.push(x); });
-        u.sort(function(a,b){ return a-b; });
+        let t, u = [];
+        if(Array.isArray(v.scores)){
+          /* 兼容「解答题逐题填分」时期的记录：回到按题号标错，得 0 分的题记为错题 */
+          v.scores.forEach(function(x,i){ if(!(Number(x)>0)) u.push((d.from||0)+i); });
+          t = Math.max(1, Math.round(Number(d.q)||0) || u.length || 1);
+        } else {
+          t = Math.max(1, Math.round(Number(v.total)||d.q));
+          const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
+                     .filter(function(x){ return isFinite(x) && x>0; });
+          w.forEach(function(x){ if(u.indexOf(x)<0) u.push(x); });
+          u.sort(function(a,b){ return a-b; });
+        }
         secs[d.k] = { total:t, wrong:u.slice(0,t) };
       }
     });
@@ -1381,11 +1388,18 @@ function normalizePapers(arr){
         const msum = mig.reduce(function(a,b){return a+b;},0);
         secs[d.k] = { scores: mig, total: Math.round(Math.min(msum, d.pt)*10)/10 };
       } else {
-        const t = Math.max(1, Math.round(Number(v.total)||d.q));
-        const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
-                   .filter(function(x){ return isFinite(x) && x>0; });
-        const u = []; w.forEach(function(x){ if(u.indexOf(x)<0) u.push(x); });
-        u.sort(function(a,b){ return a-b; });
+        let t, u = [];
+        if(Array.isArray(v.scores)){
+          /* 兼容「解答题逐题填分」时期的记录：回到按题号标错，得 0 分的题记为错题 */
+          v.scores.forEach(function(x,i){ if(!(Number(x)>0)) u.push((d.from||0)+i); });
+          t = Math.max(1, Math.round(Number(d.q)||0) || u.length || 1);
+        } else {
+          t = Math.max(1, Math.round(Number(v.total)||d.q));
+          const w = (Array.isArray(v.wrong)?v.wrong:[]).map(function(x){ return Math.round(Number(x)); })
+                     .filter(function(x){ return isFinite(x) && x>0; });
+          w.forEach(function(x){ if(u.indexOf(x)<0) u.push(x); });
+          u.sort(function(a,b){ return a-b; });
+        }
         secs[d.k] = { total:t, wrong:u.slice(0,t) };
       }
     });
@@ -1489,8 +1503,7 @@ function seed(){
       { 'ch#4':{r:'calc',t:'积分上下限写反了，思路是对的',redo:0},
         'bl#13':{r:'careless',t:'抄错题干系数',redo:1} }),
     P('p_math2_2022','math2',2022,11,
-      { ch:{total:10,wrong:[7]}, bl:{total:6,wrong:[12,16]},
-        sv:{scores:[15,14,0,12,0,9], total:50} },
+      { ch:{total:10,wrong:[7]}, bl:{total:6,wrong:[12,16]}, sv:{total:6,wrong:[19,21]} },
       { 'sv#19':{r:'unknown',t:'二重积分没想到换极坐标，卡了十分钟',redo:0} }),
     P('p_cs408_2024','cs408',2024,1,
       { ds_c:{total:11,wrong:[3,9]}, co_c:{total:11,wrong:[13,15,18,20]},
@@ -2943,13 +2956,6 @@ function qgridHTML(k){
   }
   return s + '</div>';
 }
-function pfPer(d){
-  const p = Number(d.per);
-  if(isFinite(p) && p > 0) return p;
-  const q = Number(d.q);
-  if(!(q > 0)) return d.pt;
-  return Math.round(d.pt / q * 100) / 100;
-}
 function pfRowsHTML(){
   const secs = secsOf(PF.subj, PF.year);
   let h = '<div class="card" style="padding:4px 13px;margin-bottom:10px">';
@@ -2958,7 +2964,7 @@ function pfRowsHTML(){
     h += '<div class="prow"><div class="pl"><b>'+esc(d.n)+'</b><span>';
     if(d.mode==='sub') h += '第 '+d.no+' 题 · 满分 '+d.pt+' 分';
     else if(d.mode==='subq') h += '第 '+d.from+'-'+d.to+' 题 · 每题 ≤ '+d.maxPer+' 分（共 '+d.pt+' 分）';
-    else h += '第 '+d.from+'-'+d.to+' 题 · 每题 '+pfPer(d)+' 分（共 '+d.pt+' 分）';
+    else h += '第 '+d.from+'-'+d.to+' 题 · '+d.pt+' 分';
     h += '</span></div>';
     if(d.mode==='sub'){
       h += '<div class="pr"><input class="in-s" type="number" inputmode="decimal" min="0" max="'+d.pt+'" step="0.5" ' +
@@ -2974,7 +2980,7 @@ function pfRowsHTML(){
       }
       h += '</div>';
     } else {
-      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · 每题 '+pfPer(d)+' 分</span>' +
+      h += '<div class="pr"><span class="ptag">第 '+d.from+'-'+d.to+' 题 · '+d.pt+' 分</span>' +
         '<button class="btn btn-xs '+(r.on&&!r.wrong.length?'btn-pri':'btn-ghost')+'" data-act="pfull" data-k="'+d.k+'">全对</button></div>' +
         qgridHTML(d.k);
     }
