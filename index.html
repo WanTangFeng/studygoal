@@ -765,6 +765,68 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .pol-wrinfo{ margin-top:8px; font-size:12.5px; color:var(--amber); }
 .pol-prog{ margin-top:10px; font-size:12px; color:var(--faint); text-align:center; }
 .nv-dot.pol{ background:#dd2b68; }
+/* ---- 时政刷题 v2：筛选 / 统计 / 答题卡 / 导航 / 成绩 ---- */
+.pol-frow{ display:flex; align-items:center; gap:8px; margin-top:9px; flex-wrap:wrap; }
+.pol-fl{ flex:none; width:30px; font-size:11.5px; font-weight:700; color:var(--faint); }
+.pol-frow .seg{ flex:1; min-width:0; }
+.seg-wrap{ flex-wrap:wrap; }
+.pol-stat{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:11px;
+  padding-top:10px; border-top:1px dashed var(--line2); }
+.pol-stat-i{ font-size:12px; color:var(--muted); font-weight:600; }
+.pol-stat-i b{ color:var(--ink); font-weight:850; }
+.pol-stat-i b.pr7,.pol-stat-i b.pr8,.pol-stat-i b.pr9,.pol-stat-i b.pr10{ color:#0f9d58; }
+.pol-stat-i b.pr0,.pol-stat-i b.pr1,.pol-stat-i b.pr2,.pol-stat-i b.pr3,.pol-stat-i b.pr4{ color:#dd2b68; }
+.pol-stat-btn{ display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line);
+  background:var(--card); color:var(--muted); font-size:11.5px; font-weight:700;
+  padding:5px 9px; border-radius:9px; cursor:pointer; font-family:inherit; }
+.pol-stat-btn:active{ transform:scale(.97); }
+.pol-stat-btn svg{ display:block; }
+.pol-tp{ font-style:normal; font-size:10.5px; font-weight:800; padding:1px 7px; border-radius:20px;
+  background:var(--purple-soft); color:var(--purple); }
+.pol-tp.mc{ background:#fff1e0; color:#c26a12; }
+.pol-hist{ font-size:11px; color:var(--faint); }
+.pol-fav{ margin-left:auto; background:none; border:none; cursor:pointer; font-size:17px;
+  line-height:1; color:var(--faint); padding:2px 5px; }
+.pol-fav.on{ color:#f5a623; }
+.pol-top .pol-star{ margin-left:0; }
+.pol-nav{ display:flex; align-items:center; gap:7px; margin-top:12px; padding-top:11px;
+  border-top:1px solid var(--line2); }
+.pol-navb{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:4px;
+  border:1.5px solid var(--line); background:var(--card); color:var(--ink); font-size:13px;
+  font-weight:700; padding:9px 6px; border-radius:12px; cursor:pointer; font-family:inherit; }
+.pol-navb:active{ transform:scale(.98); background:var(--bg2); }
+.pol-navb svg{ display:block; }
+.pol-jumpin{ flex:none; width:54px; text-align:center; border:1.5px solid var(--line);
+  border-radius:11px; padding:9px 4px; font-size:14px; font-weight:700;
+  background:#fbfcff; color:inherit; font-family:inherit; }
+.pol-jumpin::-webkit-outer-spin-button,.pol-jumpin::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+.pol-navpg{ flex:none; font-size:12px; color:var(--faint); font-weight:700; min-width:44px; text-align:center; }
+.pol-sheet{ display:grid; grid-template-columns:repeat(auto-fill,minmax(40px,1fr)); gap:6px; }
+.pol-cell{ border:1.5px solid var(--line); background:var(--card); color:var(--muted);
+  font-size:12.5px; font-weight:750; padding:8px 2px; border-radius:9px; cursor:pointer; font-family:inherit; }
+.pol-cell.right{ background:#e7f7ee; border-color:#16a34a; color:#0f7a44; }
+.pol-cell.wrong{ background:#ffe9f1; border-color:#dd2b68; color:#c31f57; }
+.pol-cell.cur{ box-shadow:0 0 0 2.5px var(--purple); border-color:var(--purple); color:var(--purple); }
+.pol-legend{ display:flex; gap:14px; margin-top:10px; font-size:11px; color:var(--muted); flex-wrap:wrap; }
+.pol-legend .lg::before{ content:''; display:inline-block; width:9px; height:9px; border-radius:3px;
+  background:var(--card); border:1.5px solid var(--line); margin-right:5px; vertical-align:-1px; }
+.pol-legend .lg-r::before{ background:#e7f7ee; border-color:#16a34a; }
+.pol-legend .lg-w::before{ background:#ffe9f1; border-color:#dd2b68; }
+.pol-legend .lg-c::before{ background:#fff; border-color:var(--purple); }
+.pol-exambar{ text-align:center; }
+.pol-examhd{ font-size:13px; color:var(--muted); font-weight:650; margin-bottom:10px; }
+.pol-examhd b{ color:var(--purple); font-size:16px; font-weight:850; }
+.pol-res{ text-align:center; }
+.pol-res-hd{ font-size:12px; font-weight:800; color:var(--faint); letter-spacing:1px; }
+.pol-res-big{ margin:6px 0 2px; font-size:15px; color:var(--muted); }
+.pol-res-big b{ font-size:42px; font-weight:850; color:var(--purple); letter-spacing:-1px; }
+.pol-res-sub{ font-size:12.5px; color:var(--muted); font-weight:650; }
+.pol-res-acts{ display:flex; gap:7px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+.pol-res-list{ margin-top:13px; padding-top:11px; border-top:1px solid var(--line2); text-align:left; }
+.pol-res-lt{ font-size:11.5px; color:var(--muted); font-weight:700; margin-bottom:7px; }
+.pol-res-item{ display:inline-block; margin:0 6px 6px 0; border:1px solid #dd2b68; background:#ffe9f1;
+  color:#c31f57; font-size:12px; font-weight:750; padding:5px 10px; border-radius:9px;
+  cursor:pointer; font-family:inherit; }
 
 </style>
 </head>
@@ -1077,11 +1139,15 @@ let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
   return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, ui:{ bannerAck:0, ttsRate:1 },
-    pol:{ stars:{}, res:{}, wrong:{}, settings:{remindDays:3},
+    pol:{ stars:{}, res:{}, wrong:{}, fav:{}, hist:{}, settings:{remindDays:3},
+          ui:{ kind:'practice', status:'all', filter:'all', type:'all', pos:0, deck:'', sheet:false },
+          exam:null,
           kb:{ fills:{}, wrong:{}, seen:{} } }, createdAt:new Date().toISOString() };
 }
 function normalizePol(o){
-  const d = { stars:{}, res:{}, wrong:{}, settings:{remindDays:3}, kb:{ fills:{}, wrong:{}, seen:{} } };
+  const d = { stars:{}, res:{}, wrong:{}, fav:{}, hist:{}, settings:{remindDays:3},
+              ui:{ kind:'practice', status:'all', filter:'all', type:'all', pos:0, deck:'', sheet:false },
+              exam:null, kb:{ fills:{}, wrong:{}, seen:{} } };
   if(!o || typeof o!=='object') return d;
   if(o.stars && typeof o.stars==='object'){
     Object.keys(o.stars).forEach(function(k){ const n=Math.round(Number(o.stars[k])||0); if(n>=0&&n<=3) d.stars[k]=n; });
@@ -1111,6 +1177,41 @@ function normalizePol(o){
     if(o.kb.seen && typeof o.kb.seen==='object'){
       Object.keys(o.kb.seen).forEach(function(k){ if(o.kb.seen[k]) d.kb.seen[k]=true; });
     }
+  }
+  /* 收藏 */
+  if(o.fav && typeof o.fav==='object'){
+    Object.keys(o.fav).forEach(function(k){ if(o.fav[k]) d.fav[k]=1; });
+  }
+  /* 作答历史 {n:总次数, ok:答对次数} */
+  if(o.hist && typeof o.hist==='object'){
+    Object.keys(o.hist).forEach(function(k){
+      const x = o.hist[k]; if(!x || typeof x!=='object') return;
+      const n = Math.round(Number(x.n)||0), ok = Math.round(Number(x.ok)||0);
+      if(n>0) d.hist[k] = { n:n, ok:Math.max(0, Math.min(ok, n)) };
+    });
+  }
+  /* 界面状态（筛选/进度） */
+  if(o.ui && typeof o.ui==='object'){
+    const u = o.ui;
+    if(u.kind==='practice'||u.kind==='recite'||u.kind==='exam') d.ui.kind = u.kind;
+    if(u.status==='all'||u.status==='undone'||u.status==='done'||u.status==='wrong'||u.status==='fav') d.ui.status = u.status;
+    if(u.filter==='all'||u.filter==='s1'||u.filter==='s2'||u.filter==='s3'||u.filter==='none') d.ui.filter = u.filter;
+    if(u.type==='all'||u.type==='sc'||u.type==='mc') d.ui.type = u.type;
+    const p = Math.round(Number(u.pos)||0); if(p>=0) d.ui.pos = p;
+    if(u.deck) d.ui.deck = String(u.deck).slice(0,80);
+    d.ui.sheet = !!u.sheet;
+  }
+  /* 整卷会话 */
+  if(o.exam && typeof o.exam==='object'){
+    const picks = {};
+    if(o.exam.picks && typeof o.exam.picks==='object'){
+      Object.keys(o.exam.picks).forEach(function(k){
+        const a = o.exam.picks[k];
+        if(Array.isArray(a)) picks[k] = a.filter(function(x){ return /^[A-H]$/.test(String(x)); }).slice(0,8);
+      });
+    }
+    const used = Math.round(Number(o.exam.used)||0);
+    d.exam = { picks:picks, graded:!!o.exam.graded, used: used>0?used:0 };
   }
   return d;
 }
@@ -3270,9 +3371,17 @@ const KB = {"my":[{"ch":"第一章 世界的物质性及发展规律","kps":[{"k
    考研政治时政 · 刷题 + 错题本
    ========================================================= */
 let POL_IDX = 0;            /* 当前卡片在牌组中的下标 */
-let POL_ANS = {};           /* 当前题已选选项 {A:true,...} */
-let POL_FILTER = 'all';     /* all | s1 | s2 | s3 | none | wrong */
-let POL_MODE = 'order';     /* order | random */
+let POL_ANS = {};           /* 练习/背题：当前题已选选项 {A:true,...} */
+let POL_FILTER = 'all';     /* 星级：all | s1 | s2 | s3 | none */
+let POL_MODE = 'order';     /* 出题顺序：order | random */
+let POL_KIND = 'practice';  /* 答题方式：practice 练习 | recite 背题 | exam 整卷 */
+let POL_STATUS = 'all';     /* 作答状态：all | undone | done | wrong | fav */
+let POL_TYPE = 'all';       /* 题型：all 全部 | sc 单选 | mc 多选 */
+let POL_SHEET = false;      /* 答题卡是否展开 */
+let POL_EXAM = null;        /* 整卷会话 { picks:{id:[keys]}, graded:bool, used:秒 } */
+let POL_T0 = 0;             /* 本组计时起点（毫秒） */
+let POL_T0KEY = '';         /* 计时对应的牌组签名 */
+let POL_RESET_DECK = null;  /* 「清空本组进度」待确认的题号列表 */
 
 /* 老师原版 PDF 手绘星级（从题目册 Ink 批注识别：★1~5 颗 → 三级制）
    仅作默认值，你点星可自行调整，改动会保存到 S.pol.stars */
@@ -3280,96 +3389,357 @@ const POL_STAR_DEFAULT = {1:1,2:3,3:2,4:2,5:2,6:1,7:3,8:2,9:3,10:1,12:1,13:3,14:
 function polStar(id){ return (S.pol.stars[id] != null) ? S.pol.stars[id] : (POL_STAR_DEFAULT[id] || 0); }
 
 function polById(id){ for(let i=0;i<POL.length;i++) if(POL[i].id===id) return POL[i]; return null; }
+function polDeckKey(){ return [POL_KIND,POL_STATUS,POL_FILTER,POL_TYPE,POL_MODE].join('|'); }
 function polDeck(){
   let arr = POL.map(function(it){ return it.id; });
-  if(POL_FILTER==='wrong')      arr = arr.filter(function(id){ return !!S.pol.wrong[id]; });
-  else if(POL_FILTER==='s1')    arr = arr.filter(function(id){ return polStar(id) === 1; });
-  else if(POL_FILTER==='s2')    arr = arr.filter(function(id){ return polStar(id) === 2; });
-  else if(POL_FILTER==='s3')    arr = arr.filter(function(id){ return polStar(id) >= 3; });
-  else if(POL_FILTER==='none')  arr = arr.filter(function(id){ return polStar(id) === 0; });
+  if(POL_STATUS==='undone')      arr = arr.filter(function(id){ return !S.pol.res[id]; });
+  else if(POL_STATUS==='done')   arr = arr.filter(function(id){ return !!S.pol.res[id]; });
+  else if(POL_STATUS==='wrong')  arr = arr.filter(function(id){ return !!S.pol.wrong[id]; });
+  else if(POL_STATUS==='fav')    arr = arr.filter(function(id){ return !!S.pol.fav[id]; });
+  if(POL_FILTER!=='all') arr = arr.filter(function(id){
+    const lv = polStar(id);
+    if(POL_FILTER==='s1') return lv===1;
+    if(POL_FILTER==='s2') return lv===2;
+    if(POL_FILTER==='s3') return lv>=3;
+    if(POL_FILTER==='none') return lv===0;
+    return true;
+  });
+  if(POL_TYPE!=='all') arr = arr.filter(function(id){ const it=polById(id); return !!it && it.type===POL_TYPE; });
   if(POL_MODE==='random'){
     for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
   }
   return arr;
 }
+function polStats(deck){
+  let done=0, right=0;
+  (deck||[]).forEach(function(id){ const r=S.pol.res[id]; if(r){ done++; if(r==='right') right++; } });
+  return { total:(deck||[]).length, done:done, right:right, wrong:done-right,
+           rate: done ? Math.round(right*100/done) : null, left:(deck||[]).length-done };
+}
+function polMMSS(s){
+  s = Math.max(0, Math.round(Number(s)||0));
+  const mm = String(Math.floor(s/60)); const ss = String(s%60);
+  return (mm.length<2?'0'+mm:mm)+':'+(ss.length<2?'0'+ss:ss);
+}
+function polElapsed(){
+  if(POL_EXAM && POL_EXAM.graded && POL_EXAM.used != null) return '用时 '+polMMSS(POL_EXAM.used);
+  if(!POL_T0) return '用时 00:00';
+  return '用时 '+polMMSS(Math.floor((Date.now()-POL_T0)/1000));
+}
+function polTouchTimer(){
+  const k = polDeckKey();
+  if(POL_T0KEY !== k){ POL_T0KEY = k; POL_T0 = Date.now(); }
+}
+/* 把当前筛选/进度写回存档，刷新后回到原处 */
+function polSaveUI(){
+  if(!S.pol) return;
+  S.pol.ui = { kind:POL_KIND, status:POL_STATUS, filter:POL_FILTER, type:POL_TYPE,
+               pos:POL_IDX, deck:polDeckKey(), sheet:!!POL_SHEET };
+}
+function polApplyUI(){
+  const u = (S.pol && S.pol.ui) || {};
+  if(u.kind==='practice'||u.kind==='recite'||u.kind==='exam') POL_KIND = u.kind;
+  if(u.status) POL_STATUS = u.status;
+  if(u.filter) POL_FILTER = u.filter;
+  if(u.type)   POL_TYPE   = u.type;
+  POL_SHEET = !!u.sheet;
+  POL_IDX = Math.max(0, Math.round(Number(u.pos)||0));
+  if(u.deck && u.deck !== polDeckKey()) POL_IDX = 0;
+  POL_EXAM = (S.pol && S.pol.exam) ? S.pol.exam : null;
+  POL_T0 = Date.now(); POL_T0KEY = polDeckKey();
+}
+/* 切换筛选/模式后：回到第一题、清空临时选择、整卷则重开一卷 */
+function polReset(){
+  POL_IDX = 0; POL_ANS = {}; POL_T0 = 0; POL_T0KEY = '';
+  if(POL_KIND==='exam'){ POL_EXAM = { picks:{}, graded:false, used:0 }; S.pol.exam = POL_EXAM; }
+  polSaveUI(); save(); renderPol();
+}
+function polGo(i, scroll){
+  const deck = polDeck(); const n = deck.length; if(!n) return;
+  POL_IDX = ((Math.round(i) % n) + n) % n;
+  if(POL_KIND!=='exam') POL_ANS = {};
+  polSaveUI(); save(); renderPol();
+  if(scroll){
+    const c = el('polCard');
+    if(c && c.scrollIntoView) c.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+}
+function polPick(pid, k){
+  pid = Number(pid);
+  const it = polById(pid); if(!it) return;
+  if(S.pol.res[pid]) return;                       /* 已判分，锁定 */
+  if(POL_KIND==='recite') return;                  /* 背题模式不选项 */
+  if(POL_KIND==='exam'){
+    if(POL_EXAM && POL_EXAM.graded) return;
+    if(!POL_EXAM) POL_EXAM = { picks:{}, graded:false, used:0 };
+    const cur = POL_EXAM.picks[pid] || [];
+    let nx;
+    if(it.type==='mc') nx = cur.indexOf(k)>=0 ? cur.filter(function(x){ return x!==k; })
+                                              : cur.concat([k]).sort();
+    else nx = [k];
+    POL_EXAM.picks[pid] = nx;
+    S.pol.exam = POL_EXAM;
+    polSaveUI(); save(); renderPol();
+    return;
+  }
+  if(it.type==='mc'){ POL_ANS[k] = !POL_ANS[k]; }
+  else { POL_ANS = {}; POL_ANS[k] = true; }
+  renderPol();
+}
+function polSubmit(){
+  const deck = polDeck(); if(!deck.length) return;
+  const id = deck[POL_IDX], it = polById(id); if(!it) return;
+  if(S.pol.res[id] || POL_KIND!=='practice') return;
+  const sel = Object.keys(POL_ANS).filter(function(k){ return POL_ANS[k]; }).sort();
+  if(!sel.length){ toast('先选一个答案'); return; }
+  const ans = it.ans.split('').sort();
+  const ok = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
+  S.pol.res[id] = ok ? 'right' : 'wrong';
+  const hh = S.pol.hist[id] || { n:0, ok:0 }; hh.n++; if(ok) hh.ok++; S.pol.hist[id] = hh;
+  if(ok){
+    if(S.pol.wrong[id]){ delete S.pol.wrong[id]; toast('答对啦，已移出错题本'); } else toast('答对啦');
+  } else {
+    const due = dAdd(todayStr(), S.pol.settings.remindDays);
+    if(!S.pol.wrong[id]) S.pol.wrong[id] = { added:todayStr(), due:due };
+    else S.pol.wrong[id].due = due;
+    toast('答错了，已加入错题本');
+  }
+  polSaveUI(); save(); renderPol();
+}
+function polGrade(){
+  if(!POL_EXAM) POL_EXAM = { picks:{}, graded:false, used:0 };
+  const picks = POL_EXAM.picks || {};
+  const keys = Object.keys(picks).filter(function(k){ return (picks[k]||[]).length; });
+  if(!keys.length){ toast('还没有作答，先做几题吧'); return; }
+  let right=0, bad=0;
+  keys.forEach(function(k){
+    const it = polById(Number(k)); if(!it) return;
+    const sel = picks[k].slice().sort();
+    const ans = it.ans.split('').sort();
+    const ok = sel.length===ans.length && sel.every(function(x,i){ return x===ans[i]; });
+    S.pol.res[k] = ok ? 'right' : 'wrong';
+    const hh = S.pol.hist[k] || { n:0, ok:0 }; hh.n++; if(ok) hh.ok++; S.pol.hist[k] = hh;
+    if(ok){ if(S.pol.wrong[k]) delete S.pol.wrong[k]; right++; }
+    else {
+      const due = dAdd(todayStr(), S.pol.settings.remindDays);
+      if(!S.pol.wrong[k]) S.pol.wrong[k] = { added:todayStr(), due:due };
+      else S.pol.wrong[k].due = due;
+      bad++;
+    }
+  });
+  POL_EXAM.graded = true;
+  POL_EXAM.used = POL_T0 ? Math.floor((Date.now()-POL_T0)/1000) : 0;
+  S.pol.exam = POL_EXAM;
+  polSaveUI(); save(); renderPol();
+  toast('已交卷：答对 '+right+' 题 · 答错 '+bad+' 题');
+}
 function dueWrongCount(){ const T=todayStr(); let n=0; Object.keys(S.pol.wrong).forEach(function(k){ if(S.pol.wrong[k].due<=T) n++; }); Object.keys((S.pol.kb&&S.pol.kb.wrong)||{}).forEach(function(k){ if(S.pol.kb.wrong[k].due<=T) n++; }); return n; }
 function polStarHTML(lv){ let s=''; for(let i=1;i<=3;i++) s+='<span class="st'+(i<=lv?' on':'')+'">★</span>'; return s; }
-function ansClass(it,k){
-  const isAns = it.ans.indexOf(k)>=0;
-  if(isAns) return 'right';
-  if(POL_ANS[k]) return 'wrong';
+function polAnsCls(it, k, sel){
+  if(!it) return '';
+  if(it.ans.indexOf(k) >= 0) return 'ro-right';
+  if(sel && sel.indexOf(k) >= 0) return 'ro-wrong';
   return '';
 }
 function polSzBody(){
-  const T = todayStr();
   const deck = polDeck();
+  const st = polStats(deck);
+  const wk = Object.keys(S.pol.wrong).length;
+  polTouchTimer();
   let h = '';
 
-  /* 控制条：提醒间隔 + 筛选 + 模式 */
-  h += '<div class="sec pol-ctrl"><div class="pol-set">提醒间隔 '+
-       '<input type="number" id="polRemind" value="'+S.pol.settings.remindDays+'" min="1" max="60" class="pol-num"> 天后再提醒</div>';
-  const cnt = { all:POL.length, s1:0, s2:0, s3:0, none:0, wrong:Object.keys(S.pol.wrong).length };
-  POL.forEach(function(it){ const lv=polStar(it.id); if(lv>=3) cnt.s3++; else if(lv===2) cnt.s2++; else if(lv===1) cnt.s1++; else cnt.none++; });
-  const filt=[['all','全部'],['s1','一星'],['s2','二星'],['s3','三星'],['none','无星']];
-  h += '<div class="seg" style="margin:10px 0 6px">'+filt.map(function(f){
-        return '<button class="'+(POL_FILTER===f[0]?'on':'')+'" data-act="pol-filter" data-f="'+f[0]+'">'+f[1]+'<i class="seg-n">'+cnt[f[0]]+'</i></button>';
-      }).join('')+'</div>';
-  const mode=[['order','顺序'],['random','随机']];
-  h += '<div class="seg" style="margin-bottom:4px">'+mode.map(function(f){ return '<button class="'+(POL_MODE===f[0]?'on':'')+'" data-act="pol-mode" data-m="'+f[0]+'">'+f[1]+'</button>'; }).join('')+'</div>';
-  h += '<div class="pol-tip">星级来自原版 PDF 老师手绘标注（重点题），点题号旁的星可自行调整</div></div>';
+  /* ============ 控制面板 ============ */
+  h += '<div class="sec pol-ctrl">';
+  h += '<div class="pol-set">提醒间隔 <input type="number" id="polRemind" value="'+S.pol.settings.remindDays+'" min="1" max="60" class="pol-num"> 天后再提醒</div>';
 
-  const wkeys = Object.keys(S.pol.wrong);
-  if(wkeys.length){
-    const due = dueWrongCount();
-    h += '<div class="alert '+(due?'alert-red':'alert-amber')+'" data-act="go-pol-wrong" style="text-align:center;cursor:pointer">'+
-         '<div style="font-weight:700">错题本：'+wkeys.length+' 题'+(due?'，其中 '+due+' 题今天该复习了':'')+'（点我查看）</div>'+
-         '<div style="font-size:12px;color:var(--muted);margin-top:3px">答错后会在 '+S.pol.settings.remindDays+' 天后再提醒你过来做一遍</div></div>';
+  /* 答题方式 */
+  h += '<div class="pol-frow"><span class="pol-fl">模式</span><div class="seg">'+
+       [['practice','练习'],['recite','背题'],['exam','整卷']].map(function(f){
+         return '<button class="'+(POL_KIND===f[0]?'on':'')+'" data-act="pol-kind" data-k="'+f[0]+'">'+f[1]+'</button>';
+       }).join('')+'</div></div>';
+
+  /* 作答状态 */
+  const scnt = {
+    all: POL.length,
+    undone: POL.filter(function(it){ return !S.pol.res[it.id]; }).length,
+    done: Object.keys(S.pol.res).length,
+    wrong: wk,
+    fav: Object.keys(S.pol.fav).length
+  };
+  h += '<div class="pol-frow"><span class="pol-fl">状态</span><div class="seg seg-wrap">'+
+       [['all','全部'],['undone','未做'],['done','已做'],['wrong','错题'],['fav','收藏']].map(function(f){
+         return '<button class="'+(POL_STATUS===f[0]?'on':'')+'" data-act="pol-status" data-s="'+f[0]+'">'+f[1]+'<i class="seg-n">'+scnt[f[0]]+'</i></button>';
+       }).join('')+'</div></div>';
+
+  /* 重点星级 */
+  const cnt = { all:POL.length, s1:0, s2:0, s3:0, none:0 };
+  POL.forEach(function(it){ const lv=polStar(it.id); if(lv>=3) cnt.s3++; else if(lv===2) cnt.s2++; else if(lv===1) cnt.s1++; else cnt.none++; });
+  h += '<div class="pol-frow"><span class="pol-fl">重点</span><div class="seg seg-wrap">'+
+       [['all','全部'],['s1','一星'],['s2','二星'],['s3','三星'],['none','无星']].map(function(f){
+         return '<button class="'+(POL_FILTER===f[0]?'on':'')+'" data-act="pol-filter" data-f="'+f[0]+'">'+f[1]+'<i class="seg-n">'+cnt[f[0]]+'</i></button>';
+       }).join('')+'</div></div>';
+
+  /* 题型 + 顺序 */
+  h += '<div class="pol-frow"><span class="pol-fl">题型</span><div class="seg">'+
+       [['all','全部'],['sc','单选'],['mc','多选']].map(function(f){
+         return '<button class="'+(POL_TYPE===f[0]?'on':'')+'" data-act="pol-type" data-t="'+f[0]+'">'+f[1]+'</button>';
+       }).join('')+'</div>'+
+       '<div class="seg" style="margin-left:auto;flex:none">'+
+       [['order','顺序'],['random','随机']].map(function(f){
+         return '<button class="'+(POL_MODE===f[0]?'on':'')+'" data-act="pol-mode" data-m="'+f[0]+'">'+f[1]+'</button>';
+       }).join('')+'</div></div>';
+
+  /* 统计条 */
+  h += '<div class="pol-stat">'+
+       '<span class="pol-stat-i">已做 <b>'+st.done+'</b>/'+st.total+'</span>'+
+       '<span class="pol-stat-i">正确率 <b class="pr'+(st.rate===null?'':Math.floor(st.rate/10))+'">'+(st.rate===null?'—':st.rate+'%')+'</b></span>'+
+       '<span class="pol-stat-i">剩 <b>'+st.left+'</b> 题</span>'+
+       '<span class="pol-stat-i" id="polTimer">'+polElapsed()+'</span>'+
+       '<span class="sp"></span>'+
+       '<button class="pol-stat-btn" data-act="pol-sheet">'+ic('grid',14)+'答题卡</button>'+
+       (st.done ? '<button class="pol-stat-btn" data-act="pol-reset">'+ic('refresh',14)+'清进度</button>' : '')+
+       '</div>';
+  h += '<div class="pol-tip">星级来自原版 PDF 老师手绘标注（重点题），点题号旁的星可自行调整。键盘：← → 切题 · A~H 选项 · 回车 确认/下一题</div></div>';
+
+  /* ============ 答题卡 ============ */
+  if(POL_SHEET){
+    h += '<div class="sec"><div class="sec-hd">'+ic('grid',16)+'<h2>答题卡</h2><span class="cnt">'+deck.length+' 题</span></div>';
+    if(!deck.length){
+      h += '<div class="card empty">'+ic('cap',30,1.7)+'<b>这一组没有题</b><span>换个筛选条件试试。</span></div>';
+    } else {
+      h += '<div class="pol-sheet">'+deck.map(function(id,i){
+        const r = S.pol.res[id];
+        const cur = (i===POL_IDX);
+        const hist = S.pol.hist[id];
+        return '<button class="pol-cell'+(r?(' '+r):'')+(cur?' cur':'')+'" data-act="pol-jump" data-i="'+i+'"'+
+               ' title="第'+(i+1)+'题'+(hist?(' · 做过'+hist.n+'次'):'')+'">'+id+'</button>';
+      }).join('')+'</div>';
+      h += '<div class="pol-legend"><span class="lg lg-r">答对</span><span class="lg lg-w">答错</span><span class="lg">未做</span><span class="lg lg-c">当前</span></div>';
+    }
+    h += '</div>';
   }
 
-  if(POL_FILTER==='wrong' && !wkeys.length){
+  /* ============ 整卷模式：交卷 / 成绩 ============ */
+  if(POL_KIND==='exam'){
+    if(POL_EXAM && POL_EXAM.graded){
+      h += polExamResult(deck);
+    } else {
+      const answered = POL_EXAM ? Object.keys(POL_EXAM.picks).filter(function(k){ return (POL_EXAM.picks[k]||[]).length; }).length : 0;
+      h += '<div class="sec pol-exambar"><div class="pol-examhd">整卷模式 · 已答 <b>'+answered+'</b>/'+deck.length+' 题</div>'+
+           '<button class="btn btn-pri btn-block" data-act="pol-grade">交卷判分</button>'+
+           '<div class="pol-tip" style="margin-top:9px">整卷模式不即时判题；选完之后统一交卷判分，并自动整理错题清单。</div></div>';
+    }
+  }
+
+  /* ============ 错题本提示 ============ */
+  if(wk && POL_STATUS!=='wrong'){
+    const due = dueWrongCount();
+    h += '<div class="alert '+(due?'alert-red':'alert-amber')+'" data-act="go-pol-wrong" style="text-align:center;cursor:pointer">'+
+         '<div style="font-weight:700">错题本：'+wk+' 题'+(due?'，其中 '+due+' 题今天该复习了':'')+'（点我查看）</div>'+
+         '<div style="font-size:12px;color:var(--muted);margin-top:3px">答错后会在 '+S.pol.settings.remindDays+' 天后再提醒你过来做一遍</div></div>';
+  }
+  if(POL_STATUS==='wrong' && !wk){
     h += '<div class="card empty">'+ic('cap',34,1.6)+'<b>错题本还是空的</b><span>在政治刷题时答错的题会自动进到这里，过几天再提醒你复习。</span></div>';
     return h;
   }
   if(!deck.length){
-    h += '<div class="card empty">'+ic('cap',34,1.6)+'<b>这一组没有题</b><span>换个筛选条件试试。</span></div>';
+    h += '<div class="card empty">'+ic('cap',34,1.6)+'<b>这一组没有题</b><span>换个筛选条件试试（比如把「状态」切回「全部」）。</span></div>';
     return h;
   }
 
+  /* ============ 当前题 ============ */
   if(POL_IDX>=deck.length) POL_IDX=0;
   if(POL_IDX<0) POL_IDX=deck.length-1;
   const id = deck[POL_IDX];
   const it = polById(id);
-  const res = S.pol.res[id];
+  if(!it) return h;
+  const res = S.pol.res[id] || '';
   const star = polStar(id);
-  const done = Object.keys(S.pol.res).length;
+  const fav = !!S.pol.fav[id];
+  const hist = S.pol.hist[id] || null;
+  const examGraded = !!(POL_KIND==='exam' && POL_EXAM && POL_EXAM.graded);
+  const examIng = !!(POL_KIND==='exam' && !examGraded);
+  const baseSel = (POL_KIND==='exam' && POL_EXAM) ? (POL_EXAM.picks[id]||[])
+                 : Object.keys(POL_ANS).filter(function(k){ return POL_ANS[k]; }).sort();
+  let revealed;
+  if(POL_KIND==='recite') revealed = true;
+  else if(POL_KIND==='exam') revealed = examGraded;
+  else revealed = !!res;
 
-  h += '<div class="card pol-card">';
-  h += '<div class="pol-top"><span class="pol-no">No.'+it.id+' · '+(it.type==='mc'?'多选':'单选')+'</span>'+
+  h += '<div class="card pol-card" id="polCard">';
+  h += '<div class="pol-top"><span class="pol-no">No.'+it.id+'</span>'+
+       '<span class="pol-tp '+(it.type==='mc'?'mc':'sc')+'">'+(it.type==='mc'?'多选':'单选')+'</span>'+
+       (hist ? '<span class="pol-hist">做过 '+hist.n+' 次 · 对 '+hist.ok+' 次</span>' : '')+
        '<span class="sp"></span>'+
-       '<button class="pol-star" data-act="pol-star" data-id="'+id+'" title="'+(star?'原版标了 '+star+' 星，点击可调整':'点击标为重点')+'">'+polStarHTML(star)+'</button></div>';
+       '<button class="pol-fav'+(fav?' on':'')+'" data-act="pol-fav" data-id="'+id+'" title="'+(fav?'取消收藏':'加入收藏')+'">'+(fav?'★':'☆')+'</button>'+
+       '<button class="pol-star" data-act="pol-star" data-id="'+id+'" title="'+(star?('原版标了 '+star+' 星，点击可调整'):'点击标为重点')+'">'+polStarHTML(star)+'</button></div>';
   h += '<div class="pol-q">'+esc(it.q)+'</div>';
   h += '<div class="pol-opts">';
   Object.keys(it.opts).sort().forEach(function(k){
-    const cls = res ? (' ro-'+ansClass(it,k)) : (POL_ANS[k]?' on':'');
+    let cls = '';
+    if(revealed) cls = polAnsCls(it, k, baseSel) ? (' '+polAnsCls(it, k, baseSel)) : '';
+    else if(baseSel.indexOf(k)>=0) cls = ' on';
     h += '<button class="pol-opt'+cls+'" data-act="pol-pick" data-id="'+id+'" data-k="'+k+'">'+
          '<b>'+k+'</b><span>'+esc(it.opts[k])+'</span></button>';
   });
   h += '</div>';
 
-  if(res){
-    const correct = (res==='right');
-    h += '<div class="pol-fb '+(correct?'ok':'bad')+'">'+(correct?ic('check',16)+' 答对了':('答错了，正确答案：'+esc(it.ans)))+'</div>';
+  if(revealed){
+    if(res==='right')      h += '<div class="pol-fb ok">'+ic('check',16)+' 答对了</div>';
+    else if(res==='wrong') h += '<div class="pol-fb bad">答错了，正确答案：'+esc(it.ans)+'</div>';
+    else if(examGraded)    h += '<div class="pol-fb bad">未作答 · 正确答案：'+esc(it.ans)+'</div>';
+    else                   h += '<div class="pol-fb ok">'+ic('check',16)+' 正确答案：'+esc(it.ans)+'</div>';
     if(it.exp) h += '<div class="pol-exp"><b>解析</b>'+esc(it.exp)+'</div>';
     if(res==='wrong' && S.pol.wrong[id]){
       h += '<div class="pol-wrinfo">已在错题本，下次提醒：'+md(S.pol.wrong[id].due)+'（'+wdOf(S.pol.wrong[id].due)+'）</div>';
     }
     h += '<button class="btn btn-pri btn-block" data-act="pol-next" style="margin-top:10px">下一题 →</button>';
+  } else if(examIng){
+    h += '<div class="pol-tip" style="text-align:center;margin-top:10px">整卷模式：选完继续做下一题，全部做完后回到上方点「交卷判分」</div>';
   } else {
-    h += '<button class="btn btn-pri btn-block" data-act="pol-submit" data-id="'+id+'" style="margin-top:10px">确认答案</button>';
+    h += '<button class="btn btn-pri btn-block" data-act="pol-submit" style="margin-top:10px">确认答案</button>';
   }
-  h += '<div class="pol-prog">已做 '+done+'/'+POL.length+' · 本组第 '+(POL_IDX+1)+'/'+deck.length+' 题</div>';
-  h += '</div>';
 
+  /* 底部导航 */
+  h += '<div class="pol-nav">'+
+       '<button class="pol-navb" data-act="pol-prev">'+ic('left',15)+'上一题</button>'+
+       '<input class="pol-jumpin" id="polJump" type="number" inputmode="numeric" min="1" max="'+deck.length+'" placeholder="'+(POL_IDX+1)+'" title="输入题号，回车跳转">'+
+       '<span class="pol-navpg">'+(POL_IDX+1)+'/'+deck.length+'</span>'+
+       '<button class="pol-navb" data-act="pol-next">下一题'+ic('right',15)+'</button>'+
+       '</div>';
+  h += '</div>';
+  return h;
+}
+
+/* ---------- 整卷成绩面板 ---------- */
+function polExamResult(deck){
+  const picks = (POL_EXAM && POL_EXAM.picks) || {};
+  const ids = Object.keys(picks).filter(function(k){ return (picks[k]||[]).length; });
+  let right=0; const badIds=[];
+  ids.forEach(function(k){
+    const it = polById(Number(k)); if(!it) return;
+    const sel = picks[k].slice().sort(), ans = it.ans.split('').sort();
+    const ok = sel.length===ans.length && sel.every(function(x,i){ return x===ans[i]; });
+    if(ok) right++; else badIds.push(Number(k));
+  });
+  const total = ids.length;
+  const rate = total ? Math.round(right*100/total) : 0;
+  let h = '<div class="sec pol-res">'+
+    '<div class="pol-res-hd">本次成绩</div>'+
+    '<div class="pol-res-big"><b>'+right+'</b> / '+total+'</div>'+
+    '<div class="pol-res-sub">正确率 '+rate+'% · 答错 '+badIds.length+' 题 · '+polElapsed()+'</div>'+
+    '<div class="pol-res-acts">'+
+      '<button class="btn btn-line btn-xs" data-act="pol-sheet">'+ic('grid',13)+'答题卡</button>'+
+      '<button class="btn btn-line btn-xs" data-act="pol-exam-retry">'+ic('refresh',13)+'再练一遍</button>'+
+      '<button class="btn btn-line btn-xs" data-act="pol-exam-close">退出整卷</button>'+
+    '</div>';
+  if(badIds.length){
+    h += '<div class="pol-res-list"><div class="pol-res-lt">这 '+badIds.length+' 题答错了（已进错题本，点一下可回看）</div>'+
+      badIds.map(function(n){ return '<button class="pol-res-item" data-act="pol-jump-id" data-id="'+n+'">第 '+n+' 题</button>'; }).join('')+'</div>';
+  } else if(total){
+    h += '<div class="pol-res-list"><div class="pol-res-lt">全部答对，这一组可以过了。</div></div>';
+  }
+  h += '</div>';
   return h;
 }
 
@@ -3408,6 +3778,15 @@ function renderPol(){
     const n = Math.max(1, Math.min(60, parseInt(this.value,10)||3));
     S.pol.settings.remindDays = n; save(); renderPol();
   };
+  /* 题号跳转（回车） */
+  const pj = el('polJump');
+  if(pj) pj.addEventListener('keydown', function(e){
+    if(e.key!=='Enter') return;
+    e.preventDefault();
+    const n = parseInt(this.value, 10);
+    if(isFinite(n) && n>=1) polGo(n-1, true);
+    this.value = '';
+  });
   /* 填空题输入框实时回填（每个空独立记录） */
   Array.prototype.forEach.call(document.querySelectorAll('#tab-pol .kb-fill-in'), function(inp){
     const k = inp.dataset.k;
@@ -4229,8 +4608,49 @@ document.addEventListener('click', function(ev){
       break;
     }
     /* ---- 考研政治时政 ---- */
-    case 'pol-filter': { POL_FILTER = b.dataset.f; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
-    case 'pol-mode':   { POL_MODE = b.dataset.m; POL_IDX = 0; POL_ANS = {}; renderPol(); break; }
+    case 'pol-filter': { POL_FILTER = b.dataset.f; polReset(); break; }
+    case 'pol-status': { POL_STATUS = b.dataset.s; polReset(); break; }
+    case 'pol-type':   { POL_TYPE   = b.dataset.t; polReset(); break; }
+    case 'pol-kind':   { POL_KIND   = b.dataset.k; polReset(); break; }
+    case 'pol-mode':   { POL_MODE   = b.dataset.m; polReset(); break; }
+    case 'pol-sheet':  { POL_SHEET = !POL_SHEET; polSaveUI(); save(); renderPol(); break; }
+    case 'pol-fav': {
+      const fpid = b.dataset.id;
+      if(S.pol.fav[fpid]) delete S.pol.fav[fpid]; else S.pol.fav[fpid] = 1;
+      polSaveUI(); save(); renderPol(); break;
+    }
+    case 'pol-prev':   { polGo(POL_IDX-1); break; }
+    case 'pol-jump':   { polGo(Number(b.dataset.i), true); break; }
+    case 'pol-jump-id':{ const dk0=polDeck(); const ix0=dk0.indexOf(Number(b.dataset.id)); if(ix0>=0) polGo(ix0, true); break; }
+    case 'pol-grade':  { polGrade(); break; }
+    case 'pol-exam-retry': {
+      polDeck().forEach(function(x){ delete S.pol.res[x]; });
+      POL_EXAM = { picks:{}, graded:false, used:0 }; S.pol.exam = POL_EXAM;
+      POL_T0 = 0; POL_T0KEY = ''; POL_IDX = 0; POL_ANS = {};
+      polSaveUI(); save(); renderPol(); toast('已重置，重新开始整卷');
+      break;
+    }
+    case 'pol-exam-close': {
+      POL_EXAM = null; S.pol.exam = null; POL_KIND = 'practice';
+      polReset(); toast('已退出整卷模式');
+      break;
+    }
+    case 'pol-reset': {
+      const dk1 = polDeck();
+      if(!dk1.length){ toast('这一组还没有题'); break; }
+      POL_RESET_DECK = dk1;
+      openModal('清空本组答题进度？',
+        '<div style="font-size:13.5px;line-height:1.75;color:var(--muted)">会清掉当前筛选下 <b>'+dk1.length+'</b> 题的「已做 / 对错」记录，方便二刷；<b>错题本和星级不受影响</b>。</div>',
+        '<button class="btn btn-ghost" data-act="closem">取消</button>'+
+        '<button class="btn btn-danger" data-act="pol-reset-do">'+ic('trash',16)+'确认清空</button>');
+      break;
+    }
+    case 'pol-reset-do': {
+      (POL_RESET_DECK||[]).forEach(function(x){ delete S.pol.res[x]; });
+      POL_RESET_DECK = null; POL_IDX = 0; POL_ANS = {};
+      polSaveUI(); save(); closeModal(); renderPol(); toast('已清空本组进度');
+      break;
+    }
     case 'pol-star': {
       const pid = b.dataset.id;
       const dflt = POL_STAR_DEFAULT[pid] || 0;
@@ -4239,39 +4659,10 @@ document.addEventListener('click', function(ev){
       S.pol.stars[pid] = (cur >= 3) ? 0 : (cur + 1);
       save(); renderPol(); break;
     }
-    case 'pol-pick': {
-      const pid = b.dataset.id;
-      if(S.pol.res[pid]) break;                       /* 已作答，锁定选项 */
-      const it = polById(Number(pid)); if(!it) break;
-      if(it.type==='mc'){ POL_ANS[b.dataset.k] = !POL_ANS[b.dataset.k]; }
-      else { POL_ANS = {}; POL_ANS[b.dataset.k] = true; }
-      renderPol(); break;
-    }
-    case 'pol-submit': {
-      const pid = b.dataset.id; const it = polById(Number(pid)); if(!it) break;
-      const sel = Object.keys(POL_ANS).filter(function(k){ return POL_ANS[k]; }).sort();
-      const ans = it.ans.split('').sort();
-      const correct = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
-      S.pol.res[pid] = correct ? 'right' : 'wrong';
-      if(correct){
-        if(S.pol.wrong[pid]){ delete S.pol.wrong[pid]; toast('答对啦，已移出错题本'); }
-        else toast('答对啦');
-      } else {
-        const due = dAdd(todayStr(), S.pol.settings.remindDays);
-        if(!S.pol.wrong[pid]) S.pol.wrong[pid] = { added:todayStr(), due:due };
-        else S.pol.wrong[pid].due = due;
-        toast('答错了，已加入错题本');
-      }
-      save(); renderPol(); break;
-    }
-    case 'pol-next': {
-      POL_ANS = {};
-      const dk = polDeck();
-      if(!dk.length){ POL_IDX = 0; renderPol(); break; }
-      POL_IDX = (POL_IDX+1) % dk.length;
-      renderPol(); break;
-    }
-    case 'go-pol-wrong': { POL_FILTER='wrong'; POL_IDX=0; go('pol'); break; }
+    case 'pol-pick':   { polPick(b.dataset.id, b.dataset.k); break; }
+    case 'pol-submit': { polSubmit(); break; }
+    case 'pol-next':   { polGo(POL_IDX+1); break; }
+    case 'go-pol-wrong': { POL_STATUS='wrong'; POL_KIND='practice'; POL_IDX=0; POL_ANS={}; polSaveUI(); save(); go('pol'); break; }
     case 'scroll-todo': {
       const an = el('todoSec');
       if(an && an.scrollIntoView) an.scrollIntoView({behavior:'smooth', block:'start'});
@@ -4532,8 +4923,42 @@ document.addEventListener('input', function(ev){
 /* 遮罩 / ESC 关闭 */
 el('mask').addEventListener('click', function(ev){ if(ev.target===el('mask')) closeModal(); });
 document.addEventListener('keydown', function(ev){
-  if(ev.key==='Escape' && el('mask').classList.contains('on')) closeModal();
+  if(ev.key==='Escape' && el('mask').classList.contains('on')){ closeModal(); return; }
+  /* ---- 时政刷题快捷键 ---- */
+  if(TAB!=='pol' || POL_SUB!=='sz') return;
+  const tp = el('tab-pol');
+  if(!tp || tp.classList.contains('hide')) return;
+  if(KB_SEARCH && KB_SEARCH.trim()) return;
+  const tg = (ev.target && ev.target.tagName || '').toUpperCase();
+  if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT') return;
+  if(ev.metaKey||ev.ctrlKey||ev.altKey) return;
+  const dk = polDeck(); if(!dk.length) return;
+  const cid = dk[Math.max(0, Math.min(POL_IDX, dk.length-1))];
+  const cit = polById(cid); if(!cit) return;
+  const shown = (POL_KIND==='recite') ? true
+              : (POL_KIND==='exam') ? !!(POL_EXAM && POL_EXAM.graded)
+              : !!S.pol.res[cid];
+  if(ev.key==='ArrowLeft'){ ev.preventDefault(); polGo(POL_IDX-1); return; }
+  if(ev.key==='ArrowRight'){ ev.preventDefault(); polGo(POL_IDX+1); return; }
+  if(ev.key==='Enter'){
+    ev.preventDefault();
+    if(shown) polGo(POL_IDX+1);
+    else if(POL_KIND==='practice') polSubmit();
+    return;
+  }
+  const km = /^([a-hA-H1-8])$/.exec(ev.key);
+  if(km && !shown){
+    const raw = km[1].toUpperCase();
+    const k = /[1-8]/.test(raw) ? String.fromCharCode(64 + Number(raw)) : raw;
+    if(cit.opts[k]){ ev.preventDefault(); polPick(cid, k); }
+  }
 });
+/* 时政答题计时（每题/本组用时，只更新一个文本节点） */
+setInterval(function(){
+  if(TAB!=='pol' || POL_SUB!=='sz') return;
+  const e = document.getElementById('polTimer');
+  if(e) e.textContent = polElapsed();
+}, 1000);
 
 /* 跨天自动刷新（放着不关也能滚到新的一天） */
 let curDay = todayStr();
@@ -4550,6 +4975,7 @@ document.addEventListener('visibilitychange', function(){
    ========================================================= */
 (function init(){
   const how = load();
+  if(typeof polApplyUI === 'function') polApplyUI();
   WEEK_CURSOR = mondayOf(todayStr());
   go('today');
   if(how==='migrated') setTimeout(function(){ toast('已自动迁移旧版本数据'); }, 500);
