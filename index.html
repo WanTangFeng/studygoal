@@ -737,6 +737,14 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
   border-top:1px solid var(--line2);font-size:11.5px;line-height:1.5;color:var(--muted)}
 .ck-hint svg{flex:none;opacity:.75}
 .gbar svg,.ck-hint svg,.kb-tts svg{display:block}
+.kb-tts-vc{border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:11.5px;
+  font-weight:650;padding:7px 8px;border-radius:10px;font-family:inherit;max-width:150px}
+/* ---- 看板 · 真题正确率：横向滚动时「年份」列固定不动 ---- */
+.pmat th.yh,.pmat td.yl{position:sticky;left:0;z-index:2;background:var(--card)}
+.pmat th.yh{z-index:3}
+.pmat th.yh::after,.pmat td.yl::after{content:'';position:absolute;top:0;bottom:0;right:-4px;width:4px;background:var(--card)}
+.pmat th.yh::before,.pmat td.yl::before{content:'';position:absolute;top:0;bottom:0;right:-5px;width:5px;
+  background:linear-gradient(90deg,rgba(25,27,46,.13),rgba(25,27,46,0));pointer-events:none}
 @keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
 /* ===== 考研政治时政 ===== */
@@ -3815,6 +3823,9 @@ function renderPol(){
     const n = Math.max(1, Math.min(60, parseInt(this.value,10)||3));
     S.pol.settings.remindDays = n; save(); renderPol();
   };
+  /* 史纲朗读：音色下拉 */
+  const tv = el('ttsVoice');
+  if(tv) tv.addEventListener('change', function(){ ttsVoiceChoose(this.value); });
   /* 题号跳转（回车） */
   const pj = el('polJump');
   if(pj) pj.addEventListener('keydown', function(e){
@@ -4004,41 +4015,135 @@ function kbPointCard(subj, ci, pi, p){
 
 /* ---------- 史纲文稿朗读（浏览器内置语音合成，可调倍速）---------- */
 const TTS_RATES = [0.8, 1.0, 1.25, 1.5, 2.0];
-const TTS = { ci:-1, idx:0, paras:[], rate:1.0, speaking:false, paused:false, gen:0 };
+const TTS = { ci:-1, idx:0, chunks:[], paraCount:1, rate:1.0, voice:null,
+              speaking:false, paused:false, gen:0, timer:0 };
+
 function ttsOK(){ return !!(window && window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function'); }
 function ttsActive(ci){ return TTS.ci === ci && TTS.speaking; }
+
+/* 句末标点 -> 停顿毫秒：像讲故事那样有呼吸感 */
+function ttsPauseFor(s){
+  const t = String(s||'').replace(/[」』”"）)\s]+$/,'');
+  if(/[。！？!?…]$/.test(t)) return 440;
+  if(/[；;：:]$/.test(t))    return 330;
+  if(/[，,、]$/.test(t))     return 210;
+  return 270;
+}
+/* 把整章文稿切成「适合口播的短句」：按标点断句、保留引号、算好停顿 */
+function ttsSplit(text){
+  const paras = String(text||'').split(/\n{2,}/);
+  const ENDS = '。！？!?；;：:';
+  const TAIL = '」』””")）';
+  const out = [];
+  paras.forEach(function(p, pi){
+    const s = String(p||'').replace(/\s+/g,'').trim();
+    if(!s) return;
+    let buf = '';
+    for(let k=0;k<s.length;k++){
+      const ch = s[k];
+      buf += ch;
+      const hard = ENDS.indexOf(ch) >= 0;
+      const soft = (ch === '，' || ch === '、') && buf.length >= 22;   /* 长句也在逗号处断 */
+      if((hard || soft) && buf.length >= 6){
+        while(k+1 < s.length && TAIL.indexOf(s[k+1]) >= 0){ buf += s[++k]; }
+        const seg = buf.trim();
+        if(seg) out.push({ text:seg, para:pi, pause:ttsPauseFor(seg), diag:/[「『“"]/.test(seg) });
+        buf = '';
+      }
+    }
+    if(buf.trim()){
+      const seg = buf.trim();
+      if(out.length && out[out.length-1].para === pi){
+        out[out.length-1].text += seg;
+        out[out.length-1].pause = ttsPauseFor(out[out.length-1].text);
+        out[out.length-1].diag = out[out.length-1].diag || /[「『“"]/.test(seg);
+      } else {
+        out.push({ text:seg, para:pi, pause:ttsPauseFor(seg), diag:/[「『“"]/.test(seg) });
+      }
+    }
+    if(out.length) out[out.length-1].pause = Math.max(out[out.length-1].pause, 660);  /* 段与段之间停久一点 */
+  });
+  return out;
+}
+function ttsVoiceList(){
+  if(!ttsOK()) return [];
+  let vs = [];
+  try { vs = window.speechSynthesis.getVoices() || []; } catch(e){ vs = []; }
+  const arr = Array.prototype.slice.call(vs);
+  const zh = arr.filter(function(v){
+    const lg = String(v.lang||'').toLowerCase();
+    return lg.indexOf('zh') === 0 || lg.indexOf('cmn') === 0 || /中文|普通话|Chinese/i.test(String(v.name||''));
+  });
+  return zh.length ? zh : [];
+}
+/* 挑一个「讲道理/讲故事」听起来最自然的音色，优先自然语声 */
+const TTS_GOOD = ['Xiaoxiao','晓晓','Xiaoyi','晓伊','云希','Yunxi','Yunyang','云扬','Yunjian','云健',
+                  'Huihui','慧慧','Yaoyao','瑶瑶','Ting-Ting','Tingting','婷婷','Mei-Jia','Meijia','美佳',
+                  'Google 普通话','Google 中文','Kangkang','Liang','Sinji'];
+function ttsBestVoice(){
+  const list = ttsVoiceList(); if(!list.length) return null;
+  const want = (S && S.ui && S.ui.ttsVoice) || '';
+  if(want){ const hit = list.filter(function(v){ return v.voiceURI === want; })[0]; if(hit) return hit; }
+  const nat = list.filter(function(v){ return /natural|premium|neural|enhanced|增强|自然|在线/i.test(String(v.name||'')); })[0];
+  if(nat) return nat;
+  for(let i=0;i<TTS_GOOD.length;i++){
+    const hit = list.filter(function(v){ return String(v.name||'').indexOf(TTS_GOOD[i]) >= 0; })[0];
+    if(hit) return hit;
+  }
+  return list[0];
+}
 function ttsToggle(ci){
   if(!ttsOK()){ toast('这个浏览器不支持直接朗读，可以复制文稿去别的工具听'); return; }
   const ch = KB.sg[ci]; if(!ch || !ch.audio) return;
   const sy = window.speechSynthesis;
   if(TTS.ci === ci && TTS.speaking){
-    if(TTS.paused){ sy.resume(); TTS.paused = false; }
-    else { sy.pause(); TTS.paused = true; }
-    renderPol(); return;
+    if(TTS.paused){ try{ sy.resume(); }catch(e){} TTS.paused = false; }
+    else { try{ sy.pause(); }catch(e){} TTS.paused = true; }
+    ttsPaint(); renderPol(); return;
   }
   TTS.gen++;
-  sy.cancel();
-  TTS.ci = ci; TTS.idx = 0; TTS.rate = S.ui.ttsRate || TTS.rate || 1.0;
-  TTS.paras = String(ch.audio.text).split('\n\n').filter(function(x){ return x.trim(); });
+  if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
+  try { sy.cancel(); } catch(e){}
+  TTS.ci = ci; TTS.idx = 0;
+  TTS.rate = (S.ui && S.ui.ttsRate) || TTS.rate || 1.0;
+  TTS.chunks = ttsSplit(ch.audio.text);
+  TTS.paraCount = Math.max(1, String(ch.audio.text).split(/\n{2,}/).filter(function(x){ return String(x).trim(); }).length);
+  TTS.voice = ttsBestVoice();
   TTS.speaking = true; TTS.paused = false;
-  ttsNext(); renderPol();
+  ttsNext();                       /* 首次在用户手势里同步发出，满足 iOS 要求 */
+  renderPol();
 }
 function ttsNext(){
   if(!TTS.speaking) return;
-  if(TTS.idx >= TTS.paras.length){ ttsStop(true); renderPol(); return; }
+  if(TTS.idx >= TTS.chunks.length){ ttsStop(true); renderPol(); return; }
   const g = TTS.gen;
-  const u = new window.SpeechSynthesisUtterance(TTS.paras[TTS.idx]);
-  u.lang = 'zh-CN'; u.rate = TTS.rate; u.pitch = 1;
+  const ck = TTS.chunks[TTS.idx];
+  const u = new window.SpeechSynthesisUtterance(ck.text);
+  u.lang = 'zh-CN';
+  u.rate  = (TTS.rate || 1) * (ck.diag ? 0.94 : 0.98);   /* 比默认稍慢，像在讲而不是念 */
+  u.pitch = ck.diag ? 1.12 : 1.04;                       /* 对话/引语略抬一点，语气有起伏 */
+  u.volume = 1;
+  if(TTS.voice) u.voice = TTS.voice;
   u.onend = function(){
     if(g !== TTS.gen || !TTS.speaking || TTS.paused) return;
-    TTS.idx++; ttsPaint(); ttsNext();
+    const wait = Math.max(120, Math.round((ck.pause || 270) / (TTS.rate || 1)));
+    TTS.idx++; ttsPaint();
+    const gap = function(){
+      TTS.timer = 0;
+      if(g !== TTS.gen || !TTS.speaking) return;
+      if(TTS.paused){ TTS.timer = setTimeout(gap, 200); return; }   /* 暂停时挂起，恢复后继续 */
+      ttsNext();
+    };
+    TTS.timer = setTimeout(gap, wait);
   };
   u.onerror = function(){};
+  TTS.timer = 0;
   try { window.speechSynthesis.speak(u); } catch(e){ ttsStop(false); renderPol(); }
   ttsPaint();
 }
 function ttsStop(finished){
   TTS.gen++;
+  if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
   if(ttsOK()){ try { window.speechSynthesis.cancel(); } catch(e){} }
   TTS.speaking = false; TTS.paused = false;
   if(!finished) TTS.idx = 0;
@@ -4048,25 +4153,51 @@ function ttsRate(r){
   if(S.ui){ S.ui.ttsRate = r; save(); }
   if(TTS.speaking){
     TTS.gen++;
-    if(ttsOK()) { try { window.speechSynthesis.cancel(); } catch(e){} }
+    if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
+    if(ttsOK()){ try { window.speechSynthesis.cancel(); } catch(e){} }
+    TTS.paused = false;
+    ttsNext();                     /* 换速后从当前句继续 */
+  }
+  renderPol();
+}
+function ttsVoiceChoose(uri){
+  if(S.ui){ S.ui.ttsVoice = String(uri || ''); save(); }
+  TTS.voice = ttsBestVoice();
+  if(TTS.speaking){
+    TTS.gen++;
+    if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
+    if(ttsOK()){ try { window.speechSynthesis.cancel(); } catch(e){} }
     TTS.paused = false;
     ttsNext();
   }
   renderPol();
 }
-/* 高亮当前正在读的段落，并刷新进度文字 */
+/* 高亮正在读的那一段，并刷新进度文字 */
 function ttsPaint(){
   const ps = document.querySelectorAll('#tab-pol .kb-tts-para');
+  const ck = TTS.chunks[TTS.idx] || null;
+  const curPara = ck ? ck.para : -1;
   Array.prototype.forEach.call(ps, function(el){
-    const cur = TTS.speaking && !TTS.paused && Number(el.dataset.ci) === TTS.ci && Number(el.dataset.para) === TTS.idx;
+    const cur = TTS.speaking && !TTS.paused && Number(el.dataset.ci) === TTS.ci && Number(el.dataset.para) === curPara;
     el.classList.toggle('cur', !!cur);
   });
   const n = document.getElementById('ttsProg');
   if(n){
+    const total = TTS.paraCount || 1;
+    const at = Math.max(1, Math.min(total, curPara + 1));
+    const pct = TTS.chunks.length ? Math.min(100, Math.round(TTS.idx / TTS.chunks.length * 100)) : 0;
     n.textContent = TTS.speaking
-      ? ((TTS.paused ? '已暂停' : '朗读中') + ' · 第 ' + Math.min(TTS.idx + 1, TTS.paras.length) + '/' + TTS.paras.length + ' 段')
+      ? ((TTS.paused ? '已暂停' : '朗读中') + ' · 第 ' + at + '/' + total + ' 段 · ' + pct + '%')
       : '';
   }
+}
+/* 音色列表是异步加载的，加载完刷新一下，让下拉能出现 */
+if(ttsOK()){
+  try {
+    window.speechSynthesis.onvoiceschanged = function(){
+      if(TAB === 'pol' && POL_SUB === 'sg'){ try { renderPol(); } catch(e){} }
+    };
+  } catch(e){}
 }
 
 function kbAudioCard(ci, ch){
@@ -4083,21 +4214,29 @@ function kbAudioCard(ci, ch){
     h += '<div class="kb-audio-bd">';
     if(ttsOK()){
       const label = !on ? '▶ 开始朗读' : (TTS.paused ? '▶ 继续' : '⏸ 暂停');
+      const vs = ttsVoiceList();
       h += '<div class="kb-tts">'+
              '<button class="kb-tts-play" data-act="tts-toggle" data-ci="'+ci+'">'+label+'</button>'+
              (on ? '<button class="kb-tts-stop" data-act="tts-stop">停止</button>' : '')+
              '<span class="kb-tts-spd">'+TTS_RATES.map(function(r){
                 return '<button class="'+(Math.abs(TTS.rate-r)<0.001?'on':'')+'" data-act="tts-rate" data-r="'+r+'">'+r+'×</button>';
              }).join('')+'</span>'+
-             '<span class="kb-tts-prog" id="ttsProg">'+(on ? ((TTS.paused?'已暂停':'朗读中')+' · 第 '+Math.min(TTS.idx+1,TTS.paras.length)+'/'+TTS.paras.length+' 段') : '')+'</span>'+
+             (vs.length>1
+               ? '<select class="kb-tts-vc" id="ttsVoice" title="换个音色">'+vs.map(function(v){
+                   const cur = TTS.voice && TTS.voice.voiceURI === v.voiceURI;
+                   return '<option value="'+esc(v.voiceURI)+'"'+(cur?' selected':'')+'>'+esc(v.name)+'</option>';
+                 }).join('')+'</select>'
+               : '')+
+             '<span class="kb-tts-prog" id="ttsProg">'+(on ? ((TTS.paused?'已暂停':'朗读中')+' · 第 '+Math.max(1,Math.min(TTS.paraCount,(TTS.chunks[TTS.idx]||{para:0}).para+1))+'/'+TTS.paraCount+' 段') : '')+'</span>'+
            '</div>'+
-           '<div class="kb-audio-note">点「开始朗读」直接听，可随时切倍速。声音由设备自带语音合成，效果因浏览器而异。</div>';
+           '<div class="kb-audio-note">按「讲故事」的方式朗读：<b>自动断句、句间留停顿</b>，引语处语气略作变化；声音偏慢更自然，可随时切倍速或换音色。音色由设备自带语音合成提供。</div>';
     } else {
       h += '<div class="kb-audio-note">当前浏览器不支持直接朗读，点下面的文稿复制到「微信读书 / 剪映 / 讯飞」等工具也能听。</div>';
     }
-    const paras = String(ch.audio.text).split('\n\n');
+    const paras = String(ch.audio.text).split(/\n{2,}/);
+    const curPara = (on && TTS.chunks[TTS.idx]) ? TTS.chunks[TTS.idx].para : -1;
     h += '<div class="kb-audio-txt">' + paras.map(function(p, i){
-      const cur = (on && !TTS.paused && i === TTS.idx) ? ' cur' : '';
+      const cur = (on && !TTS.paused && i === curPara) ? ' cur' : '';
       return '<span class="kb-tts-para'+cur+'" data-para="'+i+'" data-ci="'+ci+'">'+esc(p)+'</span>';
     }).join('<br><br>') + '</div>';
     h += '<button class="btn btn-line btn-xs" data-act="kb-copy" data-ci="'+ci+'">复制本讲文稿</button>';
