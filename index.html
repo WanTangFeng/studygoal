@@ -3439,6 +3439,7 @@ let POL_EXAM = null;        /* 整卷会话 { picks:{id:[keys]}, graded:bool, us
 let POL_T0 = 0;             /* 本组计时起点（毫秒） */
 let POL_T0KEY = '';         /* 计时对应的牌组签名 */
 let POL_RESET_DECK = null;  /* 「清空本组进度」待确认的题号列表 */
+let POL_DONE = {};          /* 本次会话内「刚重新做过」的题：时政用题号、填空题用 key；切模式/状态/子页即清空 */
 
 /* 老师原版 PDF 手绘星级（从题目册 Ink 批注识别：★1~5 颗 → 三级制）
    仅作默认值，你点星可自行调整，改动会保存到 S.pol.stars */
@@ -3446,6 +3447,20 @@ const POL_STAR_DEFAULT = {1:1,2:3,3:2,4:2,5:2,6:1,7:3,8:2,9:3,10:1,12:1,13:3,14:
 function polStar(id){ return (S.pol.stars[id] != null) ? S.pol.stars[id] : (POL_STAR_DEFAULT[id] || 0); }
 
 function polById(id){ for(let i=0;i<POL.length;i++) if(POL[i].id===id) return POL[i]; return null; }
+/* ---- 错题本「重做」模型 ----
+   练习模式 + 状态=错题 时，这一组题一律当作「需要重做」：不揭示答案、可直接作答，
+   直到本次重新做一遍（做完才显示对错）。切走模式/状态/子页后重新变回「没做过」。 */
+function polRedoMode(){ return POL_KIND==='practice' && POL_STATUS==='wrong'; }
+function polLocked(id){            /* 这道题现在是否「已判分、不能再改」 */
+  if(polRedoMode()) return !!POL_DONE[id];
+  return !!S.pol.res[id];
+}
+function polSnapFresh(deck, start){ /* 从 start 起找第一道「还没做过」的题（环形） */
+  const n = deck.length; if(!n) return 0;
+  start = ((Math.round(start) || 0) % n + n) % n;
+  for(let i=0;i<n;i++){ const j = (start+i)%n; if(!polLocked(deck[j])) return j; }
+  return start;
+}
 function polDeckKey(){ return [POL_KIND,POL_STATUS,POL_FILTER,POL_TYPE,POL_MODE].join('|'); }
 function polDeck(){
   let arr = POL.map(function(it){ return it.id; });
@@ -3469,7 +3484,7 @@ function polDeck(){
 }
 function polStats(deck){
   let done=0, right=0;
-  (deck||[]).forEach(function(id){ const r=S.pol.res[id]; if(r){ done++; if(r==='right') right++; } });
+  (deck||[]).forEach(function(id){ if(!polLocked(id)) return; const r=S.pol.res[id]; if(r){ done++; if(r==='right') right++; } });
   return { total:(deck||[]).length, done:done, right:right, wrong:done-right,
            rate: done ? Math.round(right*100/done) : null, left:(deck||[]).length-done };
 }
@@ -3503,12 +3518,15 @@ function polApplyUI(){
   POL_IDX = Math.max(0, Math.round(Number(u.pos)||0));
   if(u.deck && u.deck !== polDeckKey()) POL_IDX = 0;
   POL_EXAM = (S.pol && S.pol.exam) ? S.pol.exam : null;
+  POL_DONE = {};
+  POL_IDX = polSnapFresh(polDeck(), POL_IDX);   /* 进来就落到第一道没做过的题，不用自己往下翻 */
   POL_T0 = Date.now(); POL_T0KEY = polDeckKey();
 }
 /* 切换筛选/模式后：回到第一题、清空临时选择、整卷则重开一卷 */
 function polReset(){
-  POL_IDX = 0; POL_ANS = {}; POL_T0 = 0; POL_T0KEY = '';
+  POL_IDX = 0; POL_ANS = {}; POL_T0 = 0; POL_T0KEY = ''; POL_DONE = {};
   if(POL_KIND==='exam'){ POL_EXAM = { picks:{}, graded:false, used:0 }; S.pol.exam = POL_EXAM; }
+  POL_IDX = polSnapFresh(polDeck(), 0);   /* 换条件后直接落到第一道没做过的题 */
   polSaveUI(); save(); renderPol();
 }
 function polGo(i, scroll){
@@ -3524,7 +3542,7 @@ function polGo(i, scroll){
 function polPick(pid, k){
   pid = Number(pid);
   const it = polById(pid); if(!it) return;
-  if(S.pol.res[pid]) return;                       /* 已判分，锁定 */
+  if(polLocked(pid)) return;                       /* 已判分就锁定；错题本里还没重做的题可以重新选 */
   if(POL_KIND==='recite') return;                  /* 背题模式不选项 */
   if(POL_KIND==='exam'){
     if(POL_EXAM && POL_EXAM.graded) return;
@@ -3546,12 +3564,13 @@ function polPick(pid, k){
 function polSubmit(){
   const deck = polDeck(); if(!deck.length) return;
   const id = deck[POL_IDX], it = polById(id); if(!it) return;
-  if(S.pol.res[id] || POL_KIND!=='practice') return;
+  if(POL_KIND!=='practice' || polLocked(id)) return;
   const sel = Object.keys(POL_ANS).filter(function(k){ return POL_ANS[k]; }).sort();
   if(!sel.length){ toast('先选一个答案'); return; }
   const ans = it.ans.split('').sort();
   const ok = sel.length===ans.length && sel.every(function(k,i){ return k===ans[i]; });
   S.pol.res[id] = ok ? 'right' : 'wrong';
+  POL_DONE[id] = true;
   const hh = S.pol.hist[id] || { n:0, ok:0 }; hh.n++; if(ok) hh.ok++; S.pol.hist[id] = hh;
   if(ok){
     if(S.pol.wrong[id]){ delete S.pol.wrong[id]; toast('答对啦，已移出错题本'); } else toast('答对啦');
@@ -3575,6 +3594,7 @@ function polGrade(){
     const ans = it.ans.split('').sort();
     const ok = sel.length===ans.length && sel.every(function(x,i){ return x===ans[i]; });
     S.pol.res[k] = ok ? 'right' : 'wrong';
+    POL_DONE[k] = true;
     const hh = S.pol.hist[k] || { n:0, ok:0 }; hh.n++; if(ok) hh.ok++; S.pol.hist[k] = hh;
     if(ok){ if(S.pol.wrong[k]) delete S.pol.wrong[k]; right++; }
     else {
@@ -3618,8 +3638,8 @@ function polSzBody(){
   /* 作答状态 */
   const scnt = {
     all: POL.length,
-    undone: POL.filter(function(it){ return !S.pol.res[it.id]; }).length,
-    done: Object.keys(S.pol.res).length,
+    undone: POL.filter(function(it){ return !polLocked(it.id); }).length,
+    done: POL.filter(function(it){ return polLocked(it.id); }).length,
     wrong: wk,
     fav: Object.keys(S.pol.fav).length
   };
@@ -3665,7 +3685,7 @@ function polSzBody(){
       h += '<div class="card empty">'+ic('cap',30,1.7)+'<b>这一组没有题</b><span>换个筛选条件试试。</span></div>';
     } else {
       h += '<div class="pol-sheet">'+deck.map(function(id,i){
-        const r = S.pol.res[id];
+        const r = polLocked(id) ? S.pol.res[id] : '';
         const cur = (i===POL_IDX);
         const hist = S.pol.hist[id];
         return '<button class="pol-cell'+(r?(' '+r):'')+(cur?' cur':'')+'" data-act="pol-jump" data-i="'+i+'"'+
@@ -3721,7 +3741,7 @@ function polSzBody(){
   let revealed;
   if(POL_KIND==='recite') revealed = true;
   else if(POL_KIND==='exam') revealed = examGraded;
-  else revealed = !!res;
+  else revealed = polLocked(id);
 
   h += '<div class="card pol-card" id="polCard">';
   h += '<div class="pol-top"><span class="pol-no">No.'+it.id+'</span>'+
@@ -3977,43 +3997,48 @@ function kbChapterHTML(subj, ci, ch){
 /* 一个「空」对应答案里的一个词（答案用空格分段，段数 === 空位数） */
 function kbAnsParts(f){ return String(f.a||'').split(' ').filter(function(x){ return x !== ''; }); }
 
+/* 一道填空题的渲染。fresh=true 表示「按错题本重做」：忽略持久化的作答记录，
+   一律先呈现空白可填，只有本次会话重新提交过（POL_DONE）才显示对错。 */
+function kbFillItemHTML(ci, ki, fi, f, fresh){
+  const key = kbFillKey('my',ci,ki,fi);
+  const stored = (S.pol.kb.fills||{})[key];
+  const r = fresh ? (POL_DONE[key] ? stored : '') : stored;
+  const d = (KB_FILL[key]||{});
+  const ans = kbAnsParts(f);
+  const segs = f.q.split('____');
+  const multi = segs.length - 1 > 1;
+  let h = '<div class="kb-fill'+(r?(' '+r):'')+'">';
+  h += '<div class="kb-fill-q">';
+  segs.forEach(function(seg, i){
+    h += esc(seg);
+    if(i < segs.length - 1){
+      const v = (d.vs && d.vs[i] != null) ? d.vs[i] : '';
+      const mark = (r && d.oks) ? (d.oks[i] ? ' ok' : ' bad') : '';
+      h += '<input class="kb-fill-in'+mark+'" data-k="'+key+'" data-i="'+i+'" value="'+esc(v)+'"'+
+           (r?' disabled':'')+' placeholder="空'+(i+1)+'">';
+    }
+  });
+  h += '</div>';
+  if(r){
+    const allRight = (r === 'right');
+    h += '<div class="kb-fill-fb'+(allRight?' ok':'')+'">'+
+         (allRight ? '✓ 全部正确' : '✗ 正确答案：'+esc(ans.join(' / ')))+'</div>';
+    if(f.tip) h += '<div class="kb-tip">提示：'+esc(f.tip)+'</div>';
+    h += '<div class="kb-fill-btns"><button class="btn btn-line btn-xs" data-act="kb-redo" data-k="'+key+'">'+ic('refresh',13)+' 重做</button></div>';
+  } else {
+    h += '<div class="kb-fill-btns"><button class="btn btn-pri btn-xs" data-act="kb-judge" data-k="'+key+'">提交</button>'+
+         '<button class="btn btn-line btn-xs" data-act="kb-reveal" data-k="'+key+'">看答案</button>'+
+         (multi?'<span class="kb-fill-note">共 '+ans.length+' 个空</span>':'')+'</div>';
+  }
+  h += '</div>';
+  return h;
+}
 function kbFillCard(ci, ki, k){
   let h = '<div class="kb-kp" id="kb-my-'+ci+'-'+ki+'">';
   h += '<div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
        (k.star>=2?'<i class="kb-hot">高频</i>':'')+
        (k.star?('<span class="kb-star">'+'★'.repeat(Math.min(k.star,3))+'</span>'):'')+'</div>';
-  k.fills.forEach(function(f, fi){
-    const key = kbFillKey('my',ci,ki,fi);
-    const r = (S.pol.kb.fills||{})[key];
-    const d = (KB_FILL[key]||{});
-    const ans = kbAnsParts(f);
-    const segs = f.q.split('____');
-    const multi = segs.length - 1 > 1;
-    h += '<div class="kb-fill'+(r?(' '+r):'')+'">';
-    h += '<div class="kb-fill-q">';
-    segs.forEach(function(seg, i){
-      h += esc(seg);
-      if(i < segs.length - 1){
-        const v = (d.vs && d.vs[i] != null) ? d.vs[i] : '';
-        const mark = (r && d.oks) ? (d.oks[i] ? ' ok' : ' bad') : '';
-        h += '<input class="kb-fill-in'+mark+'" data-k="'+key+'" data-i="'+i+'" value="'+esc(v)+'"'+
-             (r?' disabled':'')+' placeholder="空'+(i+1)+'">';
-      }
-    });
-    h += '</div>';
-    if(r){
-      const allRight = (r === 'right');
-      h += '<div class="kb-fill-fb'+(allRight?' ok':'')+'">'+
-           (allRight ? '✓ 全部正确' : '✗ 正确答案：'+esc(ans.join(' / ')))+'</div>';
-      if(f.tip) h += '<div class="kb-tip">提示：'+esc(f.tip)+'</div>';
-      h += '<div class="kb-fill-btns"><button class="btn btn-line btn-xs" data-act="kb-redo" data-k="'+key+'">'+ic('refresh',13)+' 重做</button></div>';
-    } else {
-      h += '<div class="kb-fill-btns"><button class="btn btn-pri btn-xs" data-act="kb-judge" data-k="'+key+'">提交</button>'+
-           '<button class="btn btn-line btn-xs" data-act="kb-reveal" data-k="'+key+'">看答案</button>'+
-           (multi?'<span class="kb-fill-note">共 '+ans.length+' 个空</span>':'')+'</div>';
-    }
-    h += '</div>';
-  });
+  k.fills.forEach(function(f, fi){ h += kbFillItemHTML(ci, ki, fi, f, false); });
   h += '</div>';
   return h;
 }
@@ -4335,6 +4360,7 @@ function kbWrongPanel(){
   const wk = Object.keys(S.pol.kb.wrong||{});
   let h = '<div class="sec"><button class="btn btn-line btn-xs" data-act="kb-wrong-back">← 返回知识点</button><div style="height:10px"></div>';
   if(!wk.length){ h += '<div class="card empty">'+ic('cap',30,1.6)+'<b>错题本是空的</b><span>填空题答错后会自动进到这里。</span></div></div>'; return h; }
+  h += '<div class="kb-tip" style="margin-bottom:9px">这里的题一律要重新做一遍：不预设答案，填完点「提交」，答对就自动移出。</div>';
   wk.forEach(function(key){
     const p = key.split('-');
     const ci=+p[1], ki=+p[2], fi=+p[3];
@@ -4342,17 +4368,9 @@ function kbWrongPanel(){
     if(!k) return;
     const f = k.fills[fi]; if(!f) return;
     const w = S.pol.kb.wrong[key];
-    const qp = f.q.split('____');
-    const ap = kbAnsParts(f);
-    let qline = '';
-    qp.forEach(function(seg, i){
-      qline += esc(seg);
-      if(i < qp.length - 1) qline += '<b class="kb-ans">'+esc(ap[i]||'')+'</b>';
-    });
     h += '<div class="kb-kp"><div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
          '<span class="sp"></span>'+(w.due<=todayStr()?'<i class="kb-hot">该复习</i>':'')+'</div>'+
-         '<div class="kb-fill-q">'+qline+'</div>'+
-         '<div class="kb-fill-btns"><button class="btn btn-line btn-xs" data-act="kb-redo-jump" data-k="'+key+'" data-subj="my" data-ci="'+ci+'" data-ii="'+ki+'">'+ic('refresh',13)+' 重做</button></div></div>';
+         kbFillItemHTML(ci, ki, fi, f, true) + '</div>';
   });
   h += '</div>';
   return h;
@@ -4434,6 +4452,7 @@ function kbJudge(key){
   if(allOk){ if(S.pol.kb.wrong[key]) delete S.pol.kb.wrong[key]; }
   else { S.pol.kb.wrong[key] = { added:todayStr(), due:dAdd(todayStr(), S.pol.settings.remindDays) }; }
   KB_FILL[key] = { vs: vs, oks: oks };
+  POL_DONE[key] = true;
   save(); renderPol();
   if(allOk) toast('全对，漂亮');
   else {
@@ -4826,7 +4845,7 @@ document.addEventListener('click', function(ev){
     case 'pol-exam-retry': {
       polDeck().forEach(function(x){ delete S.pol.res[x]; });
       POL_EXAM = { picks:{}, graded:false, used:0 }; S.pol.exam = POL_EXAM;
-      POL_T0 = 0; POL_T0KEY = ''; POL_IDX = 0; POL_ANS = {};
+      POL_T0 = 0; POL_T0KEY = ''; POL_IDX = 0; POL_ANS = {}; POL_DONE = {};
       polSaveUI(); save(); renderPol(); toast('已重置，重新开始整卷');
       break;
     }
@@ -4864,6 +4883,7 @@ document.addEventListener('click', function(ev){
     case 'pol-redo': {
       const _dk = polDeck(); const _id = _dk[POL_IDX]; if(!_id) break;
       delete S.pol.res[_id];   /* 清掉这道题的作答，回到「未作答」可重新选 */
+      delete POL_DONE[_id];    /* 本次会话的「刚做过」标记一并清掉 */
       POL_ANS = {};            /* 清掉上一次的临时选择 */
       polSaveUI(); save(); renderPol();
       break;
@@ -4876,16 +4896,16 @@ document.addEventListener('click', function(ev){
       break;
     }
     /* ---- 政治知识库 ---- */
-    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; renderPol(); break; }
+    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; POL_DONE={}; POL_IDX=polSnapFresh(polDeck(),0); polSaveUI(); save(); renderPol(); break; }
     case 'kb-toggle': { const kk=b.dataset.k; KB_OPEN[kk]=!KB_OPEN[kk]; if(KB_OPEN['__all']) KB_OPEN['__all']=false; renderPol(); break; }
     case 'kb-expand-all':   { KB_OPEN={'__all':true}; renderPol(); break; }
     case 'kb-collapse-all': { KB_OPEN={}; renderPol(); break; }
     case 'kb-judge':  { kbJudge(b.dataset.k); break; }
-    case 'kb-redo':      { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; save(); renderPol(); break; }
-    case 'kb-redo-jump': { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; save(); kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
+    case 'kb-redo':      { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; delete POL_DONE[_rk]; save(); renderPol(); break; }
+    case 'kb-redo-jump': { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; delete POL_DONE[_rk]; save(); kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
     case 'kb-reveal': { kbReveal(b.dataset.k); break; }
     case 'kb-seen':   { const sk=b.dataset.k; S.pol.kb.seen[sk]=!S.pol.kb.seen[sk]; save(); renderPol(); break; }
-    case 'kb-wrong-open': { KB_WRONGMODE=true; renderPol(); break; }
+    case 'kb-wrong-open': { KB_WRONGMODE=true; POL_DONE={}; renderPol(); break; }
     case 'kb-wrong-back': { KB_WRONGMODE=false; renderPol(); break; }
     case 'kb-search-clear': { KB_SEARCH=''; KB_SRES_SUBJ='all'; renderPol(); break; }
     case 'kb-sres-subj': { KB_SRES_SUBJ=b.dataset.s; renderPol(); break; }
@@ -5146,7 +5166,7 @@ document.addEventListener('keydown', function(ev){
   const cit = polById(cid); if(!cit) return;
   const shown = (POL_KIND==='recite') ? true
               : (POL_KIND==='exam') ? !!(POL_EXAM && POL_EXAM.graded)
-              : !!S.pol.res[cid];
+              : polLocked(cid);
   if(ev.key==='ArrowLeft'){ ev.preventDefault(); polGo(POL_IDX-1); return; }
   if(ev.key==='ArrowRight'){ ev.preventDefault(); polGo(POL_IDX+1); return; }
   if(ev.key==='Enter'){
