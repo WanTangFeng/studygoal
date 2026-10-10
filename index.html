@@ -1146,7 +1146,7 @@ let TAB = 'today';
 let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
-  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, ui:{ bannerAck:0, ttsRate:1 },
+  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, lastYearBy:{}, ui:{ bannerAck:0, ttsRate:1 },
     pol:{ stars:{}, res:{}, wrong:{}, fav:{}, hist:{}, settings:{remindDays:3},
           ui:{ kind:'practice', status:'all', filter:'all', type:'all', pos:0, deck:'', sheet:false },
           exam:null,
@@ -1257,6 +1257,13 @@ function normalize(o){
   b.vocab = (o.vocab && typeof o.vocab==='object') ? o.vocab : {};
   b.pol = normalizePol(o.pol);
   b.lastYear = Math.round(Number(o.lastYear)||0);
+  b.lastYearBy = {};
+  if(o.lastYearBy && typeof o.lastYearBy === 'object'){
+    ['eng2','math2','cs408','pol'].forEach(function(k){
+      const y = Math.round(Number(o.lastYearBy[k]));
+      if(isFinite(y) && y > 0) b.lastYearBy[k] = y;
+    });
+  }
 
   /* 升级路径：旧 v3（goals/records）或无 cats 的备份 —— 清空重来，仅保留 papers/weekly */
   if(!o.cats || !Array.isArray(o.cats)){
@@ -2937,6 +2944,14 @@ function pfLoad(srcObj){
 function existingPaper(subj,year,round){
   return S.papers.filter(function(x){ return x.subj===subj && x.year===year && (x.round||1)===round; })[0] || null;
 }
+function lastYearFor(k){
+  const by = (S.lastYearBy || {});
+  const v = Math.round(Number(by[k]));
+  if(isFinite(v) && v > 0) return v;
+  /* 已经在按科目记年份：没用过的科目用默认年（去年），不跟着别的科目一起变 */
+  if(Object.keys(by).length) return new Date().getFullYear()-1;
+  return S.lastYear || (new Date().getFullYear()-1);
+}
 function pfYears(){
   const out = []; for(let y=2026; y>=2005; y--) out.push(y);
   if(PF.year && out.indexOf(PF.year)<0) out.unshift(PF.year);
@@ -3073,7 +3088,7 @@ function paperForm(pid, opts){
     subj = src.subj; year = src.year; lock = true; roundSrc = src.id;
     round = maxRound(subj, year) + 1; editId = null;
   } else {                         /* 记一份真题：自由新建，科目/年份始终可选，不自动转编辑、不锁死 */
-    subj = 'eng2'; year = S.lastYear || (new Date().getFullYear()-1); lock = false; round = 1;
+    subj = 'eng2'; year = lastYearFor('eng2'); lock = false; round = 1;
     editId = null; roundSrc = null;
   }
   PF = { subj:subj, year:year, round:round, rows:{}, vocab:[], editId:editId, lock:lock, roundSrc:roundSrc };
@@ -3109,8 +3124,10 @@ function paperForm(pid, opts){
       if(ys) ys.addEventListener('change', function(){
         PF.year = Number(ys.value);
         PF.editId = null;  /* 切换年份取消载入态，回到自由新建 */
+        if(S.lastYearBy) S.lastYearBy[PF.subj] = PF.year;  /* 每个科目各自记住年份，互不影响 */
         pfLoad();
         el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
+        save();
       });
     });
 }
@@ -3173,6 +3190,7 @@ function savePaper(){
     S.vocab[todayStr()] = rec;
   }
   S.lastYear = PF.year;
+  if(S.lastYearBy) S.lastYearBy[PF.subj] = PF.year;
   const sc = paperScore(p);
   save(); closeModal(); PSUBJ = 'all'; go('papers');
   toast('已记下 '+PAPERS[p.subj].s+' '+p.year+(p.round>1?(' · '+roundLabel(p.round)):'')+' · 估分 '+nfm(sc.got)+'/'+sc.full +
@@ -3732,7 +3750,14 @@ function polSzBody(){
     if(res==='wrong' && S.pol.wrong[id]){
       h += '<div class="pol-wrinfo">已在错题本，下次提醒：'+md(S.pol.wrong[id].due)+'（'+wdOf(S.pol.wrong[id].due)+'）</div>';
     }
-    h += '<button class="btn btn-pri btn-block" data-act="pol-next" style="margin-top:10px">下一题 →</button>';
+    if(POL_KIND==='practice' && (res==='right' || res==='wrong')){
+      h += '<div style="display:flex;gap:8px;margin-top:10px">'+
+           '<button class="btn btn-ghost" data-act="pol-redo" style="flex:0 0 auto">'+ic('refresh',15)+' 重做这道题</button>'+
+           '<button class="btn btn-pri" data-act="pol-next" style="flex:1">下一题 →</button></div>'+
+           '<div class="pol-tip" style="margin-top:8px">重做会清掉这道题的作答记录，可以重新选答案；答对后会自动移出错题本。</div>';
+    } else {
+      h += '<button class="btn btn-pri btn-block" data-act="pol-next" style="margin-top:10px">下一题 →</button>';
+    }
   } else if(examIng){
     h += '<div class="pol-tip" style="text-align:center;margin-top:10px">整卷模式：选完继续做下一题，全部做完后回到上方点「交卷判分」</div>';
   } else {
@@ -3981,6 +4006,7 @@ function kbFillCard(ci, ki, k){
       h += '<div class="kb-fill-fb'+(allRight?' ok':'')+'">'+
            (allRight ? '✓ 全部正确' : '✗ 正确答案：'+esc(ans.join(' / ')))+'</div>';
       if(f.tip) h += '<div class="kb-tip">提示：'+esc(f.tip)+'</div>';
+      h += '<div class="kb-fill-btns"><button class="btn btn-line btn-xs" data-act="kb-redo" data-k="'+key+'">'+ic('refresh',13)+' 重做</button></div>';
     } else {
       h += '<div class="kb-fill-btns"><button class="btn btn-pri btn-xs" data-act="kb-judge" data-k="'+key+'">提交</button>'+
            '<button class="btn btn-line btn-xs" data-act="kb-reveal" data-k="'+key+'">看答案</button>'+
@@ -4325,7 +4351,8 @@ function kbWrongPanel(){
     });
     h += '<div class="kb-kp"><div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
          '<span class="sp"></span>'+(w.due<=todayStr()?'<i class="kb-hot">该复习</i>':'')+'</div>'+
-         '<div class="kb-fill-q">'+qline+'</div></div>';
+         '<div class="kb-fill-q">'+qline+'</div>'+
+         '<div class="kb-fill-btns"><button class="btn btn-line btn-xs" data-act="kb-redo-jump" data-k="'+key+'" data-subj="my" data-ci="'+ci+'" data-ii="'+ki+'">'+ic('refresh',13)+' 重做</button></div></div>';
   });
   h += '</div>';
   return h;
@@ -4582,10 +4609,13 @@ document.addEventListener('click', function(ev){
       if(!PF || PF.lock) break;
       PF.subj = b.dataset.k;
       PF.editId = null;  /* 切换科目取消载入态，回到自由新建 */
+      PF.year = lastYearFor(PF.subj);  /* 年份按科目各自独立：切回该科目上次选的年份 */
       pfLoad();
       Array.prototype.forEach.call(el('pfSubj').querySelectorAll('button'), function(x){
         x.classList.toggle('on', x.dataset.k===PF.subj);
       });
+      const pfys = el('pfYear');
+      if(pfys) pfys.innerHTML = pfYears().map(function(y){ return '<option value="'+y+'"'+(y===PF.year?' selected':'')+'>'+y+' 年</option>'; }).join('');
       el('pfBody').innerHTML = pfRowsHTML(); el('pfTip').innerHTML = pfTip();
       break;
     }
@@ -4831,6 +4861,13 @@ document.addEventListener('click', function(ev){
     }
     case 'pol-pick':   { polPick(b.dataset.id, b.dataset.k); break; }
     case 'pol-submit': { polSubmit(); break; }
+    case 'pol-redo': {
+      const _dk = polDeck(); const _id = _dk[POL_IDX]; if(!_id) break;
+      delete S.pol.res[_id];   /* 清掉这道题的作答，回到「未作答」可重新选 */
+      POL_ANS = {};            /* 清掉上一次的临时选择 */
+      polSaveUI(); save(); renderPol();
+      break;
+    }
     case 'pol-next':   { polGo(POL_IDX+1); break; }
     case 'go-pol-wrong': { POL_STATUS='wrong'; POL_KIND='practice'; POL_IDX=0; POL_ANS={}; polSaveUI(); save(); go('pol'); break; }
     case 'scroll-todo': {
@@ -4844,6 +4881,8 @@ document.addEventListener('click', function(ev){
     case 'kb-expand-all':   { KB_OPEN={'__all':true}; renderPol(); break; }
     case 'kb-collapse-all': { KB_OPEN={}; renderPol(); break; }
     case 'kb-judge':  { kbJudge(b.dataset.k); break; }
+    case 'kb-redo':      { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; save(); renderPol(); break; }
+    case 'kb-redo-jump': { const _rk=b.dataset.k; delete S.pol.kb.fills[_rk]; delete KB_FILL[_rk]; save(); kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
     case 'kb-reveal': { kbReveal(b.dataset.k); break; }
     case 'kb-seen':   { const sk=b.dataset.k; S.pol.kb.seen[sk]=!S.pol.kb.seen[sk]; save(); renderPol(); break; }
     case 'kb-wrong-open': { KB_WRONGMODE=true; renderPol(); break; }
