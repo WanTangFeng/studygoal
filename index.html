@@ -716,6 +716,20 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-tts-prog{font-size:11.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
 .kb-tts-para{transition:background .25s}
 .kb-tts-para.cur{background:#fff6d8;box-shadow:0 0 0 3px #fff6d8;border-radius:4px}
+.kb-tts-restart{border:none;border-radius:11px;cursor:pointer;background:var(--bg2);color:var(--ink2);
+  font-size:12.5px;font-weight:700;padding:9px 12px;font-family:inherit}
+.kb-tts-hint{font-size:12px;color:var(--amber);background:var(--amber-soft);border-radius:9px;
+  padding:7px 10px;margin-bottom:9px;line-height:1.6}
+.kb-tts-done{font-size:12.5px;font-weight:700;color:var(--green);margin:2px 0 8px}
+.kb-tts-nextb{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;border:none;
+  border-radius:12px;cursor:pointer;background:var(--grad);color:#fff;font-size:13.5px;font-weight:750;
+  padding:11px 14px;font-family:inherit;margin-bottom:10px;box-shadow:0 6px 16px rgba(115,85,247,.28)}
+.kb-tts-nextb:active{transform:scale(.98)}
+.kb-resumebar{display:flex;align-items:center;gap:9px;padding:11px 12px;margin-bottom:10px;
+  background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:13px}
+.kb-resumebar-t{flex:1;font-size:12.5px;color:var(--ink);line-height:1.5}
+.kb-resumebar-b{border:none;border-radius:10px;cursor:pointer;background:var(--grad);color:#fff;
+  font-size:12.5px;font-weight:750;padding:8px 14px;font-family:inherit;white-space:nowrap}
 /* ---- 我的 · 打卡统计 ---- */
 .ck-total{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
 .ck-total b{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.8px;line-height:1;
@@ -1146,7 +1160,7 @@ let TAB = 'today';
 let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
-  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, lastYearBy:{}, ui:{ bannerAck:0, ttsRate:1 },
+  return { version:SCHEMA, cats:[], papers:[], weekly:{}, vocab:{}, lastYear:0, lastYearBy:{}, tts:{ prog:{}, last:null }, ui:{ bannerAck:0, ttsRate:1 },
     pol:{ stars:{}, res:{}, wrong:{}, fav:{}, hist:{}, settings:{remindDays:3},
           ui:{ kind:'practice', status:'all', filter:'all', type:'all', pos:0, deck:'', sheet:false },
           exam:null,
@@ -1263,6 +1277,22 @@ function normalize(o){
       const y = Math.round(Number(o.lastYearBy[k]));
       if(isFinite(y) && y > 0) b.lastYearBy[k] = y;
     });
+  }
+  /* 朗读存档：每一讲读到哪一句（len 用来校验文稿是否改过） */
+  b.tts = { prog:{}, last:null };
+  if(o.tts && o.tts.prog && typeof o.tts.prog === 'object'){
+    Object.keys(o.tts.prog).forEach(function(k){
+      if(!/^\d+$/.test(k)) return;
+      const p = o.tts.prog[k]; if(!p || typeof p !== 'object') return;
+      const len = Math.max(0, Math.round(Number(p.len)||0));
+      if(!len) return;
+      b.tts.prog[k] = { i:Math.max(0, Math.round(Number(p.i)||0)), len:len,
+                        done:!!p.done, at:(typeof p.at === 'string' ? p.at : '') };
+    });
+  }
+  if(o.tts && o.tts.last && typeof o.tts.last === 'object'){
+    const c = Math.round(Number(o.tts.last.ci));
+    if(isFinite(c) && c >= 0) b.tts.last = { ci:c, at:(typeof o.tts.last.at === 'string' ? o.tts.last.at : '') };
   }
 
   /* 升级路径：旧 v3（goals/records）或无 cats 的备份 —— 清空重来，仅保留 papers/weekly */
@@ -3854,6 +3884,7 @@ function renderPol(){
   } else if(POL_SUB==='sz'){
     h += polSzBody();
   } else {
+    if(POL_SUB==='sg') h += kbTtsResumeBar();
     h += kbBody(POL_SUB);
   }
   el('tab-pol').innerHTML = h;
@@ -4061,7 +4092,8 @@ function kbPointCard(subj, ci, pi, p){
 /* ---------- 史纲文稿朗读（浏览器内置语音合成，可调倍速）---------- */
 const TTS_RATES = [0.8, 1.0, 1.25, 1.5, 2.0];
 const TTS = { ci:-1, idx:0, chunks:[], paraCount:1, rate:1.0, voice:null,
-              speaking:false, paused:false, gen:0, timer:0 };
+              speaking:false, paused:false, gen:0, timer:0, lastSaved:-1 };
+const TTS_CACHE = {};        /* ci -> { len, chunks }：分句结果按文稿长度缓存，避免每次渲染重切 */
 
 function ttsOK(){ return !!(window && window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function'); }
 function ttsActive(ci){ return TTS.ci === ci && TTS.speaking; }
@@ -4110,6 +4142,68 @@ function ttsSplit(text){
   });
   return out;
 }
+/* 分句结果带缓存：文稿没变就直接复用 */
+function ttsChunksOf(ci, ch){
+  const len = String((ch && ch.audio && ch.audio.text) || '').length;
+  const c = TTS_CACHE[ci];
+  if(c && c.len === len) return c.chunks;
+  const chunks = ttsSplit(ch.audio.text);
+  TTS_CACHE[ci] = { len:len, chunks:chunks };
+  return chunks;
+}
+function ttsParaCount(text){
+  return Math.max(1, String(text||'').split(/\n{2,}/).filter(function(x){ return String(x).trim(); }).length);
+}
+/* ---- 朗读进度存档：记下每一讲读到哪一句，下次接着播 ---- */
+function ttsProgGet(ci, ch){
+  const p = (S.tts && S.tts.prog) ? S.tts.prog[ci] : null;
+  if(!p || !ch || !ch.audio) return null;
+  if(Math.round(Number(p.len)) !== String(ch.audio.text||'').length) return null;   /* 文稿改过，存档作废 */
+  const n = ttsChunksOf(ci, ch).length;
+  let i = Math.max(0, Math.round(Number(p.i)||0));
+  if(i > n) i = n;
+  return { i:i, n:n, done:!!p.done, at:p.at||'' };
+}
+function ttsProgSet(ci, ch, i, done){
+  if(ci < 0 || !ch || !ch.audio) return;
+  if(!S.tts) S.tts = { prog:{}, last:null };
+  if(!S.tts.prog) S.tts.prog = {};
+  const at = new Date().toISOString();
+  S.tts.prog[ci] = { i:Math.max(0, Math.round(i)||0), len:String(ch.audio.text||'').length, done:!!done, at:at };
+  if(!done) S.tts.last = { ci:ci, at:at };          /* 没听完才算「上次在听这一讲」 */
+  save();
+}
+/* 下一讲：史纲里下一个带文稿的章节 */
+function ttsNextInfo(ci){
+  for(let i=ci+1; i<KB.sg.length; i++){
+    if(KB.sg[i] && KB.sg[i].audio) return { ci:i, title:KB.sg[i].audio.title, ch:KB.sg[i].ch };
+  }
+  return null;
+}
+function ttsOpenChapter(ci){
+  KB_OPEN['sg-c-'+ci] = true;      /* 展开所属章节 */
+  KB_OPEN['sg-a-'+ci] = true;      /* 展开朗读卡 */
+  renderPol();
+  setTimeout(function(){
+    const n = document.querySelectorAll('#tab-pol .kb-chap')[ci];
+    if(n && n.scrollIntoView) n.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 70);
+}
+function ttsGotoStory(ci){
+  const nx = ttsNextInfo(ci);
+  if(!nx){ toast('已经是最后一讲了'); return; }
+  ttsOpenChapter(nx.ci);
+  ttsToggle(nx.ci);                /* 点击手势内直接开播 */
+}
+function ttsResumeLast(){
+  const last = (S.tts && S.tts.last) ? S.tts.last : null;
+  if(!last){ toast('还没有听过的记录'); return; }
+  const ci = Math.round(Number(last.ci));
+  const ch = KB.sg[ci]; if(!ch || !ch.audio){ toast('找不到这一讲了'); return; }
+  POL_SUB = 'sg'; KB_SEARCH = ''; KB_WRONGMODE = false;
+  ttsOpenChapter(ci);
+  ttsToggle(ci);
+}
 function ttsVoiceList(){
   if(!ttsOK()) return [];
   let vs = [];
@@ -4137,7 +4231,7 @@ function ttsBestVoice(){
   }
   return list[0];
 }
-function ttsToggle(ci){
+function ttsToggle(ci, from){
   if(!ttsOK()){ toast('这个浏览器不支持直接朗读，可以复制文稿去别的工具听'); return; }
   const ch = KB.sg[ci]; if(!ch || !ch.audio) return;
   const sy = window.speechSynthesis;
@@ -4149,18 +4243,22 @@ function ttsToggle(ci){
   TTS.gen++;
   if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
   try { sy.cancel(); } catch(e){}
-  TTS.ci = ci; TTS.idx = 0;
+  TTS.ci = ci;
   TTS.rate = (S.ui && S.ui.ttsRate) || TTS.rate || 1.0;
-  TTS.chunks = ttsSplit(ch.audio.text);
-  TTS.paraCount = Math.max(1, String(ch.audio.text).split(/\n{2,}/).filter(function(x){ return String(x).trim(); }).length);
+  TTS.chunks = ttsChunksOf(ci, ch);
+  TTS.paraCount = ttsParaCount(ch.audio.text);
   TTS.voice = ttsBestVoice();
+  /* 接着上次继续：只有点「从头开始」、或这一讲已听完、或没有存档时才从第一句播 */
+  const _pr = (from === 'start') ? null : ttsProgGet(ci, ch);
+  TTS.idx = (_pr && !_pr.done && _pr.i > 0 && _pr.i < TTS.chunks.length) ? _pr.i : 0;
+  TTS.lastSaved = -1;
   TTS.speaking = true; TTS.paused = false;
   ttsNext();                       /* 首次在用户手势里同步发出，满足 iOS 要求 */
   renderPol();
 }
 function ttsNext(){
   if(!TTS.speaking) return;
-  if(TTS.idx >= TTS.chunks.length){ ttsStop(true); renderPol(); return; }
+  if(TTS.idx >= TTS.chunks.length){ ttsFinish(); return; }
   const g = TTS.gen;
   const ck = TTS.chunks[TTS.idx];
   const u = new window.SpeechSynthesisUtterance(ck.text);
@@ -4186,11 +4284,24 @@ function ttsNext(){
   try { window.speechSynthesis.speak(u); } catch(e){ ttsStop(false); renderPol(); }
   ttsPaint();
 }
+/* 一讲读完：记成「已听完」，展开卡片露出「下一讲」，并提示一下 */
+function ttsFinish(){
+  const ci = TTS.ci, ch = KB.sg[ci];
+  if(ch && ch.audio) ttsProgSet(ci, ch, 0, true);
+  if(ci >= 0) KB_OPEN['sg-a-'+ci] = true;
+  ttsStop(true); renderPol();
+  toast(ttsNextInfo(ci) ? '这一讲听完了，接着听下一讲' : '这一讲听完了，已经是最后一讲');
+}
 function ttsStop(finished){
   TTS.gen++;
   if(TTS.timer){ clearTimeout(TTS.timer); TTS.timer = 0; }
   if(ttsOK()){ try { window.speechSynthesis.cancel(); } catch(e){} }
   TTS.speaking = false; TTS.paused = false;
+  if(!finished && TTS.ci >= 0 && TTS.idx > 0){
+    const ch = KB.sg[TTS.ci];
+    if(ch && ch.audio) ttsProgSet(TTS.ci, ch, TTS.idx, false);   /* 手动停止也保留进度 */
+  }
+  TTS.lastSaved = -1;
   if(!finished) TTS.idx = 0;
 }
 function ttsRate(r){
@@ -4226,6 +4337,11 @@ function ttsPaint(){
     const cur = TTS.speaking && !TTS.paused && Number(el.dataset.ci) === TTS.ci && Number(el.dataset.para) === curPara;
     el.classList.toggle('cur', !!cur);
   });
+  /* 每推进一句存一次进度，下次能接着播 */
+  if(TTS.speaking && TTS.ci >= 0 && !TTS.paused && TTS.idx !== TTS.lastSaved){
+    const ch = KB.sg[TTS.ci];
+    if(ch && ch.audio){ TTS.lastSaved = TTS.idx; ttsProgSet(TTS.ci, ch, TTS.idx, false); }
+  }
   const n = document.getElementById('ttsProg');
   if(n){
     const total = TTS.paraCount || 1;
@@ -4250,19 +4366,31 @@ function kbAudioCard(ci, ch){
   const open = !!KB_OPEN[key];
   const mins = Math.max(1, Math.round(ch.audio.text.length/200));
   const on = ttsActive(ci);
+  const pr = ttsProgGet(ci, ch);                       /* 这一讲的存档 */
+  const fin = !!(pr && pr.done);                       /* 已经听完了 */
+  const resumable = !!(pr && !pr.done && pr.i > 0 && pr.i < pr.n);
+  const nx = ttsNextInfo(ci);                          /* 下一讲 */
+  const paraCount = ttsParaCount(ch.audio.text);
+  const savedChunk = resumable ? ttsChunksOf(ci, ch)[pr.i] : null;
+  const savedPara = savedChunk ? Math.max(1, Math.min(paraCount, savedChunk.para + 1)) : 0;
   let h = '<div class="kb-audio">';
   h += '<button class="kb-audio-hd" data-act="kb-toggle" data-k="'+key+'">'+
        '<span class="kb-audio-ic">▶</span>'+
        '<span class="kb-audio-t">听这一章的故事 ·《'+esc(ch.audio.title)+'》</span>'+
-       '<span class="sp"></span><span class="kb-audio-m">约 '+mins+' 分钟</span></button>';
+       '<span class="sp"></span><span class="kb-audio-m">'+(fin?'已听完 · ':'')+'约 '+mins+' 分钟</span></button>';
   if(open){
     h += '<div class="kb-audio-bd">';
     if(ttsOK()){
-      const label = !on ? '▶ 开始朗读' : (TTS.paused ? '▶ 继续' : '⏸ 暂停');
+      const label = !on ? (fin ? '▶ 重听这一讲' : (resumable ? '▶ 接着上次继续' : '▶ 开始朗读'))
+                        : (TTS.paused ? '▶ 继续' : '⏸ 暂停');
       const vs = ttsVoiceList();
+      const prog = on
+        ? ((TTS.paused?'已暂停':'朗读中')+' · 第 '+Math.max(1,Math.min(TTS.paraCount,(TTS.chunks[TTS.idx]||{para:0}).para+1))+'/'+TTS.paraCount+' 段')
+        : (resumable ? ('上次读到 第 '+savedPara+'/'+paraCount+' 段 · '+Math.min(100,Math.round(pr.i/Math.max(1,pr.n)*100))+'%') : '');
       h += '<div class="kb-tts">'+
              '<button class="kb-tts-play" data-act="tts-toggle" data-ci="'+ci+'">'+label+'</button>'+
              (on ? '<button class="kb-tts-stop" data-act="tts-stop">停止</button>' : '')+
+             (!on && (resumable || fin) ? '<button class="kb-tts-restart" data-act="tts-restart" data-ci="'+ci+'">从头开始</button>' : '')+
              '<span class="kb-tts-spd">'+TTS_RATES.map(function(r){
                 return '<button class="'+(Math.abs(TTS.rate-r)<0.001?'on':'')+'" data-act="tts-rate" data-r="'+r+'">'+r+'×</button>';
              }).join('')+'</span>'+
@@ -4272,16 +4400,20 @@ function kbAudioCard(ci, ch){
                    return '<option value="'+esc(v.voiceURI)+'"'+(cur?' selected':'')+'>'+esc(v.name)+'</option>';
                  }).join('')+'</select>'
                : '')+
-             '<span class="kb-tts-prog" id="ttsProg">'+(on ? ((TTS.paused?'已暂停':'朗读中')+' · 第 '+Math.max(1,Math.min(TTS.paraCount,(TTS.chunks[TTS.idx]||{para:0}).para+1))+'/'+TTS.paraCount+' 段') : '')+'</span>'+
+             '<span class="kb-tts-prog" id="ttsProg">'+prog+'</span>'+
            '</div>'+
-           '<div class="kb-audio-note">按「讲故事」的方式朗读：<b>自动断句、句间留停顿</b>，引语处语气略作变化；声音偏慢更自然，可随时切倍速或换音色。音色由设备自带语音合成提供。</div>';
+           '<div class="kb-audio-note">按「讲故事」的方式朗读：<b>自动断句、句间留停顿</b>，引语处语气略作变化；声音偏慢更自然，可随时切倍速或换音色。音色由设备自带语音合成提供。</div>'+
+           (resumable ? '<div class="kb-tts-hint">上次听到这里（第 '+savedPara+'/'+paraCount+' 段），点「接着上次继续」就能接着听。</div>' : '')+
+           (fin ? '<div class="kb-tts-done">这一讲已经听完啦'+(nx?'':'，已经是最后一讲了')+'。</div>' : '')+
+           (fin && nx ? '<button class="kb-tts-nextb" data-act="tts-next-story" data-ci="'+ci+'">下一讲 ·《'+esc(nx.title)+'》 '+ic('right',15)+'</button>' : '');
     } else {
       h += '<div class="kb-audio-note">当前浏览器不支持直接朗读，点下面的文稿复制到「微信读书 / 剪映 / 讯飞」等工具也能听。</div>';
     }
     const paras = String(ch.audio.text).split(/\n{2,}/);
-    const curPara = (on && TTS.chunks[TTS.idx]) ? TTS.chunks[TTS.idx].para : -1;
+    const curPara = on ? ((TTS.chunks[TTS.idx]||{para:-1}).para) : (savedChunk ? savedChunk.para : -1);
+    const mark = on ? !TTS.paused : resumable;
     h += '<div class="kb-audio-txt">' + paras.map(function(p, i){
-      const cur = (on && !TTS.paused && i === curPara) ? ' cur' : '';
+      const cur = (mark && i === curPara) ? ' cur' : '';
       return '<span class="kb-tts-para'+cur+'" data-para="'+i+'" data-ci="'+ci+'">'+esc(p)+'</span>';
     }).join('<br><br>') + '</div>';
     h += '<button class="btn btn-line btn-xs" data-act="kb-copy" data-ci="'+ci+'">复制本讲文稿</button>';
@@ -4289,6 +4421,25 @@ function kbAudioCard(ci, ch){
   }
   h += '</div>';
   return h;
+}
+
+/* 史纲顶部：上次没听完的那一讲，一键接着听 */
+function kbTtsResumeBar(){
+  const last = (S.tts && S.tts.last) ? S.tts.last : null;
+  if(!last) return '';
+  const ci = Math.round(Number(last.ci));
+  const ch = KB.sg[ci];
+  if(!ch || !ch.audio) return '';
+  const pr = ttsProgGet(ci, ch);
+  if(!pr || pr.done) return '';
+  if(ttsActive(ci)) return '';
+  const n = ttsParaCount(ch.audio.text);
+  const ck = (pr.i > 0 && pr.i < pr.n) ? ttsChunksOf(ci, ch)[pr.i] : null;
+  const at = ck ? Math.max(1, Math.min(n, ck.para + 1)) : 0;
+  return '<div class="sec kb-resumebar">'+ic('cap',17)+
+    '<span class="kb-resumebar-t">上次在听《'+esc(ch.audio.title)+'》'+
+      (at ? '（第 '+at+'/'+n+' 段）' : '')+'，接着听吗？</span>'+
+    '<button class="kb-resumebar-b" data-act="kb-tts-resume">'+(at?'继续听':'开始听')+'</button></div>';
 }
 
 function kbSearchBar(){
@@ -4912,6 +5063,9 @@ document.addEventListener('click', function(ev){
     case 'kb-jump':   { kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
     case 'kb-copy':   { kbCopyAudio(+b.dataset.ci); break; }
     case 'tts-toggle': { ttsToggle(Number(b.dataset.ci)); break; }
+    case 'tts-restart':{ ttsToggle(Number(b.dataset.ci), 'start'); break; }
+    case 'tts-next-story': { ttsGotoStory(Number(b.dataset.ci)); break; }
+    case 'kb-tts-resume':  { ttsResumeLast(); break; }
     case 'tts-stop':   { ttsStop(false); renderPol(); break; }
     case 'tts-rate':   { ttsRate(Number(b.dataset.r)); break; }
     case 'kb-quiz':        { kbQuizStart(POL_SUB); break; }
