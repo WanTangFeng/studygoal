@@ -730,6 +730,98 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .kb-resumebar-t{flex:1;font-size:12.5px;color:var(--ink);line-height:1.5}
 .kb-resumebar-b{border:none;border-radius:10px;cursor:pointer;background:var(--grad);color:#fff;
   font-size:12.5px;font-weight:750;padding:8px 14px;font-family:inherit;white-space:nowrap}
+/* ============ 政治知识库 v2 ============ */
+/* 知识点卡片：按重要度给左侧色条，一眼分清高频与普通 */
+.kb-kp.lv2{padding-left:9px;border-left:3px solid var(--amber-line)}
+.kb-kp.lv3{padding-left:9px;border-left:3px solid #f2b8c0}
+/* 考点编号 / 真题频次 徽章 */
+.kb-kpn{font-style:normal;font-size:10.5px;font-weight:800;color:#7355f7;background:#f1edff;
+  border-radius:6px;padding:1px 6px;margin-right:6px;white-space:nowrap}
+.kb-tfb{font-style:normal;font-size:10.5px;font-weight:800;color:#c2410c;background:#ffedd5;
+  border-radius:6px;padding:1px 6px;white-space:nowrap;letter-spacing:.1px}
+.kb-tfb.zero{color:var(--faint);background:var(--bg2)}
+/* 结构化正文：把【小标题】/①要点/·子项/※提示 排出层次 */
+.kb-kp-bd{padding-top:1px}
+.kb-pl{margin:0 0 4px;padding-left:13px;position:relative}
+.kb-pl:last-child{margin-bottom:0}
+.kb-pl::before{content:'';position:absolute;left:2px;top:9px;width:4px;height:4px;border-radius:50%;background:var(--line)}
+.kb-pl-h{padding-left:0;margin:8px 0 5px}
+.kb-pl-h:first-child{margin-top:0}
+.kb-pl-h::before{display:none}
+.kb-ptag{display:inline-block;font-size:12px;font-weight:800;color:#5b45d6;background:var(--purple-soft);
+  border-radius:7px;padding:1px 7px;margin-right:6px;letter-spacing:.2px}
+.kb-pl-n{padding-left:23px}
+.kb-pl-n::before{display:none}
+.kb-pl-n i{position:absolute;left:0;top:2px;font-style:normal;font-size:12.5px;font-weight:800;color:#7355f7;opacity:.9;line-height:1.5}
+.kb-pl-s{padding-left:20px;font-size:13px;color:var(--muted)}
+.kb-pl-s::before{display:none}
+.kb-pl-s i{position:absolute;left:7px;top:3px;font-style:normal;font-weight:800;color:var(--faint);line-height:1.5}
+.kb-pl-w{background:var(--amber-soft);border-radius:9px;padding:6px 10px 6px 9px;color:#8a5a08;font-size:13px}
+.kb-pl-w::before{display:none}
+.kb-pl-w b{color:var(--amber);margin-right:5px;font-weight:800}
+.kb-em{font-style:normal;color:var(--muted)}
+/* 搜索命中高亮 */
+.kb-hl{background:linear-gradient(180deg,rgba(255,255,255,0) 54%,#ffe89a 54%);border-radius:2px;
+  font-weight:800;color:inherit;padding:0 1px}
+.kb-sres-s .kb-hl,.kb-sres-t .kb-hl{color:#8a5a08}
+/* 工具条：筛选 / 排序 / 动作 */
+.kb-tool{margin-top:11px;display:flex;flex-direction:column;gap:9px}
+.kb-toolrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.kb-tl{flex:none;font-size:10.5px;font-weight:800;color:var(--faint);letter-spacing:.6px}
+.kb-seg{display:inline-flex;gap:2px;background:var(--bg2);padding:3px;border-radius:11px}
+.kb-seg button{border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:750;
+  padding:6px 11px;border-radius:9px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.kb-seg button.on{background:var(--card);color:#7355f7;box-shadow:0 1px 4px rgba(25,27,46,.12)}
+.kb-fchip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink2);font-size:12px;font-weight:700;border-radius:20px;padding:5px 11px;cursor:pointer;font-family:inherit}
+.kb-fchip.on{background:linear-gradient(135deg,#6d5efc,#a855f7);border-color:transparent;color:#fff;
+  box-shadow:0 4px 12px rgba(115,85,247,.26)}
+.kb-toolacts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.kb-tooltip{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;line-height:1.55;color:var(--muted)}
+.kb-tooltip svg{flex:none;margin-top:1px;opacity:.8}
+/* 章节掌握进度 */
+.kb-chap-pg{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:800;
+  color:var(--muted);background:var(--bg2);border-radius:20px;padding:2px 8px;white-space:nowrap}
+.kb-chap-pg b{color:#7355f7;font-weight:850}
+.kb-chap-pg.full{color:#0f7a44;background:var(--green-soft)}
+.kb-chap-pg.full b{color:#0f7a44}
+.kb-chap-pg svg{opacity:.85}
+.kb-chap-hd.on .kb-chap-pg{background:var(--card)}
+.kb-chap-hd.on .kb-chap-pg.full{background:var(--green-soft)}
+/* 搜索结果 */
+.kb-sres-hd2{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:11px;line-height:1.6;
+  font-size:12px;color:var(--muted)}
+.kb-sres-hd2 b{font-size:15px;font-weight:850;color:var(--ink);letter-spacing:-.2px}
+.kb-sres-q{font-style:normal;font-weight:800;color:#5b45d6;background:var(--purple-soft);
+  border-radius:7px;padding:1px 7px}
+.kb-sres-n{font-style:normal;font-size:10.5px;font-weight:800;color:var(--muted);background:var(--bg2);
+  border-radius:6px;padding:1px 6px;margin-right:6px;white-space:nowrap}
+.kb-sres-item{position:relative}
+.kb-sres-item.seen .kb-sres-t{color:var(--muted);font-weight:650}
+.kb-sres-more{font-size:11.5px;color:var(--muted);text-align:center;padding:10px 2px 2px;line-height:1.55}
+/* 搜索跳转导航条 */
+.kb-snav{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:10px 12px;margin-bottom:10px;
+  background:linear-gradient(135deg,#f6f3ff,#eef5ff);border:1px solid var(--purple-line);border-radius:14px}
+.kb-snav-t{flex:1;min-width:130px;font-size:12.5px;color:var(--ink);line-height:1.55}
+.kb-snav-t b{font-weight:800;color:#5b45d6}
+.kb-snav-p{font-style:normal;font-weight:850;color:#7355f7}
+.kb-snav-b{flex:none;display:inline-flex;align-items:center;gap:4px;border:none;border-radius:10px;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:750;padding:7px 11px;white-space:nowrap;
+  background:var(--card);color:var(--ink2);box-shadow:0 1px 3px rgba(25,27,46,.1)}
+.kb-snav-b.pri{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(115,85,247,.26)}
+.kb-snav-b:disabled{opacity:.4;cursor:default;box-shadow:none}
+.kb-snav-b:active:not(:disabled){transform:scale(.97)}
+.kb-snav-x{flex:none;width:26px;height:26px;border-radius:50%;border:none;background:var(--card);
+  color:var(--muted);display:grid;place-items:center;cursor:pointer}
+/* 最近搜索 */
+.kb-slog{margin:9px 2px 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.kb-slog-l{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--faint)}
+.kb-slog-c{border:1px solid var(--line);background:var(--card);color:var(--ink2);font-size:12px;font-weight:650;
+  border-radius:20px;padding:4px 10px;cursor:pointer;font-family:inherit}
+.kb-slog-c:active{transform:scale(.97)}
+.kb-slog-x{flex:none;border:none;background:none;color:var(--faint);font-size:11.5px;font-weight:700;
+  cursor:pointer;font-family:inherit;padding:4px 2px}
+.kb-snav svg,.kb-slog svg,.kb-tooltip svg,.kb-chap-pg svg{display:block}
 /* ---- 我的 · 打卡统计 ---- */
 .ck-total{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
 .ck-total b{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.8px;line-height:1;
@@ -3867,6 +3959,15 @@ let KB_SEARCH = '';           /* 搜索词 */
 let KB_SRES_SUBJ = 'all';     /* 搜索结果按书过滤：all|my|mt|sg */
 let KB_QUIZ = null;           /* 随机抽查会话 */
 let KB_WRONGMODE = false;     /* 填空题错题本视图 */
+let KB_SORT = 'def';          /* 知识点排序：def 考点顺序 | star 重要度 | tf 真题频次 */
+let KB_ONLY = 'all';          /* 知识点筛选：all | hot 高频 | unseen 没掌握 | tf 真题考过 */
+let KB_SRES_OPEN = true;      /* 搜索结果面板是否展开（跳转后可收起来保留会话） */
+let KB_SRES_LIST = [];        /* 当前展示的搜索结果快照，供「上一条/下一条」用 */
+let KB_GO = null;             /* 搜索跳转会话：{ q, list, i } */
+let KB_HL = [];               /* 跳转后要在知识点正文里高亮的关键词（原始词） */
+let KB_SLOG = [];             /* 最近搜过的词（独立存 localStorage，不动 S 的结构） */
+let KB_SLOG_LOADED = false;
+const KB_SLOG_KEY = 'wb_kb_slog_v1';
 
 function polSubBar(){
   const tabs=[['sz','时政刷题'],['my','马哲填空题'],['mt','毛特知识点'],['sg','史纲知识点']];
@@ -3879,11 +3980,13 @@ function kbKey(subj, ci, ki){ return subj+'-'+ci+'-'+ki; }
 function renderPol(){
   let h = kbSearchBar();
   h += polSubBar();
-  if(KB_SEARCH.trim()){
-    h += kbSearchResults(KB_SEARCH.trim());
+  const _q = KB_SEARCH.trim();
+  if(_q && KB_SRES_OPEN){
+    h += kbSearchResults(_q);
   } else if(POL_SUB==='sz'){
     h += polSzBody();
   } else {
+    if(_q) h += kbSearchNavBar();
     if(POL_SUB==='sg') h += kbTtsResumeBar();
     h += kbBody(POL_SUB);
   }
@@ -3923,11 +4026,21 @@ function renderPol(){
   if(sb && !sb.__bound){
     sb.__bound = true;
     let timer = null;
+    sb.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter') return;
+      e.preventDefault();
+      const q = String(this.value||'').trim();
+      if(!q){ return; }
+      KB_SEARCH = q; KB_SRES_OPEN = true; KB_GO = null; KB_HL = [];
+      kbSlogPush(q);
+      renderPol();
+    });
     sb.addEventListener('input', function(){
       const val = this.value, pos = this.selectionStart;
       clearTimeout(timer);
       timer = setTimeout(function(){
         KB_SEARCH = val;
+        KB_SRES_OPEN = true; KB_GO = null; KB_HL = [];
         renderPol();
         const nb = el('kbSearch');
         if(nb){ nb.focus(); try{ nb.setSelectionRange(pos, pos); }catch(e){} }
@@ -3993,10 +4106,36 @@ function kbStats(subj){
     h += '<div class="kb-stat-hd"><b>掌握度</b><span>'+chn+' 章 · '+tot+' 个知识点 · 已掌握 '+seen+'</span></div>'+
          '<div class="pbar"><i style="width:'+pct+'%"></i></div>';
   }
-  h += '<div class="kb-acts">'+
-       '<button class="btn btn-line btn-xs" data-act="kb-quiz">随机抽查</button>'+
-       '<button class="btn btn-line btn-xs" data-act="kb-expand-all">展开全部</button>'+
-       '<button class="btn btn-line btn-xs" data-act="kb-collapse-all">收起全部</button>'+
+  /* 工具条：筛选（按科目给不同的项）+ 排序 + 操作 */
+  const noTf = (subj==='my');                       /* 马哲没有真题频次 */
+  const onlys = [['all','全部'],['hot','高频考点'],['unseen','还没掌握']];
+  if(!noTf) onlys.push(['tf','真题考过的']);
+  const sorts = [['def','考点顺序'],['star','重要度']];
+  if(!noTf) sorts.push(['tf','真题频次']);
+  const tip = (KB_ONLY==='hot')    ? '高频 = 重要度 2★ 及以上，也就是卷面上最常出的那批（筛选不改章节结构，只收起无关考点）。'
+            : (KB_ONLY==='unseen') ? '只剩还没拿下的：马哲看填空题是否全对，毛特 / 史纲看你有没有点「✓」。'
+            : (KB_ONLY==='tf')     ? '只留历年真题真正考过的知识点，徽章上的数字是考过几次。'
+            : (KB_SORT==='tf')     ? '每章内部按真题考过的次数从多到少排，先把最常考的那批刷掉，章节顺序不动。'
+            : (KB_SORT==='star')   ? '每章内部按重要度（★）从高到低排，章节顺序不动。' : '';
+  h += '<div class="kb-tool">'+
+       '<div class="kb-toolrow"><span class="kb-tl">筛选</span>'+
+         onlys.map(function(f){
+           return '<button class="kb-fchip'+(KB_ONLY===f[0]?' on':'')+'" data-act="kb-only" data-v="'+f[0]+'">'+f[1]+'</button>';
+         }).join('')+
+       '</div>'+
+       '<div class="kb-toolrow"><span class="kb-tl">排序</span>'+
+         '<div class="kb-seg">'+
+           sorts.map(function(f){
+             return '<button class="'+(KB_SORT===f[0]?'on':'')+'" data-act="kb-sort" data-v="'+f[0]+'">'+f[1]+'</button>';
+           }).join('')+
+         '</div>'+
+         '<div class="kb-toolacts">'+
+           '<button class="btn btn-line btn-xs" data-act="kb-quiz">随机抽查</button>'+
+           '<button class="btn btn-line btn-xs" data-act="kb-expand-all">展开全部</button>'+
+           '<button class="btn btn-line btn-xs" data-act="kb-collapse-all">收起全部</button>'+
+         '</div>'+
+       '</div>'+
+       (tip?('<div class="kb-tooltip">'+ic('info',13,2)+'<span>'+tip+'</span></div>'):'')+
        '</div></div>';
   if(KB_QUIZ && KB_QUIZ.subj===subj) h += kbQuizPanel(subj);
   return h;
@@ -4005,24 +4144,164 @@ function kbStats(subj){
 function kbChapterHTML(subj, ci, ch){
   const key = subj+'-c-'+ci;
   const open = !!(KB_OPEN[key] || KB_OPEN['__all']);
+  const isMy = (subj==='my');
+  const src = isMy ? ch.kps : ch.points;
+  /* 筛选与排序只作用于本章的显示顺序/取舍，绝不改动原始数据 */
+  const flt = kbFilterOf(subj), srt = kbSortOf(subj);
+  let list = src.map(function(x, i){ return { x:x, i:i }; });
+  if(flt==='unseen')   list = list.filter(function(o){ return !kbItemDone(subj, ci, o.i); });
+  else if(flt==='hot') list = list.filter(function(o){ return (o.x.star||0) >= 2; });
+  else if(flt==='tf')  list = list.filter(function(o){ return (o.x.tf||0) > 0; });
+  if(srt==='star')      list.sort(function(a,b){ return (b.x.star||0)-(a.x.star||0); });
+  else if(srt==='tf')   list.sort(function(a,b){ return (b.x.tf||0)-(a.x.tf||0); });
+  if(!list.length) return '';          /* 本章没有符合筛选条件的内容就整章收起 */
+  const st = kbChapStat(subj, ci, ch);
   let h = '<div class="sec kb-chap">';
   h += '<button class="kb-chap-hd'+(open?' on':'')+'" data-act="kb-toggle" data-k="'+key+'">'+
        '<span class="kb-chap-t">'+esc(ch.ch)+'</span>'+
        '<span class="sp"></span>'+
-       '<span class="kb-chap-n">'+(subj==='my'?(ch.kps.length+' 考点'):(ch.points.length+' 知识点'))+'</span>'+
+       (st.tot ? ('<span class="kb-chap-pg'+(st.pct>=100?' full':'')+'" title="本章已掌握">'+
+                  ic('check',11,2.8)+'<b>'+st.done+'</b>/'+st.tot+'</span>') : '')+
+       '<span class="kb-chap-n">'+(isMy?(ch.kps.length+' 考点'):(ch.points.length+' 知识点'))+'</span>'+
        '<span class="kb-caret">'+ic('down',14)+'</span></button>';
   if(open){
     h += '<div class="kb-chap-bd">';
-    if(subj==='my'){
-      ch.kps.forEach(function(k,ki){ h += kbFillCard(ci, ki, k); });
-    } else {
-      ch.points.forEach(function(p,pi){ h += kbPointCard(subj, ci, pi, p); });
-      if(subj==='sg' && ch.audio) h += kbAudioCard(ci, ch);
-    }
+    list.forEach(function(o){
+      if(isMy) h += kbFillCard(ci, o.i, ch.kps[o.i]);
+      else     h += kbPointCard(subj, ci, o.i, ch.points[o.i]);
+    });
+    if(!isMy && subj==='sg' && ch.audio) h += kbAudioCard(ci, ch);
     h += '</div>';
   }
   h += '</div>';
   return h;
+}
+
+/* ---------- 关键词切分 / 高亮 / 结构化正文 ---------- */
+/* 关键词切分：空格和标点都当分隔符，「与」语义（所有词都命中才算） */
+function kbTerms(q){
+  const seen = {}, out = [];
+  String(q||'').split(/[\s,，、。；;：:！!？?（）()【】\[\]「」“”"'·—\-]+/).forEach(function(x){
+    const s = String(x||'').trim();
+    if(!s) return;
+    const n = kbNorm(s);
+    if(!n || seen[n]) return;
+    seen[n] = 1;
+    out.push({ raw:s, norm:n });
+  });
+  return out;
+}
+/* 命中词高亮：只在原文上定位，逐段转义 —— 一个字都不多、不少，纯加标记 */
+function kbHlHTML(text, terms){
+  const s = String(text==null ? '' : text);
+  if(!terms || !terms.length) return esc(s);
+  const low = s.toLowerCase(), idx = [];
+  terms.forEach(function(t){
+    const raw = String(t||''); if(!raw) return;
+    const rl = raw.toLowerCase();
+    let p = low.indexOf(rl);
+    while(p >= 0){ idx.push([p, p + raw.length]); p = low.indexOf(rl, p + 1); }
+  });
+  if(!idx.length) return esc(s);
+  idx.sort(function(a,b){ return a[0]-b[0]; });
+  const mg = [idx[0].slice()];
+  for(let i=1;i<idx.length;i++){
+    const last = mg[mg.length-1];
+    if(idx[i][0] <= last[1]) last[1] = Math.max(last[1], idx[i][1]);
+    else mg.push(idx[i].slice());
+  }
+  let out = '', cur = 0;
+  mg.forEach(function(r){
+    out += esc(s.slice(cur, r[0])) + '<mark class="kb-hl">' + esc(s.slice(r[0], r[1])) + '</mark>';
+    cur = r[1];
+  });
+  return out + esc(s.slice(cur));
+}
+/* 「——解释」淡一档：先按 —— 切块再高亮，两套标记不会互相污染 */
+function kbRichHTML(text, terms){
+  const s = String(text==null ? '' : text);
+  const re = /——([^；。\n]{1,40})/g;
+  let out = '', last = 0, m;
+  while((m = re.exec(s))){
+    if(m.index > last) out += kbHlHTML(s.slice(last, m.index), terms);
+    out += '<em class="kb-em">' + kbHlHTML('——' + m[1], terms) + '</em>';
+    last = m.index + m[0].length;
+  }
+  if(last < s.length) out += kbHlHTML(s.slice(last), terms);
+  return out;
+}
+/* 结构化正文：把【小标题】/①要点/·子项/※提示 排成有层次的块（文字内容一字不变） */
+function kbBodyHTML(body, terms){
+  let h = '';
+  String(body||'').split('\n').forEach(function(raw){
+    const s = String(raw==null ? '' : raw).trim();
+    if(!s) return;
+    const m = s.match(/^【([^】]{1,24})】\s*([\s\S]*)$/);
+    if(m){
+      h += '<div class="kb-pl kb-pl-h"><span class="kb-ptag">'+kbHlHTML(m[1], terms)+'</span>'+
+           (m[2] ? kbRichHTML(m[2], terms) : '')+'</div>';
+      return;
+    }
+    if(/^[①-⑳]/.test(s)){
+      h += '<div class="kb-pl kb-pl-n"><i>'+esc(s.charAt(0))+'</i>'+kbRichHTML(s.slice(1), terms)+'</div>';
+      return;
+    }
+    if(/^[·•]/.test(s)){
+      h += '<div class="kb-pl kb-pl-s"><i>·</i>'+kbRichHTML(s.replace(/^[·•]\s*/,''), terms)+'</div>';
+      return;
+    }
+    if(/^[※★]/.test(s)){
+      h += '<div class="kb-pl kb-pl-w"><b>'+esc(s.charAt(0))+'</b>'+kbRichHTML(s.slice(1), terms)+'</div>';
+      return;
+    }
+    h += '<div class="kb-pl">'+kbRichHTML(s, terms)+'</div>';
+  });
+  return h;
+}
+/* ---------- 掌握度统计小工具 ---------- */
+/* 马哲按「填空题全部答对」算掌握；毛特 / 史纲按 ✓ 标记算 */
+function kbSeen(subj, ci, pi){ return !!((S.pol.kb.seen||{})[subj+'-'+ci+'-'+pi]); }
+function kbKpDone(ci, ki){
+  const k = KB.my[ci] && KB.my[ci].kps && KB.my[ci].kps[ki];
+  if(!k || !k.fills.length) return false;
+  return k.fills.every(function(f, fi){ return (S.pol.kb.fills||{})[kbFillKey('my',ci,ki,fi)] === 'right'; });
+}
+function kbItemDone(subj, ci, i){ return subj==='my' ? kbKpDone(ci, i) : kbSeen(subj, ci, i); }
+function kbChapStat(subj, ci, ch){
+  const src = subj==='my' ? ch.kps : ch.points;
+  let done = 0;
+  src.forEach(function(x, i){ if(kbItemDone(subj, ci, i)) done++; });
+  return { done:done, tot:src.length, pct:(src.length ? Math.round(done/src.length*100) : 0) };
+}
+function kbTotal(){
+  return KB.my.reduce(function(a,c){ return a+c.kps.length; },0)
+       + KB.mt.reduce(function(a,c){ return a+c.points.length; },0)
+       + KB.sg.reduce(function(a,c){ return a+c.points.length; },0);
+}
+/* 马哲没有真题频次，相关的筛选 / 排序自动退回默认 */
+function kbFilterOf(subj){ return (subj==='my' && KB_ONLY==='tf') ? 'all' : KB_ONLY; }
+function kbSortOf(subj){ return (subj==='my' && KB_SORT==='tf') ? 'def' : KB_SORT; }
+/* 最近搜索（独立 localStorage，不进 S，避免碰数据结构） */
+function kbSlogLoad(){
+  if(KB_SLOG_LOADED) return;
+  KB_SLOG_LOADED = true;
+  try{
+    const a = JSON.parse(localStorage.getItem(KB_SLOG_KEY) || '[]');
+    if(Array.isArray(a)) KB_SLOG = a.filter(function(x){ return typeof x==='string' && x.trim(); }).slice(0,8);
+  }catch(e){ KB_SLOG = []; }
+}
+function kbSlogPush(q){
+  const s = String(q||'').trim();
+  if(!s) return;
+  KB_SLOG = KB_SLOG.filter(function(x){ return x !== s; });
+  KB_SLOG.unshift(s);
+  if(KB_SLOG.length > 8) KB_SLOG = KB_SLOG.slice(0,8);
+  try{ localStorage.setItem(KB_SLOG_KEY, JSON.stringify(KB_SLOG)); }catch(e){}
+}
+function kbSlogClear(){
+  KB_SLOG = [];
+  try{ localStorage.removeItem(KB_SLOG_KEY); }catch(e){}
+  renderPol();
 }
 
 /* 一个「空」对应答案里的一个词（答案用空格分段，段数 === 空位数） */
@@ -4041,7 +4320,7 @@ function kbFillItemHTML(ci, ki, fi, f, fresh){
   let h = '<div class="kb-fill'+(r?(' '+r):'')+'">';
   h += '<div class="kb-fill-q">';
   segs.forEach(function(seg, i){
-    h += esc(seg);
+    h += kbHlHTML(seg, KB_HL);
     if(i < segs.length - 1){
       const v = (d.vs && d.vs[i] != null) ? d.vs[i] : '';
       const mark = (r && d.oks) ? (d.oks[i] ? ' ok' : ' bad') : '';
@@ -4066,7 +4345,7 @@ function kbFillItemHTML(ci, ki, fi, f, fresh){
 }
 function kbFillCard(ci, ki, k){
   let h = '<div class="kb-kp" id="kb-my-'+ci+'-'+ki+'">';
-  h += '<div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+esc(k.t)+'</span>'+
+  h += '<div class="kb-kp-hd"><span class="kb-kp-t">考点 '+k.kp+' '+kbHlHTML(k.t, KB_HL)+'</span>'+
        (k.star>=2?'<i class="kb-hot">高频</i>':'')+
        (k.star?('<span class="kb-star">'+'★'.repeat(Math.min(k.star,3))+'</span>'):'')+'</div>';
   k.fills.forEach(function(f, fi){ h += kbFillItemHTML(ci, ki, fi, f, false); });
@@ -4076,15 +4355,18 @@ function kbFillCard(ci, ki, k){
 
 function kbPointCard(subj, ci, pi, p){
   const key = subj+'-'+ci+'-'+pi;
-  const seen = !!((S.pol.kb.seen||{})[key]);
-  let h = '<div class="kb-kp'+(seen?' seen':'')+'" id="kb-'+key+'">';
-  h += '<div class="kb-kp-hd"><span class="kb-kp-t">'+ (p.kp?('考点 '+p.kp+' '):'') + esc(p.t) +'</span>'+
-       (p.star>=2?'<i class="kb-hot">高频</i>':(p.star?'<i class="kb-hot soft">次高频</i>':''))+
-       (p.star?('<span class="kb-star">'+'★'.repeat(Math.min(p.star,3))+'</span>'):'')+
+  const seen = kbSeen(subj, ci, pi);
+  const star = p.star||0, tf = (p.tf||0);
+  let h = '<div class="kb-kp'+(seen?' seen':'')+(star>=3?' lv3':(star>=2?' lv2':''))+'" id="kb-'+key+'">';
+  h += '<div class="kb-kp-hd"><span class="kb-kp-t">'+
+       (p.kp?('<i class="kb-kpn">考点 '+p.kp+'</i>'):'')+ kbHlHTML(p.t, KB_HL) +'</span>'+
+       (star>=2?'<i class="kb-hot">高频</i>':(star?'<i class="kb-hot soft">次高频</i>':''))+
+       (star?('<span class="kb-star">'+'★'.repeat(Math.min(star,3))+'</span>'):'')+
+       (subj!=='my' ? ('<i class="kb-tfb'+(tf?'':' zero')+'">'+(tf?('真题 '+tf+' 次'):'未考过')+'</i>') : '')+
        '<span class="sp"></span>'+
        '<button class="kb-seen'+(seen?' on':'')+'" data-act="kb-seen" data-k="'+key+'" title="标记已掌握">✓</button>'+
        '</div>';
-  h += '<div class="kb-kp-bd">'+ esc(p.body).replace(/\n/g,'<br>') +'</div>';
+  h += '<div class="kb-kp-bd">'+ kbBodyHTML(p.body, KB_HL) +'</div>';
   h += '</div>';
   return h;
 }
@@ -4443,24 +4725,34 @@ function kbTtsResumeBar(){
 }
 
 function kbSearchBar(){
+  kbSlogLoad();
   const nQ = KB_SEARCH.trim();
-  const total = KB.my.reduce(function(a,c){return a+c.kps.length;},0)
-              + KB.mt.reduce(function(a,c){return a+c.points.length;},0)
-              + KB.sg.reduce(function(a,c){return a+c.points.length;},0);
   let h = '<div class="polsearch">';
   h += '<div class="polsearch-box">';
   h += '<span class="polsearch-ic">'+ic('search',19,2)+'</span>';
-  h += '<input id="kbSearch" class="polsearch-in" placeholder="搜索三本书的知识点…" value="'+esc(KB_SEARCH)+'" autocomplete="off" spellcheck="false">';
+  h += '<input id="kbSearch" class="polsearch-in" placeholder="搜索三本书的知识点…（可多关键词）" value="'+esc(KB_SEARCH)+'" autocomplete="off" spellcheck="false">';
   if(nQ) h += '<button class="polsearch-x" data-act="kb-search-clear" aria-label="清空">'+ic('x',14,2.2)+'</button>';
-  else   h += '<span class="polsearch-badge">'+total+' 个知识点</span>';
+  else   h += '<span class="polsearch-badge">'+kbTotal()+' 个知识点</span>';
   h += '</div>';
-  if(!nQ) h += '<div class="polsearch-hint">搜「实践」「矛盾」「遵义会议」「中国式现代化」试试 · 马哲 / 毛特 / 史纲全覆盖</div>';
+  if(!nQ){
+    if(KB_SLOG.length){
+      h += '<div class="kb-slog"><span class="kb-slog-l">'+ic('history',13,2)+'最近搜过</span>'+
+           KB_SLOG.map(function(x){
+             return '<button class="kb-slog-c" data-act="kb-slog" data-q="'+esc(x)+'">'+esc(x)+'</button>';
+           }).join('')+
+           '<button class="kb-slog-x" data-act="kb-slog-clear">清空</button></div>';
+    }
+    h += '<div class="polsearch-hint">搜「实践」「矛盾」「遵义会议」「中国式现代化」试试 —— 马哲 / 毛特 / 史纲全覆盖。'+
+         '<br>多个词用空格分开＝必须同时命中；点结果直接跳到原知识点，还能一条条往下翻。</div>';
+  }
   h += '</div>';
   return h;
 }
 
 function kbSearchResults(q){
-  const nq = kbNorm(q);
+  const terms = kbTerms(q);
+  if(!terms.length) return '';
+  const hls = terms.map(function(t){ return t.raw; });
   const hits = [];
   ['my','mt','sg'].forEach(function(subj){
     KB[subj].forEach(function(ch, ci){
@@ -4468,18 +4760,32 @@ function kbSearchResults(q){
       items.forEach(function(it, ii){
         const title = it.t || '';
         const body = subj==='my'
-          ? it.fills.map(function(f){return f.q+' '+f.a;}).join(' ')
+          ? it.fills.map(function(f){ return f.q+' '+f.a+(f.tip?(' '+f.tip):''); }).join('\n')
           : (it.body||'');
-        if(kbNorm(title).indexOf(nq)>=0 || kbNorm(body).indexOf(nq)>=0){
-          hits.push({subj:subj, ci:ci, ii:ii, ch:ch.ch, t:title, snippet:kbSnippet(body, nq)});
-        }
+        const hay = kbNorm(title + ' ' + body);
+        for(let k=0;k<terms.length;k++){ if(hay.indexOf(terms[k].norm) < 0) return; }   /* 多词「与」 */
+        const inT = terms.some(function(t){ return kbNorm(title).indexOf(t.norm) >= 0; });
+        hits.push({ subj:subj, ci:ci, ii:ii, ch:ch.ch, t:title, snip:kbSnippet(body, terms),
+                    tf:(subj==='my'?0:(it.tf||0)), star:(it.star||0), kp:(it.kp||0),
+                    seen:kbItemDone(subj, ci, ii), inT:inT });
       });
     });
+  });
+  /* 相关度：标题命中的优先 → 真题频次高 → 重要度高 */
+  hits.sort(function(a,b){
+    if(a.inT !== b.inT) return a.inT ? -1 : 1;
+    if(a.tf !== b.tf)   return b.tf - a.tf;
+    return b.star - a.star;
   });
   const by = { all:hits.length, my:0, mt:0, sg:0 };
   hits.forEach(function(x){ by[x.subj]++; });
 
   let h = '<div class="sec kb-sres">';
+  h += '<div class="kb-sres-hd2">'+ic('search',15,2)+
+       '<b>'+by.all+' 条结果</b>'+
+       '<i class="kb-sres-q">'+esc(q)+'</i>'+
+       (terms.length>1 ? ('<span>· '+terms.length+' 个关键词同时命中</span>') : '')+
+       '<span>· 全库 '+kbTotal()+' 个知识点</span></div>';
   h += '<div class="kb-chips">'+
     [['all','全部'],['my','马哲'],['mt','毛特'],['sg','史纲']].map(function(f){
       return '<button class="kb-chip'+(KB_SRES_SUBJ===f[0]?' on':'')+'" data-act="kb-sres-subj" data-s="'+f[0]+'">'+
@@ -4487,24 +4793,84 @@ function kbSearchResults(q){
     }).join('')+'</div>';
 
   const list = KB_SRES_SUBJ==='all' ? hits : hits.filter(function(x){ return x.subj===KB_SRES_SUBJ; });
+  KB_SRES_LIST = list;                       /* 存快照：跳转后「上一条 / 下一条」就在这批里翻 */
   if(!list.length){
     h += '<div class="card empty">'+ic('search',30,1.6)+'<b>没有找到</b><span>换个关键词，或点上面「全部」看看。</span></div>';
   }
-  list.slice(0,150).forEach(function(x){
-    h += '<button class="kb-sres-item" data-act="kb-jump" data-subj="'+x.subj+'" data-ci="'+x.ci+'" data-ii="'+x.ii+'">'+
-         '<div class="kb-sres-t">'+esc(x.t)+'</div>'+
-         '<div class="kb-sres-m"><i class="kb-sres-tag">'+KB_META[x.subj].name+'</i>'+esc(x.ch)+'</div>'+
-         '<div class="kb-sres-s">'+esc(x.snippet)+'</div></button>';
+  const CAP = 150;
+  list.slice(0, CAP).forEach(function(x, n){
+    h += '<button class="kb-sres-item'+(x.seen?' seen':'')+'" data-act="kb-jump" data-i="'+n+'"'+
+         ' data-subj="'+x.subj+'" data-ci="'+x.ci+'" data-ii="'+x.ii+'">'+
+         '<div class="kb-sres-t">'+kbHlHTML(x.t, hls)+'</div>'+
+         '<div class="kb-sres-m"><i class="kb-sres-tag">'+KB_META[x.subj].name+'</i>'+
+           (x.kp?('<i class="kb-sres-n">考点 '+x.kp+'</i>'):'')+
+           esc(x.ch)+(x.tf?(' · 真题 '+x.tf+' 次'):'')+(x.seen?' · 已掌握':'')+'</div>'+
+         '<div class="kb-sres-s">'+kbHlHTML(x.snip, hls)+'</div></button>';
   });
+  if(list.length > CAP){
+    h += '<div class="kb-sres-more">共 '+list.length+' 条，先列出前 '+CAP+' 条 —— 再补一个关键词就会更准。</div>';
+  }
   h += '</div>';
   return h;
 }
-function kbSnippet(body, nq){
-  const plain = String(body||'').replace(/\n/g,' ');
-  const pos = kbNorm(plain).indexOf(nq);
-  if(pos<0) return plain.slice(0,48)+(plain.length>48?'…':'');
-  const s = Math.max(0, pos-14), e = Math.min(plain.length, pos+30);
+/* 摘要：优先围绕第一个能在原文里定位到的关键词截取 */
+function kbSnippet(body, terms){
+  const plain = String(body||'').replace(/\n/g,' ').replace(/\s+/g,' ')
+                        .replace(/[【】]/g,'').trim();     /* 摘要去掉行首【】，跟卡片排版保持一致 */
+  let pos = -1;
+  for(let i=0;i<(terms||[]).length;i++){
+    const p = plain.toLowerCase().indexOf(String(terms[i].raw).toLowerCase());
+    if(p >= 0){ pos = p; break; }
+  }
+  if(pos < 0) return plain.slice(0,52)+(plain.length>52?'…':'');
+  const s = Math.max(0, pos-16), e = Math.min(plain.length, pos+36);
   return (s>0?'…':'')+plain.slice(s,e)+(e<plain.length?'…':'');
+}
+/* ---------- 搜索跳转：保留搜索会话，可一条条往下翻 ---------- */
+function kbScrollTo(subj, ci, ii){
+  /* 三本书的知识点卡片 id 都是 kb-<科目>-<章>-<序号>，这里统一寻址 */
+  const node = el('kb-'+subj+'-'+ci+'-'+ii);
+  if(!node) return false;
+  if(node.scrollIntoView) node.scrollIntoView({ behavior:'smooth', block:'center' });
+  if(node.classList){
+    node.classList.add('kb-flash');
+    setTimeout(function(){ if(node.classList) node.classList.remove('kb-flash'); }, 1600);
+  }
+  return true;
+}
+function kbOpenHit(list, k, q){
+  if(!list || !list.length) return;
+  const i = Math.max(0, Math.min(list.length-1, Math.round(Number(k)||0)));
+  const x = list[i];
+  if(!x) return;
+  KB_GO = { q:String(q||''), list:list, i:i };
+  KB_SRES_OPEN = false;
+  KB_HL = kbTerms(q).map(function(t){ return t.raw; });
+  KB_WRONGMODE = false; KB_QUIZ = null;
+  POL_SUB = x.subj;
+  KB_OPEN[x.subj+'-c-'+x.ci] = true;
+  if(x.subj==='sg') KB_OPEN['sg-a-'+x.ci] = true;
+  kbSlogPush(q);
+  renderPol();
+  setTimeout(function(){ kbScrollTo(x.subj, x.ci, x.ii); }, 70);
+}
+function kbSearchNavBar(){
+  if(!KB_GO || !KB_GO.list || !KB_GO.list.length) return '';
+  const n = KB_GO.list.length;
+  const i = Math.max(0, Math.min(n-1, Math.round(Number(KB_GO.i)||0)));
+  const x = KB_GO.list[i];
+  if(!x) return '';
+  let h = '<div class="kb-snav">'+ic('search',16,2);
+  h += '<span class="kb-snav-t">搜索 <b>'+esc(KB_GO.q)+'</b> · 第 <i class="kb-snav-p">'+(i+1)+'/'+n+'</i> 条 · '+
+       '已跳到「'+esc(x.t)+'」（'+(KB_META[x.subj]?KB_META[x.subj].name:'')+'）</span>';
+  h += '<button class="kb-snav-b" data-act="kb-nav" data-d="-1"'+(i<=0?' disabled':'')+'>'+
+       ic('left',13,2.2)+'上一条</button>';
+  h += '<button class="kb-snav-b pri" data-act="kb-nav" data-d="1"'+(i>=n-1?' disabled':'')+'>下一条'+
+       ic('right',13,2.2)+'</button>';
+  h += '<button class="kb-snav-b" data-act="kb-sres-open">返回结果</button>';
+  h += '<button class="kb-snav-x" data-act="kb-search-clear" aria-label="结束搜索">'+ic('x',13,2.2)+'</button>';
+  h += '</div>';
+  return h;
 }
 
 function kbWrongPanel(){
@@ -4619,15 +4985,12 @@ function kbReveal(key){
   renderPol();
 }
 function kbJump(subj, ci, ii){
-  KB_SEARCH = ''; KB_WRONGMODE = false; KB_QUIZ = null; KB_SRES_SUBJ = 'all';
+  KB_WRONGMODE = false; KB_QUIZ = null;
   POL_SUB = subj;
   KB_OPEN[subj+'-c-'+ci] = true;
+  if(subj==='sg') KB_OPEN['sg-a-'+ci] = true;
   renderPol();
-  setTimeout(function(){
-    const node = el('kb-'+(subj==='my' ? ('my-'+ci+'-'+ii) : (ci+'-'+ii)));
-    if(node) node.scrollIntoView({ behavior:'smooth', block:'center' });
-    if(node){ node.classList.add('kb-flash'); setTimeout(function(){ node.classList.remove('kb-flash'); }, 1600); }
-  }, 60);
+  setTimeout(function(){ kbScrollTo(subj, ci, ii); }, 60);
 }
 function kbCopyAudio(ci){
   const ch = KB.sg[ci]; if(!ch || !ch.audio) return;
@@ -5047,7 +5410,7 @@ document.addEventListener('click', function(ev){
       break;
     }
     /* ---- 政治知识库 ---- */
-    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; POL_DONE={}; POL_IDX=polSnapFresh(polDeck(),0); polSaveUI(); save(); renderPol(); break; }
+    case 'pol-sub':   { POL_SUB=b.dataset.s; KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_WRONGMODE=false; KB_QUIZ=null; KB_GO=null; KB_HL=[]; KB_SRES_OPEN=true; POL_DONE={}; POL_IDX=polSnapFresh(polDeck(),0); polSaveUI(); save(); renderPol(); break; }
     case 'kb-toggle': { const kk=b.dataset.k; KB_OPEN[kk]=!KB_OPEN[kk]; if(KB_OPEN['__all']) KB_OPEN['__all']=false; renderPol(); break; }
     case 'kb-expand-all':   { KB_OPEN={'__all':true}; renderPol(); break; }
     case 'kb-collapse-all': { KB_OPEN={}; renderPol(); break; }
@@ -5058,9 +5421,20 @@ document.addEventListener('click', function(ev){
     case 'kb-seen':   { const sk=b.dataset.k; S.pol.kb.seen[sk]=!S.pol.kb.seen[sk]; save(); renderPol(); break; }
     case 'kb-wrong-open': { KB_WRONGMODE=true; POL_DONE={}; renderPol(); break; }
     case 'kb-wrong-back': { KB_WRONGMODE=false; renderPol(); break; }
-    case 'kb-search-clear': { KB_SEARCH=''; KB_SRES_SUBJ='all'; renderPol(); break; }
+    case 'kb-search-clear': { KB_SEARCH=''; KB_SRES_SUBJ='all'; KB_GO=null; KB_HL=[]; KB_SRES_OPEN=true; renderPol(); break; }
     case 'kb-sres-subj': { KB_SRES_SUBJ=b.dataset.s; renderPol(); break; }
-    case 'kb-jump':   { kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii); break; }
+    case 'kb-sres-open': { KB_SRES_OPEN=true; KB_HL=[]; renderPol(); break; }
+    case 'kb-slog':      { KB_SEARCH=String(b.dataset.q||''); KB_SRES_SUBJ='all'; KB_GO=null; KB_HL=[]; KB_SRES_OPEN=true; renderPol(); break; }
+    case 'kb-slog-clear':{ kbSlogClear(); break; }
+    case 'kb-sort':      { const sv=b.dataset.v; if(sv==='def'||sv==='star'||sv==='tf') KB_SORT=sv; renderPol(); break; }
+    case 'kb-only':      { const ov=b.dataset.v; if(ov==='all'||ov==='hot'||ov==='unseen'||ov==='tf') KB_ONLY=ov; renderPol(); break; }
+    case 'kb-nav':       { if(KB_GO) kbOpenHit(KB_GO.list, KB_GO.i + (Number(b.dataset.d)||0), KB_GO.q); break; }
+    case 'kb-jump': {
+      const ji = (b.dataset.i != null && b.dataset.i !== '') ? Number(b.dataset.i) : NaN;
+      if(KB_SRES_LIST && KB_SRES_LIST.length && isFinite(ji)) kbOpenHit(KB_SRES_LIST, ji, KB_SEARCH.trim());
+      else kbJump(b.dataset.subj, +b.dataset.ci, +b.dataset.ii);
+      break;
+    }
     case 'kb-copy':   { kbCopyAudio(+b.dataset.ci); break; }
     case 'tts-toggle': { ttsToggle(Number(b.dataset.ci)); break; }
     case 'tts-restart':{ ttsToggle(Number(b.dataset.ci), 'start'); break; }
