@@ -900,11 +900,13 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .mk-frow + .mk-frow{margin-top:11px}
 .mk-fl{font-size:12.5px;font-weight:700;color:var(--ink2);flex:1;min-width:0;line-height:1.45}
 .mk-fl i{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--faint)}
-.mk-step{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:11px;overflow:hidden;flex:none}
-.mk-step button{width:34px;height:34px;display:grid;place-items:center;color:var(--purple)}
-.mk-step button:active{background:var(--purple-soft)}
-.mk-step button:disabled{color:var(--line);cursor:not-allowed}
-.mk-step b{min-width:26px;text-align:center;font-size:15px;font-weight:800;color:var(--ink)}
+.mk-qgrid{margin-top:9px}
+.mk-seline{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:7px 0 2px;font-size:11.5px;color:var(--muted)}
+.mk-sebar{flex:1;min-width:70px;height:6px;border-radius:4px;background:var(--bg2);overflow:hidden}
+.mk-sebar i{display:block;height:100%;border-radius:4px;transition:width .18s ease}
+.mk-qall{font-size:11.5px;font-weight:700;color:var(--purple);cursor:pointer;padding:3px 9px;
+  border-radius:8px;background:var(--purple-soft);white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.mk-qall:active{opacity:.7}
 .mk-fv{font-size:12.5px;font-weight:800;color:var(--ink);flex:none;min-width:52px;text-align:right}
 .mk-fv i{font-style:normal;font-size:10.5px;color:var(--faint);font-weight:600}
 .mk-svgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
@@ -2684,24 +2686,26 @@ function mkRefresh(){
   ['ch','bl'].forEach(function(k){
     const d = mockSecDef(k);
     const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
-    const nEl = el('mkv_'+k), pEl = el('mkp_'+k);
-    if(nEl) nEl.textContent = String(right);
+    const pEl = el('mkp_'+k);
     if(pEl) pEl.innerHTML = (right*d.per)+'<i>/'+d.pt+'</i>';
+    const sEl = el('mks_'+k);
+    if(sEl) sEl.innerHTML = mockSelStat(k);
+    /* 选中态：以状态为准回填，避免快速连点后视觉与数据不一致 */
+    const grid = el('mkq_'+k);
+    if(grid){
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-act="mk-qpick"]'), function(bt){
+        const i = Number(bt.dataset.i);
+        bt.classList.toggle('on', i < right);
+        bt.setAttribute('aria-pressed', i < right ? 'true' : 'false');
+      });
+    }
   });
   const svEl = el('mkp_sv');
   if(svEl) svEl.innerHTML = nfm(mockSecGot(MKF, mockSecDef('sv')))+'<i>/'+mockSecDef('sv').pt+'</i>';
   const sumEl = el('mkSum');
   if(sumEl) sumEl.innerHTML = mkSumHTML();
   const root = el('modal');
-  if(root){
-    ['ch','bl'].forEach(function(k){
-      const d = mockSecDef(k);
-      const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
-      Array.prototype.forEach.call(root.querySelectorAll('[data-act="mk-step"][data-k="'+k+'"]'), function(bt){
-        bt.disabled = (Number(bt.dataset.d) < 0) ? (right<=0) : (right>=d.q);
-      });
-    });
-  }
+  if(root && !root.innerHTML) return;
 }
 function mkSumHTML(){
   const sc = mockScore(MKF);
@@ -2712,6 +2716,27 @@ function mkSumHTML(){
     '<span class="mk-sp"></span>'+
     '<span class="mk-sumr" style="color:'+col.f+'">'+(sc.rate===null?'—':Math.round(sc.rate*100)+'%')+'</span>'+
     '</div>';
+}
+/* 选择/填空：点题号选「做对的题」（和真题的错题勾选一致的操作方式） */
+function mockSelHTML(k){
+  const d = mockSecDef(k);
+  const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
+  const from = 1;
+  let s = '<div class="qgrid mk-qgrid" id="mkq_'+k+'">';
+  for(let i=0;i<d.q;i++){
+    s += '<button type="button" class="qchip'+(i<right?' on':'')+'" data-act="mk-qpick" data-k="'+k+'" data-i="'+i+'" aria-pressed="'+(i<right?'true':'false')+'" aria-label="第 '+(from+i)+' 题">'+(from+i)+'</button>';
+  }
+  return s + '</div>';
+}
+function mockSelStat(k){
+  const d = mockSecDef(k);
+  const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
+  const r = d.q>0 ? right/d.q : 0;
+  return '<b style="color:'+(right>0?'var(--ink)':'var(--faint)')+'">已选 '+right+' / '+d.q+' 题</b>'+
+         '<span class="mk-sebar"><i style="width:'+Math.round(r*100)+'%;background:'+accColor(r).f+'"></i></span>'+
+         '<span style="color:var(--muted)">得 '+right*d.per+' / '+d.pt+' 分</span>'+
+         '<span class="mk-sp"></span>'+
+         '<span data-act="mk-qall" data-k="'+k+'" class="mk-qall">'+(right>=d.q?'全不选':'全选')+'</span>';
 }
 function mockFormHTML(){
   if(!MKF) return '';
@@ -2726,14 +2751,11 @@ function mockFormHTML(){
     const d = mockSecDef(k);
     const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
     h += '<div class="mk-frow">'+
-         '<span class="mk-fl">答对题数 · '+d.n+'<i>'+d.q+' 题 × '+d.per+' 分，共 '+d.pt+' 分</i></span>'+
-         '<span class="mk-step">'+
-           '<button type="button" data-act="mk-step" data-k="'+k+'" data-d="-1"'+(right<=0?' disabled':'')+' aria-label="减一题">'+ic('minus',14,2.6)+'</button>'+
-           '<b id="mkv_'+k+'">'+right+'</b>'+
-           '<button type="button" data-act="mk-step" data-k="'+k+'" data-d="1"'+(right>=d.q?' disabled':'')+' aria-label="加一题">'+ic('plus',14,2.6)+'</button>'+
-         '</span>'+
+         '<span class="mk-fl">'+d.n+'<i>'+d.q+' 题 × '+d.per+' 分，共 '+d.pt+' 分 · <b style="color:var(--green)">点亮的＝做对的题</b>，没点的算错</i></span>'+
          '<span class="mk-fv" id="mkp_'+k+'">'+(right*d.per)+'<i>/'+d.pt+'</i></span>'+
-         '</div>';
+         '</div>'+
+         mockSelHTML(k)+
+         '<div class="mk-seline" id="mks_'+k+'">'+mockSelStat(k)+'</div>';
   });
   h += '<div class="mk-frow">'+
        '<span class="mk-fl">'+sv.n+'逐题得分<i>'+sv.q+' 题（17—22）共 '+sv.pt+' 分，单题上限 '+sv.per+' 分</i></span>'+
@@ -5544,6 +5566,28 @@ document.addEventListener('click', function(ev){
       }
       closeModal();
       if(TAB==='board') renderBoard();
+      break;
+    }
+    case 'mk-qpick': {
+      if(!MKF) break;
+      const k = b.dataset.k;
+      const d = mockSecDef(k); if(!d) break;
+      const i = Math.max(0, Math.min(d.q - 1, Math.round(Number(b.dataset.i)||0)));
+      if(!MKF[k]) MKF[k] = { right: 0 };
+      const cur = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k].right)||0)));
+      /* 点亮的题号是「前 N 题」连续前缀，跟真题勾错题一样点一下就切换：
+         点第 i 个时，若它已亮则取消它及之后 → N=i；若没亮则连它一起点亮 → N=i+1 */
+      MKF[k].right = (i < cur) ? i : (i + 1);
+      mkRefresh();
+      break;
+    }
+    case 'mk-qall': {
+      if(!MKF) break;
+      const k = b.dataset.k, d = mockSecDef(k); if(!d) break;
+      if(!MKF[k]) MKF[k] = { right: 0 };
+      const cur = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k].right)||0)));
+      MKF[k].right = (cur >= d.q) ? 0 : d.q;
+      mkRefresh();
       break;
     }
     case 'mk-step':  { mockStep(b.dataset.k, Number(b.dataset.d)); break; }
