@@ -6096,7 +6096,11 @@ document.addEventListener('input', function(ev){
     if(isFinite(qi) && qi>=0 && qi<d.q){
       const raw = String(mkr.value||'').trim();
       const v = raw==='' ? 0 : (Number(raw)||0);
-      MKF.sv.scores[qi] = Math.max(0, Math.min(d.per, v));
+      const safe = Math.max(0, Math.min(d.per, v));
+      MKF.sv.scores[qi] = safe;
+      /* 越界（>15 / 负数）时把框里显示的数字也拉回合法值，
+         否则会出现「框里写着 99、小计却按 15 算」的不一致 */
+      if(raw !== '' && v !== safe) mkr.value = String(safe);
       mkRefresh();
     }
     return;
