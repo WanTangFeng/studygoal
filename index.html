@@ -242,6 +242,26 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .mrow .mt span{font-size:12px;color:var(--muted);line-height:1.45;display:block}
 .mrow.danger .mi{background:var(--red-soft);color:var(--red)}
 .mrow.danger .mt b{color:var(--red)}
+/* 自动快照面板 */
+.snapbox{border-top:1px solid var(--line2);padding:12px 14px 13px;background:var(--bg2)}
+.snap-hd{display:flex;flex-direction:column;gap:2px;margin-bottom:9px}
+.snap-hd b{font-size:13.5px;font-weight:750}
+.snap-hd span{font-size:11.5px;color:var(--muted);line-height:1.45}
+.snap-row{display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  padding:9px 10px;margin-bottom:7px;border:1px solid var(--line2);border-radius:11px;
+  background:var(--card);cursor:pointer}
+.snap-row:last-of-type{margin-bottom:0}
+.snap-row:active{transform:scale(.995)}
+.snap-n{width:23px;height:23px;border-radius:8px;flex:none;display:grid;place-items:center;
+  font-size:11.5px;font-weight:750;background:var(--purple-soft);color:var(--purple)}
+.snap-mid{flex:1;min-width:0}
+.snap-mid b{display:block;font-size:12.8px;font-weight:700;line-height:1.4}
+.snap-mid i{display:block;font-size:11px;color:var(--muted);font-style:normal;line-height:1.45;margin-top:1px}
+.snap-go{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:11.5px;
+  font-weight:700;color:var(--purple);white-space:nowrap}
+.snap-empty{font-size:12px;color:var(--muted);line-height:1.6;padding:2px 0 8px}
+.snap-tip{display:flex;gap:5px;align-items:flex-start;margin-top:9px;
+  font-size:11px;color:var(--faint);line-height:1.55}
 .steps{counter-reset:s}
 .step{display:flex;gap:11px;padding:11px 0;border-bottom:1px dashed var(--line2)}
 .step:last-child{border-bottom:none}
@@ -1537,16 +1557,54 @@ function restoreBak(i){
   if(!n || !n.cats.length){ toast('快照里没有分类数据'); return; }
   S = n;
   LOAD_ERR = null;
-  save(true);          /* 恢复本身不再压栈，避免把好快照挤掉 */
+  /* 恢复前先把当前状态压进快照栈：万一恢复的这份反而不对，还能再退回来 */
+  save();
   WEEK_CURSOR = mondayOf(todayStr());
   if(typeof polApplyUI === 'function') polApplyUI();
-  TAB = 'today';
-  ['today','board','papers','pol','me'].forEach(function(k){ el('tab-'+k).classList.toggle('hide', k!=='today'); });
-  renderNav(); renderTopStrip(); renderToday(); renderBoard();
-  if(typeof renderPapers === 'function') renderPapers();
-  if(typeof renderPol === 'function') renderPol();
-  if(typeof renderMe === 'function') renderMe();
-  toast('已恢复到快照 #' + (i+1) + '（' + n.cats.length + ' 个分类）');
+  curDay = todayStr();
+  go('today');
+  toast('已恢复到快照 #' + (i+1) + '（' + n.cats.length + ' 个分类 · ' + bakChecks(n) + ' 次打卡）');
+}
+/* 数一份数据里总共有多少次打卡，用于快照列表和恢复提示 */
+function bakChecks(d){
+  let tot = 0;
+  const cs = (d && d.cats) ? d.cats : [];
+  cs.forEach(function(c){
+    const ck = c && c.checkins;
+    if(ck && typeof ck === 'object') tot += Object.keys(ck).length;
+  });
+  return tot;
+}
+function bakAskRestore(i){
+  let raw = null;
+  try { raw = localStorage.getItem(bakKey(i)); } catch(e){}
+  if(!raw){ toast('这一份快照不存在'); return; }
+  let d = null;
+  try { d = JSON.parse(raw); } catch(e){ toast('快照损坏，无法恢复'); return; }
+  const curC = S.cats.length, curK = totalCheckins();
+  const bakC = (d && d.cats) ? d.cats.length : 0, bakK = bakChecks(d);
+  /* 快照比当前更"空"时给红色警告，避免用户点错反而丢得更多 */
+  const thinner = (bakC < curC) || (bakK < curK);
+  openModal('恢复这份快照？',
+    '<div style="display:flex;gap:11px;align-items:flex-start">' +
+    '<div style="color:' + (thinner ? 'var(--red)' : 'var(--purple)') + ';flex:none">' +
+      ic(thinner ? 'alert' : 'refresh', 22) + '</div>' +
+    '<div style="font-size:13px;color:var(--ink2);line-height:1.7">' +
+    '当前：<b>' + curC + ' 个分类</b> · <b>' + curK + ' 次打卡</b><br>' +
+    '快照 #' + (i+1) + '：<b>' + bakC + ' 个分类</b> · <b>' + bakK + ' 次打卡</b><br><br>' +
+    (thinner
+      ? '<b style="color:var(--red)">注意：这份快照的内容比现在少。</b>恢复后当前数据会被替换。'
+      : '恢复后当前数据会被这份快照替换。') +
+    '<br>不过恢复之前，当前数据会自动存成一份新快照，<b>点错了还能再退回来</b>。</div></div>',
+    '<button class="btn btn-ghost" data-act="closem">取消</button>' +
+    '<button class="btn ' + (thinner ? 'btn-danger' : 'btn-pri') + '" id="doRestore">' +
+      ic('refresh', 16) + '确认恢复</button>',
+    function(){
+      el('doRestore').addEventListener('click', function(){
+        closeModal();
+        restoreBak(i);
+      });
+    });
 }
 let LOAD_ERR = null;      /* 读取异常时留在这里，供界面提示 */
 function load(){
@@ -3553,6 +3611,7 @@ function renderMe(){
     mrow('down','导出 JSON 备份','把全部分类、打卡、子计划、周报复盘存成一个文件','export') +
     mrow('up','导入恢复','选择备份文件，覆盖前会先确认，不限条数','import') +
     mrow('refresh','检测并迁移旧版本数据','从旧版本的存储键里找回分类和打卡','migrate') +
+    snapBox() +
     '</div></div>';
 
   h += '<div class="sec"><div class="sec-hd">'+ic('phone',16)+'<h2>装到手机主屏幕</h2></div>' +
@@ -3591,6 +3650,33 @@ function mrow(icon, title, sub, act, disabled){
   return '<button class="mrow'+(act==='clearseed'?' danger':'')+'" data-act="'+act+'"'+(disabled?' disabled style="opacity:.42"':'')+'>' +
     '<span class="mi">'+ic(icon,17)+'</span><span class="mt"><b>'+title+'</b><span>'+sub+'</span></span>' +
     '<span style="color:var(--faint)">'+ic('right',16)+'</span></button>';
+}
+/* 自动快照面板：每次保存前的旧数据都在这，点一下就能退回去 */
+function snapBox(){
+  const L = bakList();
+  let h = '<div class="snapbox">' +
+    '<div class="snap-hd"><b>自动快照</b>' +
+    '<span>每次保存前自动留一份，最多 3 份</span></div>';
+  if(!L.length){
+    h += '<div class="snap-empty">还没有快照。等你改动过一次数据，这里就会出现。</div>';
+  } else {
+    L.forEach(function(x){
+      h += '<button class="snap-row" data-act="snap-restore" data-i="'+x.i+'">' +
+        '<span class="snap-n">'+ (x.i+1) +'</span>' +
+        '<span class="snap-mid">' +
+          '<b>'+x.cats+' 个分类 · '+x.checks+' 次打卡</b>' +
+          '<i>'+ (x.last ? ('最后打卡 '+esc(x.last)) : '没有打卡记录') +
+            ' · '+x.papers+' 份真题 · '+x.mocks+' 次模考' +
+            ' · '+(x.size/1024).toFixed(1)+' KB</i>' +
+        '</span>' +
+        '<span class="snap-go">'+ic('refresh',14)+'恢复</span>' +
+      '</button>';
+    });
+  }
+  h += '<div class="snap-tip">' + ic('shield',13) +
+    ' 快照也存在这台设备的浏览器里，清缓存会一起没掉。重要的进度请照上面导出成文件。</div>';
+  h += '</div>';
+  return h;
 }
 function step(n, t){ return '<div class="step"><div class="sn">'+n+'</div><div class="sd">'+t+'</div></div>'; }
 
@@ -6423,6 +6509,7 @@ case 'qpick': {
     case 'me-export': { exportJSON(); break; }
     case 'import':   importJSON(); break;
     case 'migrate':  doMigrate(); break;
+    case 'snap-restore': bakAskRestore(Number(b.dataset.i)||0); break;
     case 'clearseed':clearSeed(); break;
   }
 });
