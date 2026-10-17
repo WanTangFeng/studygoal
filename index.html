@@ -392,6 +392,13 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .qchip:hover{border-color:var(--muted)}
 .qchip.on{background:var(--red-soft);border-color:var(--red);color:var(--red)}
 .pmat-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+/* 左滑改分值：提示 + 行反馈 */
+.pm-tip{font-size:11.5px;color:var(--faint);margin:0 0 7px 2px;line-height:1.5}
+tr.pm-swipe{transition:background .12s;-webkit-user-select:none;user-select:none}
+tr.pm-swipe > td{transition:background .12s}
+tr.pm-swipe.pm-on > td{background:var(--purple-soft)}
+tr.pm-swipe.pm-go > td{background:var(--purple-soft)}
+tr.pm-swipe.pm-go > td:first-child{box-shadow:inset 3px 0 0 var(--purple);color:var(--purple)}
 .pmat{border-collapse:separate;border-spacing:3px;font-size:12px;min-width:100%}
 .pmat th{font-size:10.5px;font-weight:700;color:var(--muted);padding:2px 4px;text-align:center;white-space:nowrap;line-height:1.3}
 .pmat th.yh{text-align:left;padding-left:2px}
@@ -874,7 +881,10 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .mk-spark{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 11px 5px;margin-bottom:10px;box-shadow:var(--sh-sm)}
 .mk-spark svg{width:100%;height:auto;display:block}
 .mk-list{display:flex;flex-direction:column;gap:9px}
-.mk-item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--sh-sm)}
+.mk-item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--sh-sm);
+  transition:transform .14s ease,background .12s;-webkit-user-select:none;user-select:none}
+.mk-item.mk-on{background:var(--purple-soft)}
+.mk-item.mk-go{transform:translateX(-10px)}
 .mk-itop{display:flex;align-items:baseline;gap:8px}
 .mk-name{font-size:14.5px;font-weight:750;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mk-date{font-size:11px;color:var(--faint);flex:none;font-weight:600}
@@ -901,12 +911,25 @@ textarea:focus{outline:none;border-color:var(--purple-line);background:#fff;box-
 .mk-fl{font-size:12.5px;font-weight:700;color:var(--ink2);flex:1;min-width:0;line-height:1.45}
 .mk-fl i{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--faint)}
 .mk-qgrid{margin-top:9px}
+/* 模拟卷的题号点亮色＝绿色（真题那套 .qchip.on 是红色，靠这个更高特异性的选择器只覆盖模拟卷） */
+.mk-qgrid .qchip.on{background:var(--green-soft);border-color:var(--green);color:var(--green)}
 .mk-seline{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:7px 0 2px;font-size:11.5px;color:var(--muted)}
 .mk-sebar{flex:1;min-width:70px;height:6px;border-radius:4px;background:var(--bg2);overflow:hidden}
-.mk-sebar i{display:block;height:100%;border-radius:4px;transition:width .18s ease}
+.mk-sebar i{display:block;height:100%;border-radius:4px;background:var(--green);transition:width .18s ease}
 .mk-qall{font-size:11.5px;font-weight:700;color:var(--purple);cursor:pointer;padding:3px 9px;
   border-radius:8px;background:var(--purple-soft);white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .mk-qall:active{opacity:.7}
+/* ============ 修改分值弹窗 ============ */
+.se-rows{display:flex;flex-direction:column;gap:8px}
+.se-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:12px;background:var(--bg2)}
+.se-n{flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--ink);line-height:1.35}
+.se-n i{display:block;font-style:normal;font-size:11px;font-weight:600;color:var(--faint);margin-top:2px}
+.se-in{display:flex;align-items:center;gap:5px;flex:none}
+.se-in input{width:64px;height:36px;text-align:center;border-radius:9px;border:1px solid var(--line);
+  background:var(--card);font-size:14px;font-weight:800;color:var(--ink)}
+.se-in i{font-style:normal;font-size:11.5px;font-weight:600;color:var(--faint)}
+.se-sum{margin-top:11px;padding:10px 12px;border-radius:12px;background:var(--grad-soft);
+  border:1px solid var(--purple-line);font-size:12.5px;color:var(--purple);line-height:1.6}
 .mk-fv{font-size:12.5px;font-weight:800;color:var(--ink);flex:none;min-width:52px;text-align:right}
 .mk-fv i{font-style:normal;font-size:10.5px;color:var(--faint);font-weight:600}
 .mk-svgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
@@ -1197,7 +1220,34 @@ function math2Secs(year){
     {k:'sv',s:'解答',n:'解答题',q:svQ,from:chQ+blQ+1,to:chQ+blQ+svQ,mode:'subq',pt:svPt,maxPer:15}
   ];
 }
-function secsOf(subj, year){ return (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs; }
+/* 该科目该年份的「出厂」结构：数二按年份分两套，其余科目固定 */
+function secsBase(subj, year){
+  return (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs;
+}
+function secOvOf(subj, year){
+  if(year==null) return null;
+  /* normalize() 期间 S 还是 null，必须容错，否则整条加载链会崩 */
+  const S0 = (typeof S !== 'undefined' && S) ? S : null;
+  const m = S0 ? S0.secOv : null;
+  if(!m || typeof m !== 'object') return null;
+  const o = m[subj+'@'+year];
+  return (o && typeof o === 'object') ? o : null;
+}
+/* 有效结构 = 出厂结构 + 用户改过的满分（题数/题号范围一律不动） */
+function secsOf(subj, year){
+  const base = secsBase(subj, year);
+  const ov = secOvOf(subj, year);
+  if(!ov) return base;
+  return base.map(function(d){
+    const p = Number(ov[d.k]);
+    if(!(isFinite(p) && p > 0)) return d;
+    const out = {};
+    for(const kk in d){ if(Object.prototype.hasOwnProperty.call(d, kk)) out[kk] = d[kk]; }
+    out.pt = Math.round(p*10)/10;
+    if(d.mode === 'obj' && d.q > 0) out.per = Math.round(out.pt / d.q * 100) / 100;
+    return out;
+  });
+}
 function subqSum(arr, maxPer){ let s=0; (arr||[]).forEach(function(x){ const n=Number(x); if(isFinite(n)&&n>0) s+=Math.min(n,maxPer); }); return s; }
 const SUBJ_ORDER = ['eng2','math2','cs408','pol'];
 const REASONS = {
@@ -1208,7 +1258,7 @@ function paperFull(subj){
   let s=0; PAPERS[subj].secs.forEach(function(x){ s+=x.pt; }); return s;
 }
 function secDef(subj, k, year){
-  const list = (subj==='math2' && year!=null) ? math2Secs(year) : PAPERS[subj].secs;
+  const list = secsOf(subj, year);
   const a = list.filter(function(x){return x.k===k;}); return a[0]||null;
 }
 function secAcc(subj, k, v, year){
@@ -1316,13 +1366,27 @@ let TAB = 'today';
 let WEEK_CURSOR = mondayOf(todayStr());
 
 function blank(){
-  return { version:SCHEMA, cats:[], papers:[], mocks:[], weekly:{}, vocab:{}, lastYear:0, lastYearBy:{}, tts:{ prog:{}, last:null }, ui:{ bannerAck:0, ttsRate:1 },
+  return { version:SCHEMA, cats:[], papers:[], mocks:[], secOv:{}, weekly:{}, vocab:{}, lastYear:0, lastYearBy:{}, tts:{ prog:{}, last:null }, ui:{ bannerAck:0, ttsRate:1 },
     pol:{ stars:{}, res:{}, wrong:{}, fav:{}, hist:{}, settings:{remindDays:3},
           ui:{ kind:'practice', status:'all', filter:'all', type:'all', pos:0, deck:'', sheet:false },
           exam:null,
           kb:{ fills:{}, wrong:{}, seen:{} } }, createdAt:new Date().toISOString() };
 }
 /* ---------- 模拟卷（看板 · 数学二）数据清洗 ---------- */
+/* 存档清洗：把 {right,on} 归一成合法题号数组；只有 right 的老数据展开成前 N 题 */
+function normOn(rec, q){
+  const right = Math.max(0, Math.min(q, Math.round(Number(rec && rec.right)||0)));
+  if(rec && Array.isArray(rec.on)){
+    const seen = {}, out = [];
+    rec.on.forEach(function(x){
+      const n = Math.round(Number(x)||0);
+      if(n>=1 && n<=q && !seen[n]){ seen[n] = 1; out.push(n); }
+    });
+    return out.sort(function(a,b){ return a-b; });
+  }
+  const out = []; for(let i=1;i<=right;i++) out.push(i);
+  return out;
+}
 function normalizeMocks(arr){
   const out = [];
   if(!Array.isArray(arr)) return out;
@@ -1332,8 +1396,7 @@ function normalizeMocks(arr){
     if(!name) return;
     const date = /^\d{4}-\d{2}-\d{2}$/.test(m.date||'') ? m.date : todayStr();
     const chQ = 10, blQ = 6, svPer = 15, svQ = 6;
-    const ch = Math.max(0, Math.min(chQ, Math.round(Number(m.ch && m.ch.right)||0)));
-    const bl = Math.max(0, Math.min(blQ, Math.round(Number(m.bl && m.bl.right)||0)));
+    const chOn = normOn(m.ch, chQ), blOn = normOn(m.bl, blQ);
     const raw = (m.sv && Array.isArray(m.sv.scores)) ? m.sv.scores : [];
     const scores = [];
     for(let i=0;i<svQ;i++){
@@ -1342,7 +1405,9 @@ function normalizeMocks(arr){
     }
     out.push({ id: (m.id ? String(m.id).slice(0,40) : uid('mk')),
                name: name, date: date,
-               ch: { right: ch }, bl: { right: bl }, sv: { scores: scores },
+               ch: { right: chOn.length, on: chOn },
+               bl: { right: blOn.length, on: blOn },
+               sv: { scores: scores },
                note: (m.note ? String(m.note).trim().slice(0,60) : '') });
   });
   return out;
@@ -1418,25 +1483,105 @@ function normalizePol(o){
   }
   return d;
 }
-function save(){
-  try { localStorage.setItem(SKEY, JSON.stringify(S)); }
+/* 覆盖前先留一份旧的：滚动保留 3 份，任何一次误覆盖都能回退 */
+const BAK_N = 3;
+function bakKey(i){ return 'wb_studygoal_bak_' + i; }
+function pushBak(next){
+  try {
+    const cur = localStorage.getItem(SKEY);
+    if(!cur) return;
+    /* 内容没变就不压栈：cur 是旧值，next 是将要写入的新值 */
+    if(next !== undefined && next === cur) return;
+    for(let i = BAK_N-1; i > 0; i--){
+      const v = localStorage.getItem(bakKey(i-1));
+      if(v === null) localStorage.removeItem(bakKey(i));
+      else localStorage.setItem(bakKey(i), v);
+    }
+    localStorage.setItem(bakKey(0), cur);
+  } catch(e){}
+}
+function save(skipBak){
+  try {
+    const next = JSON.stringify(S);
+    if(!skipBak) pushBak(next);
+    localStorage.setItem(SKEY, next);
+  }
   catch(e){ toast('保存失败：本地存储可能已满'); }
 }
+function bakList(){
+  const out = [];
+  try {
+    for(let i = 0; i < BAK_N; i++){
+      const v = localStorage.getItem(bakKey(i));
+      if(!v) continue;
+      let d = null;
+      try { d = JSON.parse(v); } catch(e){ continue; }
+      const cs = (d && d.cats) ? d.cats : [];
+      let tot = 0, last = '';
+      cs.forEach(function(c){
+        const ck = (c && c.checkins) || {};
+        Object.keys(ck).forEach(function(k){ tot++; if(k > last) last = k; });
+      });
+      out.push({ i:i, size:v.length, cats:cs.length, checks:tot, last:last,
+                 papers:(d.papers||[]).length, mocks:(d.mocks||[]).length });
+    }
+  } catch(e){}
+  return out;
+}
+function restoreBak(i){
+  let raw = null;
+  try { raw = localStorage.getItem(bakKey(i)); } catch(e){}
+  if(!raw){ toast('这一份快照不存在'); return; }
+  let n = null;
+  try { n = normalize(JSON.parse(raw)); } catch(e){ toast('快照损坏，无法恢复'); return; }
+  if(!n || !n.cats.length){ toast('快照里没有分类数据'); return; }
+  S = n;
+  LOAD_ERR = null;
+  save(true);          /* 恢复本身不再压栈，避免把好快照挤掉 */
+  WEEK_CURSOR = mondayOf(todayStr());
+  if(typeof polApplyUI === 'function') polApplyUI();
+  TAB = 'today';
+  ['today','board','papers','pol','me'].forEach(function(k){ el('tab-'+k).classList.toggle('hide', k!=='today'); });
+  renderNav(); renderTopStrip(); renderToday(); renderBoard();
+  if(typeof renderPapers === 'function') renderPapers();
+  if(typeof renderPol === 'function') renderPol();
+  if(typeof renderMe === 'function') renderMe();
+  toast('已恢复到快照 #' + (i+1) + '（' + n.cats.length + ' 个分类）');
+}
+let LOAD_ERR = null;      /* 读取异常时留在这里，供界面提示 */
 function load(){
   let raw = null;
   try { raw = localStorage.getItem(SKEY); } catch(e){}
   if(raw){
-    try {
-      const n = normalize(JSON.parse(raw));
-      if(n.cats.length){ S = n; save(); return 'loaded'; }
-      /* 升级：保留旧真题，分类清空重来 */
-      const base = seed();
-      base.papers = n.papers.length ? n.papers : base.papers;
-      S = base; save(); return 'migrated';
-    } catch(e){}
+    let parsed = null, norm = null;
+    try { parsed = JSON.parse(raw); }
+    catch(e){
+      /* 解析失败：绝不覆盖，原样留在存储里等人工处理 */
+      LOAD_ERR = { kind:'parse', msg:String(e && e.message || e), size:raw.length };
+      S = seed(); return 'error';
+    }
+    try { norm = normalize(parsed); }
+    catch(e){
+      LOAD_ERR = { kind:'normalize', msg:String(e && e.message || e), size:raw.length };
+      S = seed(); return 'error';
+    }
+    if(norm && norm.cats.length){
+      /* 旧数据里题量明显多于新结果时也停手，避免又一次静默瘦身 */
+      const oldN = (parsed && Array.isArray(parsed.cats)) ? parsed.cats.length : 0;
+      if(oldN && norm.cats.length < oldN){
+        LOAD_ERR = { kind:'shrink', msg:'分类数 ' + oldN + ' → ' + norm.cats.length, size:raw.length };
+        S = norm; return 'error';
+      }
+      S = norm; save(true); return 'loaded';
+    }
+    /* 有原始数据但归一化后没有任何分类：不覆盖，先把原样托住 */
+    LOAD_ERR = { kind:'empty', msg:'读到了数据但没有可用的分类', size:raw.length };
+    S = norm && norm.papers && norm.papers.length ? norm : seed();
+    return 'error';
   }
   const mg = readLegacy();
   if(mg && mg.cats.length){ S = mg; save(); return 'migrated'; }
+  /* 真正全新：这时才允许铺示例数据 */
   S = seed(); save(); return 'seeded';
 }
 function normalize(o){
@@ -1452,6 +1597,21 @@ function normalize(o){
   b.vocab = (o.vocab && typeof o.vocab==='object') ? o.vocab : {};
   b.pol = normalizePol(o.pol);
   b.mocks = normalizeMocks(o.mocks);
+  /* 分值覆盖：只接受「科目@四位年份」→ { 题型key: 正数满分 } */
+  b.secOv = {};
+  if(o.secOv && typeof o.secOv === 'object'){
+    Object.keys(o.secOv).forEach(function(k){
+      if(!/^(eng2|math2|cs408|pol)@\d{4}$/.test(k)) return;
+      const v = o.secOv[k];
+      if(!v || typeof v !== 'object') return;
+      const keep = {};
+      Object.keys(v).forEach(function(sk){
+        const p = Number(v[sk]);
+        if(isFinite(p) && p > 0 && p <= 500) keep[sk] = Math.round(p*10)/10;
+      });
+      if(Object.keys(keep).length) b.secOv[k] = keep;
+    });
+  }
   b.lastYear = Math.round(Number(o.lastYear)||0);
   b.lastYearBy = {};
   if(o.lastYearBy && typeof o.lastYearBy === 'object'){
@@ -2383,6 +2543,138 @@ function renderVbWords(dateStr){
     });
   });
 }
+/* ---------------- 左滑改分值（真题）/ 左滑编辑（模拟卷） ---------------- */
+let SECE = null;                 /* { subj, year } 当前正在改的科目年份 */
+function bindSwipe(node, cb, cls){
+  let sx=0, sy=0, moved=false, active=false;
+  const mark = function(on, go){
+    node.classList.toggle(cls+'-on', !!on);
+    node.classList.toggle(cls+'-go', !!go);
+  };
+  const start = function(x, y){ sx=x; sy=y; moved=false; active=true; };
+  const move = function(x, y){
+    if(!active) return;
+    const dx = x-sx, dy = y-sy;
+    if(!moved && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 24) moved = true;
+    if(moved) mark(true, dx < -48);
+  };
+  const end = function(x){
+    if(!active) return;
+    active = false;
+    const dx = x - sx, fire = moved && dx < -55;
+    moved = false; mark(false, false);
+    if(fire) setTimeout(cb, 60);   /* 等手抬起再弹窗，手感更稳 */
+  };
+  const guard = function(t){ return t && t.closest && t.closest('button,[data-act],input,a') ? true : false; };
+  node.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1 || guard(e.target)) return;
+    start(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+  node.addEventListener('touchmove', function(e){
+    if(e.touches.length !== 1) return;
+    move(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+  node.addEventListener('touchend', function(e){
+    const t = e.changedTouches && e.changedTouches[0];
+    end(t ? t.clientX : sx);
+  });
+  /* 桌面端：鼠标拖拽同样支持，避免「手机上才有的功能」 */
+  let mdn = false;
+  node.addEventListener('mousedown', function(e){
+    if(e.button !== 0 || guard(e.target)) return;
+    mdn = true; start(e.clientX, e.clientY);
+  });
+  node.addEventListener('mousemove', function(e){ if(mdn) move(e.clientX, e.clientY); });
+  node.addEventListener('mouseup', function(e){ if(!mdn) return; mdn = false; end(e.clientX); });
+  node.addEventListener('mouseleave', function(){
+    if(!mdn) return; mdn = false; active = false; moved = false; mark(false, false);
+  });
+}
+function bindBoardSwipe(){
+  const root = el('tab-board'); if(!root || !root.querySelectorAll) return;
+  Array.prototype.forEach.call(root.querySelectorAll('tr[data-secyear]'), function(tr){
+    bindSwipe(tr, function(){ openSecEdit(tr.dataset.secsubj, Number(tr.dataset.secyear)); }, 'pm');
+  });
+  Array.prototype.forEach.call(root.querySelectorAll('.mk-item[data-mkid]'), function(it){
+    bindSwipe(it, function(){ mockForm(it.dataset.mkid); }, 'mk');
+  });
+}
+function secEditSum(){
+  if(!SECE) return '';
+  const secs = secsOf(SECE.subj, SECE.year);
+  const base = secsBase(SECE.subj, SECE.year);
+  let now = 0, was = 0, bad = 0;
+  secs.forEach(function(d){
+    const inp = el('se_pt_'+d.k);
+    const v = inp ? Number(inp.value) : d.pt;
+    if(!(isFinite(v) && v > 0)) bad++;
+    else now += v;
+    const b = base.filter(function(x){ return x.k===d.k; })[0];
+    was += (b ? b.pt : d.pt);
+  });
+  now = Math.round(now*10)/10;
+  const changed = Math.abs(now - was) > 0.001;
+  return '这套卷子合计 <b>'+nfm(now)+'</b> 分' +
+    (changed ? '（原为 '+nfm(was)+' 分，'+(now>was?'+':'')+nfm(Math.round((now-was)*10)/10)+'）' : '（与默认一致）') +
+    (bad ? ' · <span style="color:var(--red)">有 '+bad+' 项分值无效</span>' : '');
+}
+function secEditRefresh(){
+  const s = el('seSum'); if(s) s.innerHTML = secEditSum();
+}
+function openSecEdit(subj, year){
+  if(!subj || !PAPERS[subj] || !(year > 0)) return;
+  SECE = { subj:subj, year:year };
+  const secs = secsOf(subj, year);
+  let h = '<div class="fld"><label>说明 <em>只改分值，题数不动</em></label>' +
+    '<div style="font-size:12.5px;color:var(--ink2);line-height:1.65">' +
+    '改的是 <b>'+esc(PAPERS[subj].n)+' · '+year+' 年</b> 各题型的满分。改完之后：' +
+    '<br>· 真题录入页按新分值算每题分<br>· 正确率表和看板的得分、全卷分都跟着变' +
+    '<br>· <b>题数和题号范围不变</b>，所以已经记过的错题号不受影响</div></div>';
+  h += '<div class="fld"><label>各题型满分</label><div class="se-rows">';
+  secs.forEach(function(d){
+    const rng = d.mode === 'sub' ? ('第 '+d.no+' 题') : ('第 '+d.from+'—'+d.to+' 题 · '+d.q+' 题');
+    h += '<div class="se-row">' +
+         '<span class="se-n">'+esc(d.n)+'<i>'+rng+'</i></span>' +
+         '<span class="se-in"><input type="number" inputmode="decimal" min="0.5" max="500" step="0.5" ' +
+         'id="se_pt_'+d.k+'" value="'+d.pt+'" aria-label="'+esc(d.n)+'满分"><i>分</i></span></div>';
+  });
+  h += '</div></div><div class="se-sum" id="seSum">'+secEditSum()+'</div>';
+  openModal('修改分值 · '+esc(PAPERS[subj].n)+' '+year+' 年', h,
+    '<button class="btn btn-ghost" data-act="closem">取消</button>' +
+    '<button class="btn btn-ghost" data-act="se-reset">恢复默认</button>' +
+    '<button class="btn btn-pri" data-act="se-save">'+ic('check',16)+'保存</button>');
+}
+function saveSecEdit(){
+  if(!SECE) return;
+  const subj = SECE.subj, year = SECE.year;
+  const secs = secsOf(subj, year);
+  const ov = {};
+  let bad = null;
+  secs.forEach(function(d){
+    const inp = el('se_pt_'+d.k);
+    const v = Number(inp ? inp.value : d.pt);
+    if(!(isFinite(v) && v > 0)){ if(!bad) bad = d.n; return; }
+    ov[d.k] = Math.round(v*10)/10;
+  });
+  if(bad){ toast('「'+bad+'」的满分要大于 0'); return; }
+  if(!S.secOv || typeof S.secOv !== 'object') S.secOv = {};
+  S.secOv[subj+'@'+year] = ov;
+  SECE = null;
+  save(); closeModal();
+  if(TAB === 'board') renderBoard();
+  else if(TAB === 'papers') renderPapers();
+  toast('已更新 '+PAPERS[subj].n+' '+year+' 年分值');
+}
+function resetSecEdit(){
+  if(!SECE) return;
+  const subj = SECE.subj, year = SECE.year;
+  if(S.secOv && S.secOv[subj+'@'+year]){
+    delete S.secOv[subj+'@'+year];
+    save();
+  }
+  openSecEdit(subj, year);        /* 重新打开即为默认值 */
+  toast('已恢复默认分值');
+}
 function renderBoard(){
   const cats = sortedCats();
   let h = '';
@@ -2428,6 +2720,7 @@ function renderBoard(){
   }, 50);
 
   el('tab-board').innerHTML = h;
+  bindBoardSwipe();
 }
 
 /* ---------- 看板 · 真题正确率矩阵 ---------- */
@@ -2463,6 +2756,7 @@ function paperMatrix(){
     return '<div class="cel" style="background:'+c.b+';color:'+c.f+'">'+Math.round(a*100)+'%' +
            (sub?'<small>'+sub+'</small>':'')+'</div>';
   };
+  h += '<div class="pm-tip">← 左滑某一年份，可改这一年的分值</div>';
   h += '<div class="card" style="padding:11px 12px"><div class="pmat-wrap"><table class="pmat"><thead><tr>' +
        '<th class="yh">年份</th>' +
        def.secs.map(function(d){ return '<th>'+esc(d.s)+'</th>'; }).join('') +
@@ -2470,7 +2764,7 @@ function paperMatrix(){
   const sums = {}; def.secs.forEach(function(d){ sums[d.k] = []; });
   const wholes = [];
   rows.forEach(function(p){
-    h += '<tr><td class="yl">'+p.year+'</td>';
+    h += '<tr class="pm-swipe" data-secyear="'+p.year+'" data-secsubj="'+BSUBJ+'"><td class="yl">'+p.year+'</td>';
     secsOf(BSUBJ, p.year).forEach(function(d){
       const v = p.secs[d.k];
       if(!v){ h += '<td>'+cell(null)+'</td>'; return; }
@@ -2594,7 +2888,8 @@ function mockBoard(){
     return h;
   }
 
-  h += '<div class="mk-sub">题型分值按 2021 年起现行结构：选择 10×5 · 填空 6×5 · 解答 6 题 70 分，全卷 150 分。</div>';
+  h += '<div class="mk-sub">题型分值按 2021 年起现行结构：选择 10×5 · 填空 6×5 · 解答 6 题 70 分，全卷 150 分。' +
+       '<br>← 左滑某条记录可直接跳到修改界面</div>';
 
   /* ---- 汇总 ---- */
   const recent = list.slice(0,5);
@@ -2653,7 +2948,7 @@ function mockBoard(){
   list.forEach(function(m){
     const sc = mockScore(m);
     const col = accColor(sc.rate);
-    h += '<div class="mk-item">';
+    h += '<div class="mk-item" data-mkid="'+esc(m.id)+'">';
     h += '<div class="mk-itop"><span class="mk-name">'+esc(m.name)+'</span>'+
          '<span class="mk-date">'+md(m.date)+'</span></div>';
     h += '<div class="mk-imid">'+
@@ -2685,7 +2980,9 @@ function mkRefresh(){
   if(!MKF) return;
   ['ch','bl'].forEach(function(k){
     const d = mockSecDef(k);
-    const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
+    const on = mockOn(k), right = on.length;
+    /* right 与 on 始终保持一致，供 mockSecGot / 存档复用 */
+    if(MKF[k]) MKF[k].right = right;
     const pEl = el('mkp_'+k);
     if(pEl) pEl.innerHTML = (right*d.per)+'<i>/'+d.pt+'</i>';
     const sEl = el('mks_'+k);
@@ -2694,9 +2991,9 @@ function mkRefresh(){
     const grid = el('mkq_'+k);
     if(grid){
       Array.prototype.forEach.call(grid.querySelectorAll('[data-act="mk-qpick"]'), function(bt){
-        const i = Number(bt.dataset.i);
-        bt.classList.toggle('on', i < right);
-        bt.setAttribute('aria-pressed', i < right ? 'true' : 'false');
+        const lit = on.indexOf(Number(bt.dataset.i)+1) >= 0;
+        bt.classList.toggle('on', lit);
+        bt.setAttribute('aria-pressed', lit ? 'true' : 'false');
       });
     }
   });
@@ -2717,24 +3014,42 @@ function mkSumHTML(){
     '<span class="mk-sumr" style="color:'+col.f+'">'+(sc.rate===null?'—':Math.round(sc.rate*100)+'%')+'</span>'+
     '</div>';
 }
-/* 选择/填空：点题号选「做对的题」（和真题的错题勾选一致的操作方式） */
+/* 选择/填空：每个题号独立开关，点一个亮一个（亮＝做对）
+   on 里存的是已点亮的题号（1 基），right 恒等于 on.length，旧数据只有 right 时按前 right 题处理 */
+function mockOn(k){
+  const d = mockSecDef(k);
+  if(!d || !MKF || !MKF[k]) return [];
+  const rec = MKF[k];
+  if(Array.isArray(rec.on)){
+    const seen = {}, out = [];
+    rec.on.forEach(function(x){
+      const n = Math.round(Number(x)||0);
+      if(n>=1 && n<=d.q && !seen[n]){ seen[n] = 1; out.push(n); }
+    });
+    return out.sort(function(a,b){ return a-b; });
+  }
+  /* 老数据 / 只给了 right：视作前 right 题点亮，保持原有语义 */
+  const n = Math.max(0, Math.min(d.q, Math.round(Number(rec.right)||0)));
+  const out = []; for(let i=1;i<=n;i++) out.push(i);
+  return out;
+}
 function mockSelHTML(k){
   const d = mockSecDef(k);
-  const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
-  const from = 1;
+  const on = mockOn(k), from = 1;
   let s = '<div class="qgrid mk-qgrid" id="mkq_'+k+'">';
   for(let i=0;i<d.q;i++){
-    s += '<button type="button" class="qchip'+(i<right?' on':'')+'" data-act="mk-qpick" data-k="'+k+'" data-i="'+i+'" aria-pressed="'+(i<right?'true':'false')+'" aria-label="第 '+(from+i)+' 题">'+(from+i)+'</button>';
+    const lit = on.indexOf(from+i) >= 0;
+    s += '<button type="button" class="qchip'+(lit?' on':'')+'" data-act="mk-qpick" data-k="'+k+'" data-i="'+i+'" aria-pressed="'+(lit?'true':'false')+'" aria-label="第 '+(from+i)+' 题">'+(from+i)+'</button>';
   }
   return s + '</div>';
 }
 function mockSelStat(k){
   const d = mockSecDef(k);
-  const right = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k] && MKF[k].right)||0)));
+  const right = mockOn(k).length;
   const r = d.q>0 ? right/d.q : 0;
-  return '<b style="color:'+(right>0?'var(--ink)':'var(--faint)')+'">已选 '+right+' / '+d.q+' 题</b>'+
-         '<span class="mk-sebar"><i style="width:'+Math.round(r*100)+'%;background:'+accColor(r).f+'"></i></span>'+
-         '<span style="color:var(--muted)">得 '+right*d.per+' / '+d.pt+' 分</span>'+
+  return '<b style="color:'+(right>0?'var(--green)':'var(--faint)')+'">已选 '+right+' / '+d.q+' 题</b>'+
+         '<span class="mk-sebar"><i style="width:'+Math.round(r*100)+'%"></i></span>'+
+         '<span style="color:var(--muted)">得 <b style="color:'+(right>0?'var(--green)':'var(--faint)')+'">'+right*d.per+'</b> / '+d.pt+' 分</span>'+
          '<span class="mk-sp"></span>'+
          '<span data-act="mk-qall" data-k="'+k+'" class="mk-qall">'+(right>=d.q?'全不选':'全选')+'</span>';
 }
@@ -2777,19 +3092,34 @@ function mockForm(id){
   const src = id ? (S.mocks||[]).filter(function(x){ return x.id===id; })[0] : null;
   if(src){
     MKF = { id:src.id, name:src.name||'', date:src.date||todayStr(),
-            ch:{ right:Math.round(Number(src.ch && src.ch.right)||0) },
-            bl:{ right:Math.round(Number(src.bl && src.bl.right)||0) },
+            ch:mkOnOf(src.ch, 'ch'), bl:mkOnOf(src.bl, 'bl'),
             sv:{ scores:mkScores(src) },
             note:src.note||'' };
   } else {
     MKF = { id:'', name:'', date:todayStr(),
-            ch:{ right:0 }, bl:{ right:0 },
+            ch:{ right:0, on:[] }, bl:{ right:0, on:[] },
             sv:{ scores:[0,0,0,0,0,0] }, note:'' };
   }
   openModal(src ? '编辑模拟卷' : '记一份模拟卷', mockFormHTML(),
     '<button class="btn btn-ghost" data-act="closem">取消</button>' +
     '<button class="btn btn-pri" data-act="mk-save">'+ic('check',16)+'保存</button>',
     function(){ const n = el('mkName'); if(n) n.focus(); });
+}
+/* 从存档里的 {right,on} 还原成 MKF 用的 {right,on}；老数据只有 right 时展开成前 N 题 */
+function mkOnOf(rec, k){
+  const d = mockSecDef(k), q = d ? d.q : 0;
+  const right = Math.max(0, Math.min(q, Math.round(Number(rec && rec.right)||0)));
+  if(rec && Array.isArray(rec.on)){
+    const seen = {}, on = [];
+    rec.on.forEach(function(x){
+      const n = Math.round(Number(x)||0);
+      if(n>=1 && n<=q && !seen[n]){ seen[n] = 1; on.push(n); }
+    });
+    on.sort(function(a,b){ return a-b; });
+    return { right: on.length, on: on };
+  }
+  const on = []; for(let i=1;i<=right;i++) on.push(i);
+  return { right: on.length, on: on };
 }
 function mockStep(k, delta){
   if(!MKF) return;
@@ -2812,8 +3142,8 @@ function saveMock(){
     id: MKF.id || uid('mk'),
     name: name,
     date: date,
-    ch: { right: Math.max(0, Math.min(ch.q, Math.round(Number(MKF.ch.right)||0))) },
-    bl: { right: Math.max(0, Math.min(bl.q, Math.round(Number(MKF.bl.right)||0))) },
+    ch: { right: mockOn('ch').length, on: mockOn('ch') },
+    bl: { right: mockOn('bl').length, on: mockOn('bl') },
     sv: { scores: mkScores(MKF) },
     note: (noteEl ? String(noteEl.value||'').trim() : '').slice(0,60)
   };
@@ -5573,25 +5903,31 @@ document.addEventListener('click', function(ev){
       const k = b.dataset.k;
       const d = mockSecDef(k); if(!d) break;
       const i = Math.max(0, Math.min(d.q - 1, Math.round(Number(b.dataset.i)||0)));
-      if(!MKF[k]) MKF[k] = { right: 0 };
-      const cur = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k].right)||0)));
-      /* 点亮的题号是「前 N 题」连续前缀，跟真题勾错题一样点一下就切换：
-         点第 i 个时，若它已亮则取消它及之后 → N=i；若没亮则连它一起点亮 → N=i+1 */
-      MKF[k].right = (i < cur) ? i : (i + 1);
+      /* 每个题号各自独立开关：点一下只切换它自己，不动别的题号 */
+      const on = mockOn(k);
+      const idx = on.indexOf(i + 1);
+      if(idx >= 0) on.splice(idx, 1); else on.push(i + 1);
+      on.sort(function(x,y){ return x-y; });
+      MKF[k] = { right: on.length, on: on };
       mkRefresh();
       break;
     }
     case 'mk-qall': {
       if(!MKF) break;
       const k = b.dataset.k, d = mockSecDef(k); if(!d) break;
-      if(!MKF[k]) MKF[k] = { right: 0 };
-      const cur = Math.max(0, Math.min(d.q, Math.round(Number(MKF[k].right)||0)));
-      MKF[k].right = (cur >= d.q) ? 0 : d.q;
+      const cur = mockOn(k).length;
+      if(cur >= d.q){ MKF[k] = { right: 0, on: [] }; }
+      else {
+        const all = []; for(let i=1;i<=d.q;i++) all.push(i);
+        MKF[k] = { right: all.length, on: all };
+      }
       mkRefresh();
       break;
     }
     case 'mk-step':  { mockStep(b.dataset.k, Number(b.dataset.d)); break; }
     case 'mk-save':  { saveMock(); break; }
+    case 'se-save':  { saveSecEdit(); break; }
+    case 'se-reset': { resetSecEdit(); break; }
     case 'mark':       markModal(id, b.dataset.key); break;
     case 'savemark':   saveMark(); break;
     case 'clearmark':  clearMark(); break;
@@ -6132,6 +6468,11 @@ document.addEventListener('input', function(ev){
     }
     pfRefresh(k);
   }
+  /* 改动分值弹窗：边改边算合计 */
+  if(ev.target && /^se_pt_/.test(String(ev.target.id || '')) && SECE){
+    secEditRefresh();
+    return;
+  }
   /* 模拟卷表单：解答题逐题分数，边填边算 */
   const mkr = ev.target.closest('[data-mkrow="sv"]');
   if(mkr && MKF){
@@ -6210,6 +6551,26 @@ document.addEventListener('visibilitychange', function(){
   WEEK_CURSOR = mondayOf(todayStr());
   go('today');
   if(how==='migrated') setTimeout(function(){ toast('已自动迁移旧版本数据'); }, 500);
+  /* 读取异常：绝不静默覆盖，明确告诉用户原始数据还在存储里 */
+  if(how==='error' && LOAD_ERR){
+    setTimeout(function(){
+      var b = document.createElement('div');
+      b.id = 'loadErrBar';
+      b.style.cssText = 'position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#fff4f4;'
+        + 'border:1px solid #e04350;border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.6;'
+        + 'color:#8a2530;box-shadow:0 8px 26px rgba(0,0,0,.18)';
+      b.innerHTML = '<b>数据读取异常，已暂停写入</b><br>'
+        + '为避免覆盖，本次没有保存任何东西。原始数据仍完整留在浏览器里。<br>'
+        + '原因：' + (LOAD_ERR.msg || LOAD_ERR.kind) + '<br>'
+        + '请先到「我的 → 数据备份」导出一次，再联系我处理。';
+      var x = document.createElement('button');
+      x.textContent = '×';
+      x.style.cssText = 'position:absolute;right:8px;top:6px;border:0;background:transparent;font-size:17px;color:#8a2530';
+      x.onclick = function(){ b.remove(); };
+      b.appendChild(x);
+      document.body.appendChild(b);
+    }, 400);
+  }
   
 })();
 
